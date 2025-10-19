@@ -178,9 +178,6 @@ const Discounts = () => {
                     </div>
                   </div>
 
-                  <button className={`w-full bg-gradient-to-r ${discount.color} text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 group-hover:scale-105`}>
-                    Claim Discount
-                  </button>
                 </div>
               </motion.div>
             )
@@ -248,9 +245,7 @@ const Discounts = () => {
                     </div>
                   </div>
 
-                  <button className={`w-full bg-gradient-to-r ${discount.color} text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 group-hover:scale-105`}>
-                    Claim Discount
-                  </button>
+               
                 </div>
               </motion.div>
             )
@@ -290,17 +285,7 @@ const Discounts = () => {
           </div>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
-          viewport={{ once: true }}
-          className="text-center"
-        >
-          <button className="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105">
-            Apply for Discount
-          </button>
-        </motion.div>
+        
       </div>
     </section>
   )

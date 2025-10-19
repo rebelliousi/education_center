@@ -6,6 +6,8 @@ import Activities from "./sections/Activities"
 import Videos from "./sections/Videos"
 import Teachers from "./sections/Teachers"
 import Discounts from "./sections/Discount"
+import Contact from "./sections/Contact"
+import Footer from "./sections/Footer"
 
 
 
@@ -21,6 +23,8 @@ export const App=()=>{
       </div>
       <Teachers/>
       <Discounts/>
+      <Contact/>
+      <Footer/>
     </div>
   )
 }

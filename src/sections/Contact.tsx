@@ -1,0 +1,161 @@
+import React, { useState } from 'react'
+import { motion } from 'framer-motion'
+import { Phone, Mail, MapPin, ArrowRight } from 'lucide-react'
+
+const Contact = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  })
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
+  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    console.log('Form submitted:', formData)
+    setFormData({
+      name: '',
+      email: '',
+      subject: '',
+      message: ''
+    })
+  }
+
+  return (
+    <section id="contact" className="py-24 bg-gradient-to-br from-blue-50 via-white to-blue-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+            Ready to Begin Your{' '}
+            <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+              Journey?
+            </span>
+          </h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            Get in touch with us and start your path to scientific discovery
+          </p>
+        </motion.div>
+
+        {/* Contact Cards */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          viewport={{ once: true }}
+          className="grid md:grid-cols-3 gap-8 mb-16"
+        >
+          <motion.div
+            whileHover={{ y: -8 }}
+            className="text-center p-8 bg-white/50 backdrop-blur-sm rounded-2xl border border-blue-200/50 hover:border-blue-300 transition-all duration-300 shadow-lg hover:shadow-xl group"
+          >
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform">
+              <Phone className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="font-bold mb-2 text-lg text-gray-900">Call Us</h3>
+            <p className="text-gray-600">+1 (555) 123-4567</p>
+          </motion.div>
+
+          <motion.div
+            whileHover={{ y: -8 }}
+            className="text-center p-8 bg-white/50 backdrop-blur-sm rounded-2xl border border-blue-200/50 hover:border-blue-300 transition-all duration-300 shadow-lg hover:shadow-xl group"
+          >
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform">
+              <Mail className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="font-bold mb-2 text-lg text-gray-900">Email Us</h3>
+            <p className="text-gray-600">info@goshmaca.edu</p>
+          </motion.div>
+
+          <motion.div
+            whileHover={{ y: -8 }}
+            className="text-center p-8 bg-white/50 backdrop-blur-sm rounded-2xl border border-blue-200/50 hover:border-blue-300 transition-all duration-300 shadow-lg hover:shadow-xl group"
+          >
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform">
+              <MapPin className="w-8 h-8 text-white" />
+            </div>
+            <h3 className="font-bold mb-2 text-lg text-gray-900">Visit Us</h3>
+            <p className="text-gray-600">123 Science Avenue</p>
+          </motion.div>
+        </motion.div>
+
+        {/* Contact Form */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          viewport={{ once: true }}
+          className="bg-white/60 backdrop-blur-sm p-12 rounded-3xl border border-blue-200/50 shadow-xl max-w-3xl mx-auto"
+        >
+          <div className="space-y-6">
+            <div className="grid md:grid-cols-2 gap-6">
+              <motion.input
+                whileFocus={{ scale: 1.02 }}
+                type="text"
+                name="name"
+                placeholder="Your Name"
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full px-6 py-4 rounded-xl bg-blue-50/50 border border-blue-200/50 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all backdrop-blur-sm"
+              />
+              <motion.input
+                whileFocus={{ scale: 1.02 }}
+                type="email"
+                name="email"
+                placeholder="Your Email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full px-6 py-4 rounded-xl bg-blue-50/50 border border-blue-200/50 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all backdrop-blur-sm"
+              />
+            </div>
+
+            <motion.input
+              whileFocus={{ scale: 1.02 }}
+              type="text"
+              name="subject"
+              placeholder="Subject"
+              value={formData.subject}
+              onChange={handleChange}
+              className="w-full px-6 py-4 rounded-xl bg-blue-50/50 border border-blue-200/50 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all backdrop-blur-sm"
+            />
+
+            <motion.textarea
+              whileFocus={{ scale: 1.02 }}
+              name="message"
+              placeholder="Your Message"
+              rows={6}
+              value={formData.message}
+              onChange={handleChange}
+              className="w-full px-6 py-4 rounded-xl bg-blue-50/50 border border-blue-200/50 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all resize-none backdrop-blur-sm"
+            ></motion.textarea>
+
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleSubmit}
+              className="w-full py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-bold text-lg hover:shadow-lg transition-all shadow-lg flex items-center justify-center gap-2 group"
+            >
+              Send Message
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </motion.button>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
+export default Contact
