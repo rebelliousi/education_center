@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, Play, Sparkles, Zap, BookOpen } from 'lucide-react'
+import { ArrowRight, Play, Sparkles, BookOpen } from 'lucide-react'
 import gsap from 'gsap'
+import img from '../../public/image 2.svg' // kendi görsel yolun
 
 const SHAPE_CLASSES = [
   "w-4 h-4 bg-blue-200 rounded-full",
@@ -10,9 +11,9 @@ const SHAPE_CLASSES = [
   "w-6 h-6 bg-blue-200 rounded-lg"
 ]
 const SHAPE_COUNT = 20
-const ICONS = ['⚛️', '🔬', '🧪', '🌟', '💫', '🔭']
+const ICONS = ['⚛️', '🔬', '🧪', '🌟', '💫', '🔭','⚛️', '🔬', '🧪', '🌟', '💫', '🔭']
 
-const HERO_WIDTH = 1300 // fallback sabit değer
+const HERO_WIDTH = 1300
 const HERO_HEIGHT = 800
 
 const Hero = () => {
@@ -37,7 +38,6 @@ const Hero = () => {
     }
   }
 
-  // Random pozisyonlar oluşturmak için bir kez hesaplanır
   const randomShapes = React.useMemo(() =>
     Array.from({ length: SHAPE_COUNT }, () => ({
       x: Math.random() * HERO_WIDTH,
@@ -66,7 +66,6 @@ const Hero = () => {
     >
       {/* Animated Background Elements */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-        {/* Floating Geometric Shapes */}
         {randomShapes.map((shape, i) => (
           <motion.div
             key={i}
@@ -85,8 +84,6 @@ const Hero = () => {
             }}
           />
         ))}
-
-        {/* Science Icons Floating */}
         {randomIcons.map((iconObj, i) => (
           <motion.div
             key={i}
@@ -129,7 +126,6 @@ const Hero = () => {
                 <span className="text-blue-700 font-semibold">Welcome to the Future of Learning</span>
               </div>
             </motion.div>
-
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -142,7 +138,6 @@ const Hero = () => {
               </span>{' '}
               <span className="text-gray-800">Center</span>
             </motion.h1>
-
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -152,7 +147,6 @@ const Hero = () => {
               Experience a unique education hub where science comes alive with creativity and technology.
               Discover your passion, connect with passionate educators, and embark on an inspiring learning journey.
             </motion.p>
-
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -170,7 +164,6 @@ const Hero = () => {
                 <span>Explore Courses</span>
                 <ArrowRight className="h-5 w-5" aria-hidden="true" />
               </motion.button>
-
               <motion.button
                 onClick={() => scrollToSection('videos')}
                 whileHover={{ scale: 1.05 }}
@@ -182,7 +175,6 @@ const Hero = () => {
                 <span>Watch Videos</span>
               </motion.button>
             </motion.div>
-
             {/* Stats */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -205,94 +197,15 @@ const Hero = () => {
             </motion.div>
           </motion.div>
 
-          {/* Animated Illustration */}
-          <motion.div
-            ref={floatingRef}
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="relative"
-          >
-            <div className="relative w-full max-w-lg mx-auto">
-              {/* Main Science Hub Illustration */}
-              <div className="relative bg-gradient-to-br from-blue-500 to-blue-600 rounded-3xl p-8 shadow-2xl">
-                <div className="text-center">
-                  <motion.div
-                    animate={{ rotate: [0, 360] }}
-                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                    className="w-32 h-32 mx-auto mb-6 bg-white rounded-full flex items-center justify-center shadow-lg"
-                  >
-                    <svg className="w-16 h-16 text-blue-600" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                      <path d="M12 2L13.09 8.26L19 7.27L14.18 12L19 16.73L13.09 15.74L12 22L10.91 15.74L5 16.73L9.82 12L5 7.27L10.91 8.26L12 2Z" />
-                    </svg>
-                  </motion.div>
-                  <h3 className="text-2xl font-bold text-white mb-4">Science Comes Alive</h3>
-                  <p className="text-blue-100">Where creativity meets technology in perfect harmony</p>
-                </div>
-              </div>
-
-              {/* Floating Elements */}
-              <motion.div
-                animate={{
-                  rotate: 360,
-                  y: [-10, 10, -10]
-                }}
-                transition={{
-                  rotate: { duration: 20, repeat: Infinity, ease: "linear" },
-                  y: { duration: 3, repeat: Infinity }
-                }}
-                className="absolute -top-4 -right-4 w-16 h-16 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full flex items-center justify-center shadow-lg"
-                aria-hidden="true"
-              >
-                <span className="text-2xl">⚛️</span>
-              </motion.div>
-
-              <motion.div
-                animate={{
-                  y: [-15, 15, -15],
-                  rotate: [0, 180, 360]
-                }}
-                transition={{
-                  y: { duration: 4, repeat: Infinity },
-                  rotate: { duration: 8, repeat: Infinity }
-                }}
-                className="absolute -bottom-4 -left-4 w-12 h-12 bg-gradient-to-r from-white to-blue-100 rounded-full flex items-center justify-center shadow-lg border-2 border-blue-200"
-                aria-hidden="true"
-              >
-                <span className="text-lg">🧪</span>
-              </motion.div>
-
-              <motion.div
-                animate={{
-                  x: [-10, 10, -10],
-                  scale: [1, 1.1, 1]
-                }}
-                transition={{
-                  x: { duration: 3, repeat: Infinity },
-                  scale: { duration: 2, repeat: Infinity }
-                }}
-                className="absolute top-1/2 -left-8 w-10 h-10 bg-blue-200 rounded-full flex items-center justify-center shadow-md"
-                aria-hidden="true"
-              >
-                <Zap className="h-5 w-5 text-blue-600" aria-hidden="true" />
-              </motion.div>
-
-              <motion.div
-                animate={{
-                  x: [10, -10, 10],
-                  opacity: [0.7, 1, 0.7]
-                }}
-                transition={{
-                  x: { duration: 3.5, repeat: Infinity },
-                  opacity: { duration: 2, repeat: Infinity }
-                }}
-                className="absolute top-1/4 -right-6 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md border border-blue-200"
-                aria-hidden="true"
-              >
-                <span className="text-sm">🔬</span>
-              </motion.div>
-            </div>
-          </motion.div>
+          {/* Modern ve sade görsel alanı */}
+          <div className="flex items-center justify-center w-full">
+            <img
+              src={img}
+              alt="Science Center Visual"
+              className="w-full rounded-2xl object-cover"
+              style={{ boxShadow: 'none' }}
+            />
+          </div>
         </div>
       </div>
 
