@@ -1,131 +1,44 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Clock, Users, Star, BookOpen, Award } from "lucide-react";
-
-const courses = [
-  {
-    id: 1,
-    title: "Quantum Physics Fundamentals",
-    description: "Explore the mysterious world of quantum mechanics and particle physics",
-    duration: "12 weeks",
-    students: 156,
-    rating: 4.9,
-    level: "Advanced",
-    image: "https://images.pexels.com/photos/2280549/pexels-photo-2280549.jpeg?auto=compress&cs=tinysrgb&w=400",
-    icon: "⚛️",
-    color: "from-blue-500 to-blue-600"
-  },
-  {
-    id: 2,
-    title: "Organic Chemistry Mastery",
-    description: "Master the fundamentals of organic compounds and reactions",
-    duration: "10 weeks",
-    students: 243,
-    rating: 4.8,
-    level: "Intermediate",
-    image: "https://images.pexels.com/photos/2280568/pexels-photo-2280568.jpeg?auto=compress&cs=tinysrgb&w=400",
-    icon: "🧪",
-    color: "from-blue-400 to-blue-500"
-  },
-  {
-    id: 3,
-    title: "Astrophysics & Cosmology",
-    description: "Journey through the cosmos and understand the universe's mysteries",
-    duration: "14 weeks",
-    students: 189,
-    rating: 4.9,
-    level: "Advanced",
-    image: "https://images.pexels.com/photos/2150/sky-space-dark-galaxy.jpg?auto=compress&cs=tinysrgb&w=400",
-    icon: "🌌",
-    color: "from-blue-600 to-blue-700"
-  },
-  {
-    id: 4,
-    title: "Molecular Biology",
-    description: "Dive deep into the molecular mechanisms of life",
-    duration: "11 weeks",
-    students: 198,
-    rating: 4.7,
-    level: "Intermediate",
-    image: "https://images.pexels.com/photos/2280571/pexels-photo-2280571.jpeg?auto=compress&cs=tinysrgb&w=400",
-    icon: "🧬",
-    color: "from-blue-500 to-blue-600"
-  },
-  {
-    id: 5,
-    title: "Environmental Science",
-    description: "Study environmental systems and sustainability solutions",
-    duration: "9 weeks",
-    students: 267,
-    rating: 4.8,
-    level: "Beginner",
-    image: "https://images.pexels.com/photos/1108572/pexels-photo-1108572.jpeg?auto=compress&cs=tinysrgb&w=400",
-    icon: "🌱",
-    color: "from-blue-400 to-blue-500"
-  },
-  {
-    id: 6,
-    title: "Neuroscience Basics",
-    description: "Understand the brain and nervous system functions",
-    duration: "13 weeks",
-    students: 134,
-    rating: 4.9,
-    level: "Intermediate",
-    image: "https://images.pexels.com/photos/3825586/pexels-photo-3825586.jpeg?auto=compress&cs=tinysrgb&w=400",
-    icon: "🧠",
-    color: "from-blue-600 to-blue-700"
-  },
-  {
-    id: 7,
-    title: "Materials Science",
-    description: "Explore the properties and applications of advanced materials",
-    duration: "10 weeks",
-    students: 176,
-    rating: 4.6,
-    level: "Advanced",
-    image: "https://images.pexels.com/photos/2280550/pexels-photo-2280550.jpeg?auto=compress&cs=tinysrgb&w=400",
-    icon: "⚗️",
-    color: "from-blue-500 to-blue-600"
-  },
-  {
-    id: 8,
-    title: "Genetics & Genomics",
-    description: "Study heredity and genetic variation in organisms",
-    duration: "12 weeks",
-    students: 221,
-    rating: 4.8,
-    level: "Intermediate",
-    image: "https://images.pexels.com/photos/3825527/pexels-photo-3825527.jpeg?auto=compress&cs=tinysrgb&w=400",
-    icon: "🔬",
-    color: "from-blue-400 to-blue-500"
-  }
-];
-
-const LEVELS = [
-  { label: "All", value: "all" },
-  { label: "Beginner", value: "Beginner" },
-  { label: "Intermediate", value: "Intermediate" },
-  { label: "Advanced", value: "Advanced" }
-];
+import { useCourses } from "../hooks/useCourses";
+import { useLevels } from "../hooks/useLevels";
 
 function getLevelColor(level: string) {
   switch (level) {
-    case 'Beginner': return 'bg-green-100 text-green-700';
-    case 'Intermediate': return 'bg-yellow-100 text-yellow-700';
-    case 'Advanced': return 'bg-red-100 text-red-700';
-    default: return 'bg-blue-100 text-blue-700';
+    case "Beginner":
+      return "bg-green-100 text-green-700";
+    case "Intermediate":
+      return "bg-yellow-100 text-yellow-700";
+    case "Advanced":
+      return "bg-red-100 text-red-700";
+    default:
+      return "bg-blue-100 text-blue-700";
   }
 }
 
 export default function CoursesSection() {
   const [filter, setFilter] = useState("all");
+  const { data: courses = [], isLoading: coursesLoading, error: coursesError } = useCourses();
+  const { data: levels = [], isLoading: levelsLoading, error: levelsError } = useLevels();
 
-  const filteredCourses = filter === "all"
-    ? courses
-    : courses.filter(course => course.level === filter);
+  // Dinamik level butonları: "All" + API'dan gelen seviyeler
+  const LEVELS = [
+    { label: "All", value: "all" },
+    ...levels.map(lvl => ({
+      label: lvl.name,
+      value: lvl.name
+    }))
+  ];
+
+  // Filtrelenmiş kurslar
+  const filteredCourses =
+    filter === "all" ? courses : courses.filter(course => course.level === filter);
+
+
 
   return (
-    <section id="courses" className="py-20 ">
+    <section id="courses" className="py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header & Filter */}
         <motion.div
@@ -152,7 +65,7 @@ export default function CoursesSection() {
           </p>
         </motion.div>
 
-        {/* Filter Buttons */}
+        {/* Level Filter Buttons */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -192,13 +105,13 @@ export default function CoursesSection() {
               className="bg-white rounded-2xl overflow-hidden border border-blue-100 hover:border-blue-200 transition-all duration-300 cursor-pointer group shadow-lg hover:shadow-xl flex flex-col"
               tabIndex={0}
               role="button"
-              aria-label={`Learn more about ${course.title}`}
+              aria-label={`Learn more about ${course.name}`}
             >
               {/* Course Image */}
               <div className="relative h-48 overflow-hidden">
                 <img
                   src={course.image}
-                  alt={course.title}
+                  alt={course.name}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                 />
                 <div className={`absolute inset-0 bg-gradient-to-t ${course.color} opacity-70`} />
@@ -219,7 +132,7 @@ export default function CoursesSection() {
               {/* Course Content */}
               <div className="flex flex-col flex-1 p-6">
                 <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors leading-tight min-h-[56px]">
-                  {course.title}
+                  {course.name}
                 </h3>
                 <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed min-h-[48px]">
                   {course.description}
