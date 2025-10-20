@@ -198,7 +198,7 @@ const Hero = () => {
           </motion.div>
 
           {/* Modern ve sade görsel alanı */}
-          <div className="flex items-center justify-center w-full">
+          <div className="flex items-center justify-center w-[700px]">
             <img
               src={img}
               alt="Science Center Visual"
