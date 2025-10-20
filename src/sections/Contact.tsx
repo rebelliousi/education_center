@@ -1,6 +1,15 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Phone, Mail, MapPin, ArrowRight } from 'lucide-react'
+import { useContactForm } from "../hooks/useSendForms"
+import { useContactItems } from "../hooks/useFooter"
+
+const iconMap = {
+  Phone: Phone,
+  Mail: Mail,
+  MapPin: MapPin,
+  // Diğer iconlar varsa buraya ekleyebilirsin
+}
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -9,6 +18,12 @@ const Contact = () => {
     subject: '',
     message: ''
   })
+  const [showVerification, setShowVerification] = useState(false)
+  const [verificationCode, setVerificationCode] = useState('')
+  const [isVerified, setIsVerified] = useState(false)
+
+  const { mutate: submitContactForm, isPending, isSuccess, error } = useContactForm();
+  const { data: contactItems = [], isLoading: contactLoading, error: contactError } = useContactItems();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -18,15 +33,32 @@ const Contact = () => {
     }))
   }
 
-  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleFirstSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    console.log('Form submitted:', formData)
+    submitContactForm({
+      ...formData,
+      is_verified: false,
+      verification_code: '',
+    })
+    setShowVerification(true)
+  }
+
+  const handleVerificationSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    submitContactForm({
+      ...formData,
+      is_verified: true,
+      verification_code: verificationCode,
+    })
+    setShowVerification(false)
     setFormData({
       name: '',
       email: '',
       subject: '',
       message: ''
     })
+    setVerificationCode('')
+    setIsVerified(false)
   }
 
   return (
@@ -50,7 +82,7 @@ const Contact = () => {
           </p>
         </motion.div>
 
-        {/* Contact Cards */}
+        {/* Contact Cards - Dinamik */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -58,38 +90,23 @@ const Contact = () => {
           viewport={{ once: true }}
           className="grid md:grid-cols-3 gap-8 mb-16"
         >
-          <motion.div
-            whileHover={{ y: -8 }}
-            className="text-center p-8 bg-white/50 backdrop-blur-sm rounded-2xl border border-blue-200/50 hover:border-blue-300 transition-all duration-300 shadow-lg hover:shadow-xl group"
-          >
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform">
-              <Phone className="w-8 h-8 text-white" />
-            </div>
-            <h3 className="font-bold mb-2 text-lg text-gray-900">Call Us</h3>
-            <p className="text-gray-600">+1 (555) 123-4567</p>
-          </motion.div>
-
-          <motion.div
-            whileHover={{ y: -8 }}
-            className="text-center p-8 bg-white/50 backdrop-blur-sm rounded-2xl border border-blue-200/50 hover:border-blue-300 transition-all duration-300 shadow-lg hover:shadow-xl group"
-          >
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform">
-              <Mail className="w-8 h-8 text-white" />
-            </div>
-            <h3 className="font-bold mb-2 text-lg text-gray-900">Email Us</h3>
-            <p className="text-gray-600">info@goshmaca.edu</p>
-          </motion.div>
-
-          <motion.div
-            whileHover={{ y: -8 }}
-            className="text-center p-8 bg-white/50 backdrop-blur-sm rounded-2xl border border-blue-200/50 hover:border-blue-300 transition-all duration-300 shadow-lg hover:shadow-xl group"
-          >
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform">
-              <MapPin className="w-8 h-8 text-white" />
-            </div>
-            <h3 className="font-bold mb-2 text-lg text-gray-900">Visit Us</h3>
-            <p className="text-gray-600">123 Science Avenue</p>
-          </motion.div>
+       
+          {contactItems.map((item) => {
+            const IconComponent = iconMap[item.icon as keyof typeof iconMap]  || Phone;
+            return (
+              <motion.div
+                key={item.id}
+                whileHover={{ y: -8 }}
+                className="text-center p-8 bg-white/50 backdrop-blur-sm rounded-2xl border border-blue-200/50 hover:border-blue-300 transition-all duration-300 shadow-lg hover:shadow-xl group"
+              >
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform">
+                  <IconComponent className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="font-bold mb-2 text-lg text-gray-900">{item.title}</h3>
+                <p className="text-gray-600">{item.value}</p>
+              </motion.div>
+            )
+          })}
         </motion.div>
 
         {/* Contact Form */}
@@ -100,7 +117,7 @@ const Contact = () => {
           viewport={{ once: true }}
           className="bg-white/60 backdrop-blur-sm p-12 rounded-3xl border border-blue-200/50 shadow-xl max-w-3xl mx-auto"
         >
-          <div className="space-y-6">
+          <form className="space-y-6">
             <div className="grid md:grid-cols-2 gap-6">
               <motion.input
                 whileFocus={{ scale: 1.02 }}
@@ -109,6 +126,7 @@ const Contact = () => {
                 placeholder="Your Name"
                 value={formData.name}
                 onChange={handleChange}
+                required
                 className="w-full px-6 py-4 rounded-xl bg-blue-50/50 border border-blue-200/50 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all backdrop-blur-sm"
               />
               <motion.input
@@ -118,10 +136,10 @@ const Contact = () => {
                 placeholder="Your Email"
                 value={formData.email}
                 onChange={handleChange}
+                required
                 className="w-full px-6 py-4 rounded-xl bg-blue-50/50 border border-blue-200/50 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all backdrop-blur-sm"
               />
             </div>
-
             <motion.input
               whileFocus={{ scale: 1.02 }}
               type="text"
@@ -129,9 +147,9 @@ const Contact = () => {
               placeholder="Subject"
               value={formData.subject}
               onChange={handleChange}
+              required
               className="w-full px-6 py-4 rounded-xl bg-blue-50/50 border border-blue-200/50 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all backdrop-blur-sm"
             />
-
             <motion.textarea
               whileFocus={{ scale: 1.02 }}
               name="message"
@@ -139,20 +157,62 @@ const Contact = () => {
               rows={6}
               value={formData.message}
               onChange={handleChange}
+              required
               className="w-full px-6 py-4 rounded-xl bg-blue-50/50 border border-blue-200/50 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all resize-none backdrop-blur-sm"
             ></motion.textarea>
 
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={handleSubmit}
+              onClick={handleFirstSubmit}
               className="w-full py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-bold text-lg hover:shadow-lg transition-all shadow-lg flex items-center justify-center gap-2 group"
+              disabled={isPending}
             >
-              Send Message
+              {isPending ? "Sending..." : "Send Message"}
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </motion.button>
-          </div>
+            {isSuccess && (
+              <div className="text-green-600 font-semibold text-center">Your message has been sent!</div>
+            )}
+            {error && (
+              <div className="text-red-600 font-semibold text-center">Something went wrong. Please try again.</div>
+            )}
+          </form>
         </motion.div>
+
+        {/* Verification Modal */}
+        {showVerification && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl border border-blue-200"
+            >
+              <h3 className="text-xl font-bold mb-4 text-center">Enter Verification Code</h3>
+              <input
+                type="text"
+                placeholder="Verification Code"
+                value={verificationCode}
+                onChange={e => setVerificationCode(e.target.value)}
+                className="w-full mb-4 px-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+              <div className="flex gap-4">
+                <button
+                  onClick={() => setShowVerification(false)}
+                  className="w-full py-3 rounded-lg bg-gray-200 text-gray-700 font-semibold"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleVerificationSubmit}
+                  className="w-full py-3 rounded-lg bg-blue-700 text-white font-semibold"
+                >
+                  Verify & Send
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
       </div>
     </section>
   )

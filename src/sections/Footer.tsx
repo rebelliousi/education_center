@@ -1,8 +1,18 @@
 import React from 'react'
-import { GraduationCap, Facebook, Twitter, Linkedin } from 'lucide-react'
+import { GraduationCap, Facebook, Twitter, Linkedin, Phone, Mail, MapPin } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { useContactItems } from "../hooks/useFooter"
+
+const iconMap = {
+  Phone,
+  Mail,
+  MapPin,
+  // Diğer ikonlar varsa buraya ekle
+}
 
 const Footer = () => {
+  const { data: contactItems = [], isLoading, error } = useContactItems()
+
   return (
     <footer className="bg-gradient-to-b from-white to-blue-50 text-gray-900 py-16 border-t border-blue-200/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -26,6 +36,21 @@ const Footer = () => {
             <p className="text-gray-600 leading-relaxed max-w-md">
               Inspiring minds and shaping futures through innovative science education. Join our community of passionate learners and educators on a journey of scientific discovery.
             </p>
+            {/* Contact Items API'dan */}
+            <div className="mt-8 flex flex-col gap-4">
+              {isLoading && <span className="text-blue-600">Loading contact info...</span>}
+              {error && <span className="text-red-600">Contact info error!</span>}
+              {contactItems.map(item => {
+                const IconComponent = iconMap[item.icon as keyof typeof iconMap] || Phone;
+                return (
+                  <div key={item.id} className="flex items-center gap-2 text-gray-700 text-sm">
+                    <IconComponent className="w-5 h-5 text-blue-600" />
+                    <span className="font-semibold">{item.title}:</span>
+                    <span>{item.value}</span>
+                  </div>
+                )
+              })}
+            </div>
           </motion.div>
 
           {/* Social Links */}

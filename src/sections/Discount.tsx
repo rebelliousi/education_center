@@ -1,91 +1,34 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import {Percent, Users, Clock, Star, Gift, Zap} from 'lucide-react'
+import { Percent, Users, Clock, Star, Gift, Zap } from 'lucide-react'
+import { useDiscountItems } from "../hooks/useDiscounts"
+
+// API'dan gelen icon ismine göre bir ikon component'i döndür
+const getIconComponent = (iconName: string) => {
+  switch (iconName) {
+    case "Clock": return Clock
+    case "Users": return Users
+    case "Star": return Star
+    case "Gift": return Gift
+    case "Zap": return Zap
+    default: return Percent
+  }
+}
+
+// API'dan gelen requirements string ise, diziye çevir
+function parseRequirements(requirements: string | string[]) {
+  if (Array.isArray(requirements)) return requirements
+  if (typeof requirements === "string") {
+    // Virgül veya yeni satıra göre bölebilirsin
+    return requirements.split("\n").map(s => s.trim()).filter(Boolean)
+  }
+  return []
+}
 
 const Discounts = () => {
-  const discounts = [
-    {
-      id: 1,
-      percentage: 50,
-      title: "Early Bird Special",
-      description: "Register for any course 30 days before start date",
-      requirements: [
-        "Register 30+ days in advance",
-        "Pay full tuition upfront",
-        "Valid for first-time students"
-      ],
-      icon: Clock,
-      color: "from-yellow-500 to-orange-600",
-      bgGradient: "from-yellow-500/20 to-orange-600/20",
-      popular: true,
-      validUntil: "Limited Time",
-      courses: "All Courses"
-    },
-    {
-      id: 2,
-      percentage: 30,
-      title: "Group Enrollment",
-      description: "Bring 3 or more friends and save together",
-      requirements: [
-        "Minimum 3 students per group",
-        "All must enroll in same course",
-        "Group payment required"
-      ],
-      icon: Users,
-      color: "from-blue-500 to-purple-600",
-      bgGradient: "from-blue-500/20 to-purple-600/20",
-      validUntil: "Ongoing",
-      courses: "All Courses"
-    },
-    {
-      id: 3,
-      percentage: 25,
-      title: "Student Loyalty",
-      description: "For students completing 2+ courses with us",
-      requirements: [
-        "Completed 2+ previous courses",
-        "Maintained 4.0+ GPA",
-        "Active student status"
-      ],
-      icon: Star,
-      color: "from-purple-500 to-pink-600",
-      bgGradient: "from-purple-500/20 to-pink-600/20",
-      validUntil: "Ongoing",
-      courses: "All Courses"
-    },
-    {
-      id: 4,
-      percentage: 20,
-      title: "Academic Excellence",
-      description: "High school/college students with 3.5+ GPA",
-      requirements: [
-        "Current student status",
-        "3.5+ GPA verification",
-        "Valid student ID required"
-      ],
-      icon: Zap,
-      color: "from-green-500 to-teal-600",
-      bgGradient: "from-green-500/20 to-teal-600/20",
-      validUntil: "Academic Year",
-      courses: "Selected Courses"
-    },
-    {
-      id: 5,
-      percentage: 15,
-      title: "Referral Bonus",
-      description: "Refer a friend and both get discounts",
-      requirements: [
-        "Friend must be new student",
-        "Both must complete enrollment",
-        "Discount applies to both parties"
-      ],
-      icon: Gift,
-      color: "from-emerald-500 to-cyan-600",
-      bgGradient: "from-emerald-500/20 to-cyan-600/20",
-      validUntil: "Ongoing",
-      courses: "All Courses"
-    }
-  ]
+  const { data: discounts = [], isLoading, error } = useDiscountItems();
+
+  
 
   return (
     <section id="discounts" className="py-24 bg-gradient-to-br from-blue-50 via-white to-blue-100">
@@ -112,8 +55,8 @@ const Discounts = () => {
         {/* Top 3 Discounts Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           {discounts.slice(0, 3).map((discount, index) => {
-            const IconComponent = discount.icon
-            
+            const IconComponent = getIconComponent(discount.icon)
+            const requirements = parseRequirements(discount.requirements)
             return (
               <motion.div
                 key={discount.id}
@@ -132,7 +75,7 @@ const Discounts = () => {
                   </div>
                 )}
 
-                <div className={`absolute inset-0 bg-gradient-to-br ${discount.bgGradient}`} />
+                <div className={`absolute inset-0 bg-gradient-to-br ${discount.bg_gradient}`} />
 
                 <div className="relative p-8">
                   <div className="flex items-center justify-between mb-6">
@@ -158,7 +101,7 @@ const Discounts = () => {
                   <div className="mb-6">
                     <h4 className="text-gray-900 font-semibold mb-3">Requirements:</h4>
                     <ul className="space-y-2">
-                      {discount.requirements.map((requirement, i) => (
+                      {requirements.map((requirement, i) => (
                         <li key={i} className="flex items-start space-x-2 text-gray-700 text-sm">
                           <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
                           <span>{requirement}</span>
@@ -170,14 +113,13 @@ const Discounts = () => {
                   <div className="grid grid-cols-2 gap-4 mb-6 text-sm border-t border-blue-200/50 pt-6">
                     <div>
                       <span className="text-gray-600">Valid Until:</span>
-                      <p className="text-gray-900 font-semibold">{discount.validUntil}</p>
+                      <p className="text-gray-900 font-semibold">{discount.valid_until}</p>
                     </div>
                     <div>
                       <span className="text-gray-600">Applies To:</span>
                       <p className="text-gray-900 font-semibold">{discount.courses}</p>
                     </div>
                   </div>
-
                 </div>
               </motion.div>
             )
@@ -187,8 +129,8 @@ const Discounts = () => {
         {/* Bottom 2 Discounts - Centered */}
         <div className="flex flex-col md:flex-row gap-8 justify-center max-w-4xl mx-auto mb-16">
           {discounts.slice(3, 5).map((discount, index) => {
-            const IconComponent = discount.icon
-            
+            const IconComponent = getIconComponent(discount.icon)
+            const requirements = parseRequirements(discount.requirements)
             return (
               <motion.div
                 key={discount.id}
@@ -199,7 +141,7 @@ const Discounts = () => {
                 whileHover={{ y: -10 }}
                 className="relative bg-white/50 backdrop-blur-sm rounded-2xl overflow-hidden border border-blue-200/50 hover:border-blue-300 transition-all duration-300 group shadow-lg hover:shadow-xl md:flex-1"
               >
-                <div className={`absolute inset-0 bg-gradient-to-br ${discount.bgGradient}`} />
+                <div className={`absolute inset-0 bg-gradient-to-br ${discount.bg_gradient}`} />
 
                 <div className="relative p-8">
                   <div className="flex items-center justify-between mb-6">
@@ -225,7 +167,7 @@ const Discounts = () => {
                   <div className="mb-6">
                     <h4 className="text-gray-900 font-semibold mb-3">Requirements:</h4>
                     <ul className="space-y-2">
-                      {discount.requirements.map((requirement, i) => (
+                      {requirements.map((requirement, i) => (
                         <li key={i} className="flex items-start space-x-2 text-gray-700 text-sm">
                           <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
                           <span>{requirement}</span>
@@ -237,15 +179,13 @@ const Discounts = () => {
                   <div className="grid grid-cols-2 gap-4 mb-6 text-sm border-t border-blue-200/50 pt-6">
                     <div>
                       <span className="text-gray-600">Valid Until:</span>
-                      <p className="text-gray-900 font-semibold">{discount.validUntil}</p>
+                      <p className="text-gray-900 font-semibold">{discount.valid_until}</p>
                     </div>
                     <div>
                       <span className="text-gray-600">Applies To:</span>
                       <p className="text-gray-900 font-semibold">{discount.courses}</p>
                     </div>
                   </div>
-
-               
                 </div>
               </motion.div>
             )
@@ -284,8 +224,6 @@ const Discounts = () => {
             </div>
           </div>
         </motion.div>
-
-        
       </div>
     </section>
   )
