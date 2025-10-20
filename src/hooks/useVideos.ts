@@ -22,7 +22,7 @@ const getVideos = async (): Promise<VideosType[]> => {
 };
 
 // React Query hook'u
-export const useFeaturedCourses = () => {
+export const useVideos = () => {
   return useQuery<VideosType[]>({
     queryKey: ["videos"],
     queryFn: getVideos,

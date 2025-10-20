@@ -1,118 +1,13 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import {Heart, Award, BookOpen, Users, Star, Trophy} from 'lucide-react'
+import { Heart, Award, Users, Star, Trophy } from 'lucide-react'
+import { useTeachers } from "../hooks/useTeachers" // Hook'unu import et
 
 const Teachers = () => {
   const [likedTeachers, setLikedTeachers] = useState<number[]>([])
 
-  const teachers = [
-    {
-      id: 1,
-      name: "Dr. Sarah Chen",
-      specialization: "Quantum Physics",
-      experience: "15 years",
-      students: 320,
-      courses: 8,
-      likes: 1250,
-      rating: 4.9,
-      image: "https://images.pexels.com/photos/3831645/pexels-photo-3831645.jpeg?auto=compress&cs=tinysrgb&w=400",
-      bio: "Leading researcher in quantum mechanics with publications in Nature and Science journals.",
-      achievements: ["Nobel Prize Nominee", "Best Teacher Award 2023"],
-      featured: true
-    },
-    {
-      id: 2,
-      name: "Prof. Michael Rodriguez",
-      specialization: "Organic Chemistry",
-      experience: "12 years",
-      students: 285,
-      courses: 6,
-      likes: 1180,
-      rating: 4.8,
-      image: "https://images.pexels.com/photos/3831849/pexels-photo-3831849.jpeg?auto=compress&cs=tinysrgb&w=400",
-      bio: "Expert in synthetic organic chemistry with over 100 research publications.",
-      achievements: ["Chemistry Innovation Award", "Top Educator 2023"]
-    },
-    {
-      id: 3,
-      name: "Dr. Emily Watson",
-      specialization: "Molecular Biology",
-      experience: "10 years",
-      students: 240,
-      courses: 5,
-      likes: 980,
-      rating: 4.9,
-      image: "https://images.pexels.com/photos/3831888/pexels-photo-3831888.jpeg?auto=compress&cs=tinysrgb&w=400",
-      bio: "Pioneering research in gene therapy and molecular diagnostics.",
-      achievements: ["Young Scientist Award", "Research Excellence Medal"]
-    },
-    {
-      id: 4,
-      name: "Dr. James Parker",
-      specialization: "Astrophysics",
-      experience: "18 years",
-      students: 195,
-      courses: 7,
-      likes: 1420,
-      rating: 4.9,
-      image: "https://images.pexels.com/photos/3831847/pexels-photo-3831847.jpeg?auto=compress&cs=tinysrgb&w=400",
-      bio: "Former NASA researcher specializing in exoplanet discovery and space exploration.",
-      achievements: ["NASA Excellence Award", "Astronomy Leadership Prize"],
-      featured: true
-    },
-    {
-      id: 5,
-      name: "Dr. Lisa Anderson",
-      specialization: "Environmental Science",
-      experience: "14 years",
-      students: 310,
-      courses: 9,
-      likes: 1350,
-      rating: 4.8,
-      image: "https://images.pexels.com/photos/3831881/pexels-photo-3831881.jpeg?auto=compress&cs=tinysrgb&w=400",
-      bio: "Climate change expert and sustainability advocate with UN advisory roles.",
-      achievements: ["Environmental Hero Award", "Climate Action Recognition"]
-    },
-    {
-      id: 6,
-      name: "Prof. David Kim",
-      specialization: "Robotics & AI",
-      experience: "11 years",
-      students: 275,
-      courses: 6,
-      likes: 1100,
-      rating: 4.7,
-      image: "https://images.pexels.com/photos/3831883/pexels-photo-3831883.jpeg?auto=compress&cs=tinysrgb&w=400",
-      bio: "AI researcher and robotics engineer with multiple tech industry patents.",
-      achievements: ["Tech Innovation Award", "AI Excellence Recognition"]
-    },
-    {
-      id: 7,
-      name: "Dr. Maria Santos",
-      specialization: "Marine Biology",
-      experience: "13 years",
-      students: 220,
-      courses: 4,
-      likes: 890,
-      rating: 4.8,
-      image: "https://images.pexels.com/photos/3831887/pexels-photo-3831887.jpeg?auto=compress&cs=tinysrgb&w=400",
-      bio: "Ocean conservation specialist with extensive deep-sea research experience.",
-      achievements: ["Marine Conservation Award", "Ocean Explorer Medal"]
-    },
-    {
-      id: 8,
-      name: "Prof. Robert Green",
-      specialization: "Renewable Energy",
-      experience: "16 years",
-      students: 265,
-      courses: 7,
-      likes: 1200,
-      rating: 4.9,
-      image: "https://images.pexels.com/photos/3831844/pexels-photo-3831844.jpeg?auto=compress&cs=tinysrgb&w=400",
-      bio: "Renewable energy systems expert and clean technology innovator.",
-      achievements: ["Green Energy Pioneer", "Sustainability Champion 2023"]
-    }
-  ]
+  // Dinamik olarak öğretmenleri çek
+  const { data: teachers = [], isLoading, error } = useTeachers();
 
   const handleLike = (teacherId: number, currentLikes: number) => {
     if (likedTeachers.includes(teacherId)) {
@@ -130,6 +25,8 @@ const Teachers = () => {
 
   const topTeachers = sortedTeachers.slice(0, 3)
 
+
+
   return (
     <section id="teachers" className="py-24 bg-gradient-to-br from-blue-50 via-white to-blue-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -146,7 +43,6 @@ const Teachers = () => {
               <span className="text-blue-700 font-semibold">Meet Our Faculty</span>
             </div>
           </div>
-          
           <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
             World-Class{' '}
             <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">

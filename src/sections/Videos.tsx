@@ -1,124 +1,33 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Play, Clock, Eye, Star } from 'lucide-react'
+import { useVideos } from "../hooks/useVideos"
+import { useCategories } from "../hooks/useCategories"
 
 const Videos = () => {
-  const [activeCategory, setActiveCategory] = useState('all')
+  const [activeCategory, setActiveCategory] = useState<string | number>('all')
 
-  const promotionalVideo = {
-    id: 'promo',
-    title: "Welcome to Goshmaca Science Center",
-    description: "Discover the spirit of innovation and learning that defines our unique educational community",
-    duration: "3:45",
-    views: "12.5K",
-    thumbnail: "https://images.pexels.com/photos/2280568/pexels-photo-2280568.jpeg?auto=compress&cs=tinysrgb&w=800",
-    featured: true
-  }
+  // Videoları çek
+  const { data: videos = [], isLoading: videosLoading, error: videosError } = useVideos()
+  // Kategorileri çek
+  const { data: categories = [], isLoading: categoriesLoading, error: categoriesError } = useCategories()
 
-  const educationalVideos = [
-    {
-      id: 1,
-      title: "Quantum Mechanics Explained Simply",
-      description: "Understanding the fundamental principles of quantum physics",
-      duration: "15:30",
-      views: "8.2K",
-      rating: 4.9,
-      category: "physics",
-      thumbnail: "https://images.pexels.com/photos/2280549/pexels-photo-2280549.jpeg?auto=compress&cs=tinysrgb&w=600",
-      instructor: "Dr. Sarah Chen"
-    },
-    {
-      id: 2,
-      title: "Organic Chemistry Reactions",
-      description: "Step-by-step guide to understanding organic reactions",
-      duration: "22:15",
-      views: "6.7K",
-      rating: 4.8,
-      category: "chemistry",
-      thumbnail: "https://images.pexels.com/photos/2280571/pexels-photo-2280571.jpeg?auto=compress&cs=tinysrgb&w=600",
-      instructor: "Prof. Michael Rodriguez"
-    },
-    {
-      id: 3,
-      title: "DNA Replication Process",
-      description: "Molecular mechanisms of genetic information transfer",
-      duration: "18:45",
-      views: "9.1K",
-      rating: 4.9,
-      category: "biology",
-      thumbnail: "https://images.pexels.com/photos/3825527/pexels-photo-3825527.jpeg?auto=compress&cs=tinysrgb&w=600",
-      instructor: "Dr. Emily Watson"
-    },
-    {
-      id: 4,
-      title: "Solar System Formation",
-      description: "How our solar system came to be over billions of years",
-      duration: "25:20",
-      views: "11.3K",
-      rating: 4.8,
-      category: "astronomy",
-      thumbnail: "https://images.pexels.com/photos/2150/sky-space-dark-galaxy.jpg?auto=compress&cs=tinysrgb&w=600",
-      instructor: "Dr. James Parker"
-    },
-    {
-      id: 5,
-      title: "Climate Change Science",
-      description: "Understanding global warming and its environmental impact",
-      duration: "20:10",
-      views: "15.6K",
-      rating: 4.9,
-      category: "environmental",
-      thumbnail: "https://images.pexels.com/photos/1108572/pexels-photo-1108572.jpeg?auto=compress&cs=tinysrgb&w=600",
-      instructor: "Dr. Lisa Anderson"
-    },
-    {
-      id: 6,
-      title: "Robotics Programming Basics",
-      description: "Introduction to programming autonomous robotic systems",
-      duration: "28:30",
-      views: "7.8K",
-      rating: 4.7,
-      category: "technology",
-      thumbnail: "https://images.pexels.com/photos/2599244/pexels-photo-2599244.jpeg?auto=compress&cs=tinysrgb&w=600",
-      instructor: "Prof. David Kim"
-    },
-    {
-      id: 7,
-      title: "Marine Ecosystem Dynamics",
-      description: "Exploring ocean life and underwater ecosystems",
-      duration: "19:45",
-      views: "5.9K",
-      rating: 4.8,
-      category: "biology",
-      thumbnail: "https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=600",
-      instructor: "Dr. Maria Santos"
-    },
-    {
-      id: 8,
-      title: "Renewable Energy Technologies",
-      description: "Comprehensive overview of sustainable energy solutions",
-      duration: "24:15",
-      views: "13.2K",
-      rating: 4.9,
-      category: "environmental",
-      thumbnail: "https://images.pexels.com/photos/433308/pexels-photo-433308.jpeg?auto=compress&cs=tinysrgb&w=600",
-      instructor: "Prof. Robert Green"
-    }
-  ]
+ 
 
-  const categories = [
-    { id: 'all', label: 'All Videos', count: educationalVideos.length },
-    { id: 'physics', label: 'Physics', count: educationalVideos.filter(v => v.category === 'physics').length },
-    { id: 'chemistry', label: 'Chemistry', count: educationalVideos.filter(v => v.category === 'chemistry').length },
-    { id: 'biology', label: 'Biology', count: educationalVideos.filter(v => v.category === 'biology').length },
-    { id: 'astronomy', label: 'Astronomy', count: educationalVideos.filter(v => v.category === 'astronomy').length },
-    { id: 'environmental', label: 'Environmental', count: educationalVideos.filter(v => v.category === 'environmental').length },
-    { id: 'technology', label: 'Technology', count: educationalVideos.filter(v => v.category === 'technology').length }
-  ]
+  // Kategorileri "All Videos" ile birlikte hazırla
+  const allCategory = { id: 'all', name: 'All Videos', count: videos.length }
+  const categoryList = [allCategory, ...categories.map(cat => ({
+    ...cat,
+    count: videos.filter(v => v.category === cat.name).length
+  }))]
 
+  // Filtrelenmiş videolar
   const filteredVideos = activeCategory === 'all'
-    ? educationalVideos
-    : educationalVideos.filter(video => video.category === activeCategory)
+    ? videos
+    : videos.filter(video => video.category === activeCategory)
+
+  // İlk "featured" videoyu bul (varsa)
+  const promotionalVideo = videos.find(v => v.featured) || videos[0]
 
   return (
     <section
@@ -146,6 +55,7 @@ const Videos = () => {
         </motion.div>
 
         {/* Promotional Video */}
+        {promotionalVideo && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -203,6 +113,7 @@ const Videos = () => {
             </div>
           </div>
         </motion.div>
+        )}
 
         {/* Category Filter */}
         <motion.div
@@ -213,7 +124,7 @@ const Videos = () => {
           className="mb-12"
         >
           <div className="flex flex-wrap justify-center gap-3">
-            {categories.map((category) => (
+            {categoryList.map((category) => (
               <button
                 key={category.id}
                 onClick={() => setActiveCategory(category.id)}
@@ -223,7 +134,7 @@ const Videos = () => {
                     : 'bg-white/40 text-gray-900 hover:bg-white/60 border border-blue-200/50'
                 }`}
               >
-                {category.label} ({category.count})
+                {category.name} ({category.count})
               </button>
             ))}
           </div>
