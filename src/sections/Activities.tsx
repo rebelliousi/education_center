@@ -1,79 +1,15 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Calendar, MapPin, Users, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useSocialActivities } from "../hooks/useActivities" // import hook!
+import type { SocialActivityType } from '../hooks/useActivities'
 
 const Activities = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [direction, setDirection] = useState(0)
 
-  const activities = [
-    {
-      id: 1,
-      title: "Science Fair 2024",
-      description: "Students showcase innovative projects in physics, chemistry, and biology",
-      date: "March 15, 2024",
-      location: "Main Auditorium",
-      participants: 120,
-      image: "https://images.pexels.com/photos/2280568/pexels-photo-2280568.jpeg?auto=compress&cs=tinysrgb&w=600",
-      icon: "🏆",
-      color: "from-blue-500 to-blue-600",
-    },
-    {
-      id: 2,
-      title: "Robotics Workshop",
-      description: "Hands-on experience building and programming autonomous robots",
-      date: "March 22, 2024",
-      location: "Tech Lab",
-      participants: 45,
-      image: "https://images.pexels.com/photos/2599244/pexels-photo-2599244.jpeg?auto=compress&cs=tinysrgb&w=600",
-      icon: "🤖",
-      color: "from-blue-500 to-blue-600"
-    },
-    {
-      id: 3,
-      title: "Chemistry Magic Show",
-      description: "Spectacular demonstrations of chemical reactions and phenomena",
-      date: "March 28, 2024",
-      location: "Chemistry Lab",
-      participants: 80,
-      image: "https://images.pexels.com/photos/2280549/pexels-photo-2280549.jpeg?auto=compress&cs=tinysrgb&w=600",
-      icon: "⚗️",
-      color: "from-blue-500 to-blue-600"
-    },
-    {
-      id: 4,
-      title: "Astronomy Night",
-      description: "Stargazing session with telescopes and constellation mapping",
-      date: "April 5, 2024",
-      location: "Observatory Deck",
-      participants: 60,
-      image: "https://images.pexels.com/photos/2150/sky-space-dark-galaxy.jpg?auto=compress&cs=tinysrgb&w=600",
-      icon: "🌟",
-      color: "from-blue-500 to-blue-600"
-    },
-    {
-      id: 5,
-      title: "Environmental Action Day",
-      description: "Community cleanup and sustainability awareness activities",
-      date: "April 12, 2024",
-      location: "Campus Grounds",
-      participants: 150,
-      image: "https://images.pexels.com/photos/1108572/pexels-photo-1108572.jpeg?auto=compress&cs=tinysrgb&w=600",
-      icon: "🌱",
-      color: "from-blue-500 to-blue-600"
-    },
-    {
-      id: 6,
-      title: "3D Printing Workshop",
-      description: "Learn to design and print custom scientific instruments",
-      date: "April 18, 2024",
-      location: "Maker Space",
-      participants: 35,
-      image: "https://images.pexels.com/photos/3862132/pexels-photo-3862132.jpeg?auto=compress&cs=tinysrgb&w=600",
-      icon: "🖨️",
-      color: "from-blue-500 to-blue-600"
-    }
-  ]
+  // Dinamik API'dan aktiviteleri çek
+  const { data: activities = [], isLoading, error } = useSocialActivities();
 
   const cardsPerPage = 3
   const totalPages = Math.ceil(activities.length / cardsPerPage)
@@ -92,6 +28,8 @@ const Activities = () => {
       return newIndex
     })
   }
+
+
 
   return (
     <section id="activities" className="py-20 ">
@@ -126,7 +64,7 @@ const Activities = () => {
               transition={{ duration: 0.8, ease: "easeInOut" }}
               className="contents"
             >
-            {visibleActivities.map((activity, index) => (
+            {visibleActivities.map((activity:SocialActivityType, index:number) => (
               <motion.div
                 key={activity.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -140,7 +78,7 @@ const Activities = () => {
                   <div className="relative overflow-hidden">
                     <img
                       src={activity.image}
-                      alt={activity.title}
+                      alt={activity.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     <div className={`absolute inset-0 bg-gradient-to-r ${activity.color} opacity-60`} />
@@ -154,7 +92,7 @@ const Activities = () => {
                   <div className="p-6 flex flex-col justify-between">
                     <div>
                       <h3 className="text-lg font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors line-clamp-2">
-                        {activity.title}
+                        {activity.name}
                       </h3>
                       <p className="text-gray-600 text-sm mb-4 line-clamp-2">
                         {activity.description}
