@@ -1,0 +1,1 @@
+export const host='http://35.228.26.48/api/v1/'
