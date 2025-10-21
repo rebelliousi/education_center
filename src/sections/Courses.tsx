@@ -8,10 +8,16 @@ import { useTranslation } from "react-i18next";
 function getLevelColor(level: string) {
   switch (level) {
     case "Beginner":
+    case "Başlangyç":
+    case "Новичок":
       return "bg-green-100 text-green-700";
     case "Intermediate":
+    case "Orta":
+    case "Средний":
       return "bg-yellow-100 text-yellow-700";
     case "Advanced":
+    case "Ýokary":
+    case "Продвинутый":
       return "bg-red-100 text-red-700";
     default:
       return "bg-blue-100 text-blue-700";
@@ -19,23 +25,42 @@ function getLevelColor(level: string) {
 }
 
 export default function CoursesSection() {
-  const [filter, setFilter] = useState("all");
+  const [filter, setFilter] = useState<string | number>("all");
   const { data: courses = [], isLoading: coursesLoading, error: coursesError } = useCourses();
   const { data: levels = [], isLoading: levelsLoading, error: levelsError } = useLevels();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language || "en";
 
-  // Dinamik level butonları: "All" + API'dan gelen seviyeler
+  // Sadece kursu olan seviyelerin id'lerini bul (TypeScript hatasız)
+  const usedLevelIds = new Set(
+    courses
+      .map(course =>
+        typeof course.level === "object" && course.level !== null && "id" in course.level
+          ? (course.level as any).id
+          : undefined
+      )
+      .filter((id): id is number => typeof id === "number")
+  );
+
   const LEVELS = [
     { label: t("courses.all"), value: "all" },
-    ...levels.map(lvl => ({
-      label: lvl.name,
-      value: lvl.name
-    }))
+    ...levels
+      .filter((lvl: any) => usedLevelIds.has(lvl.id))
+      .map((lvl: any) => ({
+        label: lvl[`name_${lang}`] || lvl.name,
+        value: lvl.id
+      }))
   ];
 
-  // Filtrelenmiş kurslar
+  // Seçili filtreye göre kursları göster
   const filteredCourses =
-    filter === "all" ? courses : courses.filter(course => course.level === filter);
+    filter === "all"
+      ? courses
+      : courses.filter((course: any) =>
+          typeof course.level === "object" && course.level !== null && "id" in course.level
+            ? course.level.id === filter
+            : false
+        );
 
   return (
     <section id="courses" className="py-20">
@@ -91,75 +116,88 @@ export default function CoursesSection() {
 
         {/* Course Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {filteredCourses.map((course, index) => (
-            <motion.div
-              key={course.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.05 }}
-              viewport={{ once: true }}
-              whileHover={{
-                y: -10,
-                boxShadow: "0 25px 50px rgba(59, 130, 246, 0.15)"
-              }}
-              className="bg-white rounded-2xl overflow-hidden border border-blue-100 hover:border-blue-200 transition-all duration-300 cursor-pointer group shadow-lg hover:shadow-xl flex flex-col"
-              tabIndex={0}
-              role="button"
-              aria-label={t("courses.learn_more", { name: course.name })}
-            >
-              {/* Course Image */}
-              <div className="relative h-48 overflow-hidden">
-                <img
-                  src={course.image}
-                  alt={course.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className={`absolute inset-0 bg-gradient-to-t ${course.color} opacity-70`} />
-                <div className="absolute top-4 right-4 text-3xl drop-shadow-lg">{course.icon}</div>
-                <div className="absolute top-4 left-4">
-                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getLevelColor(course.level)}`}>
-                    {course.level}
-                  </span>
-                </div>
-                <div className="absolute bottom-4 left-4 flex items-center space-x-2">
-                  <div className="flex items-center space-x-1 bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">
-                    <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                    <span className="text-sm font-semibold text-white">{course.rating}</span>
-                  </div>
-                </div>
-              </div>
+          {filteredCourses.map((course: any, index: number) => {
+            // Dil desteğiyle kurs alanlarını göster
+            const displayName = course[`name_${lang}`] || course.name;
+            const displayDescription = course[`description_${lang}`] || course.description;
+            const displayDuration = course[`duration_${lang}`] || course.duration;
 
-              {/* Course Content */}
-              <div className="flex flex-col flex-1 p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors leading-tight min-h-[56px]">
-                  {course.name}
-                </h3>
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed min-h-[48px]">
-                  {course.description}
-                </p>
+            // Level adı
+            let displayLevel = "";
+            if (typeof course.level === "object" && course.level !== null) {
+              displayLevel = course.level[`name_${lang}`] || course.level.name || "";
+            }
 
-                {/* Course Stats */}
-                <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                  <div className="flex items-center space-x-1">
-                    <Clock className="h-4 w-4 text-blue-500" />
-                    <span>{course.duration}</span>
+            return (
+              <motion.div
+                key={course.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.05 }}
+                viewport={{ once: true }}
+                whileHover={{
+                  y: -10,
+                  boxShadow: "0 25px 50px rgba(59, 130, 246, 0.15)"
+                }}
+                className="bg-white rounded-2xl overflow-hidden border border-blue-100 hover:border-blue-200 transition-all duration-300 cursor-pointer group shadow-lg hover:shadow-xl flex flex-col"
+                tabIndex={0}
+                role="button"
+                aria-label={t("courses.learn_more", { name: displayName })}
+              >
+                {/* Course Image */}
+                <div className="relative h-48 overflow-hidden">
+                  <img
+                    src={course.image}
+                    alt={displayName}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                  <div className={`absolute inset-0 bg-gradient-to-t ${course.color} opacity-70`} />
+                  <div className="absolute top-4 right-4 text-3xl drop-shadow-lg">{course.icon}</div>
+                  <div className="absolute top-4 left-4">
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getLevelColor(displayLevel)}`}>
+                      {displayLevel}
+                    </span>
                   </div>
-                  <div className="flex items-center space-x-1">
-                    <Users className="h-4 w-4 text-blue-500" />
-                    <span>{course.students}</span>
+                  <div className="absolute bottom-4 left-4 flex items-center space-x-2">
+                    <div className="flex items-center space-x-1 bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">
+                      <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                      <span className="text-sm font-semibold text-white">{course.rating}</span>
+                    </div>
                   </div>
                 </div>
 
-                {/* CTA Button */}
-                <div className="mt-auto">
-                  <button className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-xl hover:shadow-lg transition-all duration-300 group-hover:from-blue-700 group-hover:to-blue-800 font-semibold">
-                    <span>{t("courses.learn_more_btn")}</span>
-                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </button>
+                {/* Course Content */}
+                <div className="flex flex-col flex-1 p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors leading-tight min-h-[56px]">
+                    {displayName}
+                  </h3>
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed min-h-[48px]">
+                    {displayDescription}
+                  </p>
+
+                  {/* Course Stats */}
+                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                    <div className="flex items-center space-x-1">
+                      <Clock className="h-4 w-4 text-blue-500" />
+                      <span>{displayDuration}</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Users className="h-4 w-4 text-blue-500" />
+                      <span>{course.students}</span>
+                    </div>
+                  </div>
+
+                  {/* CTA Button */}
+                  <div className="mt-auto">
+                    <button className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-xl hover:shadow-lg transition-all duration-300 group-hover:from-blue-700 group-hover:to-blue-800 font-semibold">
+                      <span>{t("courses.learn_more_btn")}</span>
+                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
 
         {/* Call to Action */}
