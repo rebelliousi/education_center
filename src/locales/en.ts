@@ -11,6 +11,16 @@ const en = {
   "hero.courses": "Courses",
   "hero.teachers": "Teachers",
   "hero.students": "Students",
-  "hero.visual_alt": "Science Center Visual"
+  "hero.visual_alt": "Science Center Visual",
+  "courses.all": "All",
+  "courses.curriculum": "Our Curriculum",
+  "courses.discover": "Discover Our",
+  "courses.diverse": "Diverse Courses",
+  "courses.explore_desc": "Explore carefully crafted courses designed to ignite your passion for science and technology.",
+  "courses.learn_more": "Learn more about {{name}}",
+  "courses.learn_more_btn": "Learn More",
+  "courses.ready": "Ready to Start Learning?",
+  "courses.join_students": "Join thousands of students advancing their scientific knowledge",
+  "courses.view_all": "View All Courses"
 }
 export default en;

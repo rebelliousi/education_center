@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Clock, Users, Star, BookOpen, Award } from "lucide-react";
 import { useCourses } from "../hooks/useCourses";
 import { useLevels } from "../hooks/useLevels";
+import { useTranslation } from "react-i18next";
 
 function getLevelColor(level: string) {
   switch (level) {
@@ -21,10 +22,11 @@ export default function CoursesSection() {
   const [filter, setFilter] = useState("all");
   const { data: courses = [], isLoading: coursesLoading, error: coursesError } = useCourses();
   const { data: levels = [], isLoading: levelsLoading, error: levelsError } = useLevels();
+  const { t } = useTranslation();
 
   // Dinamik level butonları: "All" + API'dan gelen seviyeler
   const LEVELS = [
-    { label: "All", value: "all" },
+    { label: t("courses.all"), value: "all" },
     ...levels.map(lvl => ({
       label: lvl.name,
       value: lvl.name
@@ -34,8 +36,6 @@ export default function CoursesSection() {
   // Filtrelenmiş kurslar
   const filteredCourses =
     filter === "all" ? courses : courses.filter(course => course.level === filter);
-
-
 
   return (
     <section id="courses" className="py-20">
@@ -51,17 +51,17 @@ export default function CoursesSection() {
           <div className="flex items-center justify-center mb-6">
             <div className="flex items-center space-x-2 bg-blue-100 px-4 py-2 rounded-full">
               <BookOpen className="h-5 w-5 text-blue-600" />
-              <span className="text-blue-700 font-semibold">Our Curriculum</span>
+              <span className="text-blue-700 font-semibold">{t("courses.curriculum")}</span>
             </div>
           </div>
           <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-            Discover Our{" "}
+            {t("courses.discover")}{" "}
             <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-              Diverse Courses
+              {t("courses.diverse")}
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Explore carefully crafted courses designed to ignite your passion for science and technology.
+            {t("courses.explore_desc")}
           </p>
         </motion.div>
 
@@ -105,7 +105,7 @@ export default function CoursesSection() {
               className="bg-white rounded-2xl overflow-hidden border border-blue-100 hover:border-blue-200 transition-all duration-300 cursor-pointer group shadow-lg hover:shadow-xl flex flex-col"
               tabIndex={0}
               role="button"
-              aria-label={`Learn more about ${course.name}`}
+              aria-label={t("courses.learn_more", { name: course.name })}
             >
               {/* Course Image */}
               <div className="relative h-48 overflow-hidden">
@@ -153,7 +153,7 @@ export default function CoursesSection() {
                 {/* CTA Button */}
                 <div className="mt-auto">
                   <button className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-xl hover:shadow-lg transition-all duration-300 group-hover:from-blue-700 group-hover:to-blue-800 font-semibold">
-                    <span>Learn More</span>
+                    <span>{t("courses.learn_more_btn")}</span>
                     <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </button>
                 </div>
@@ -172,10 +172,10 @@ export default function CoursesSection() {
         >
           <div className="bg-blue-600 text-white p-8 rounded-2xl shadow-xl">
             <Award className="h-12 w-12 mx-auto mb-4" />
-            <h3 className="text-2xl font-bold mb-2">Ready to Start Learning?</h3>
-            <p className="text-blue-100 mb-6">Join thousands of students advancing their scientific knowledge</p>
+            <h3 className="text-2xl font-bold mb-2">{t("courses.ready")}</h3>
+            <p className="text-blue-100 mb-6">{t("courses.join_students")}</p>
             <button className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105">
-              View All Courses
+              {t("courses.view_all")}
             </button>
           </div>
         </motion.div>

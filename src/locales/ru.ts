@@ -11,6 +11,16 @@ const ru = {
   "hero.courses": "Курсы",
   "hero.teachers": "Преподаватели",
   "hero.students": "Студенты",
-  "hero.visual_alt": "Изображение научного центра"
+  "hero.visual_alt": "Изображение научного центра",
+  "courses.all": "Все",
+  "courses.curriculum": "Наша программа",
+  "courses.discover": "Откройте для себя",
+  "courses.diverse": "Разнообразные курсы",
+  "courses.explore_desc": "Изучайте тщательно подготовленные курсы, которые пробудят вашу страсть к науке и технологиям.",
+  "courses.learn_more": "Подробнее о {{name}}",
+  "courses.learn_more_btn": "Подробнее",
+  "courses.ready": "Готовы начать обучение?",
+  "courses.join_students": "Присоединяйтесь к тысячам студентов, повышающих свои научные знания",
+  "courses.view_all": "Смотреть все курсы"
 };
 export default ru;

@@ -11,6 +11,16 @@ const tk = {
   "hero.courses": "Kurslar",
   "hero.teachers": "Mugallymlar",
   "hero.students": "Okuwçylar",
-  "hero.visual_alt": "Ylym merkezi şekili"
+  "hero.visual_alt": "Ylym merkezi şekili",
+   "courses.all": "Hemmesi",
+  "courses.curriculum": "Okuw meýilnamamyz",
+  "courses.discover": "Täze",
+  "courses.diverse": "Dürli kurslarymyz",
+  "courses.explore_desc": "Ylham beriji we ylym-tehnologiýa höwesini oýarýan kurslarymyz bilen tanyş boluň.",
+  "courses.learn_more": "{{name}} barada giňişleýin",
+  "courses.learn_more_btn": "Giňişleýin oka",
+  "courses.ready": "Okuwa başlamak isleýärsiňizmi?",
+  "courses.join_students": "Ýüzlerçe okuwçy bilen ylym başarnygyňy ösdür!",
+  "courses.view_all": "Ähli kurslary gör"
 };
 export default tk;
