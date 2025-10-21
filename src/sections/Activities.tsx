@@ -1,14 +1,15 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Calendar, MapPin, Users, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
-import { useSocialActivities } from "../hooks/useActivities" // import hook!
+import { useSocialActivities } from "../hooks/useActivities"
 import type { SocialActivityType } from '../hooks/useActivities'
+import { useTranslation } from "react-i18next"
 
 const Activities = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [direction, setDirection] = useState(0)
+  const { t } = useTranslation()
 
-  // Dinamik API'dan aktiviteleri çek
   const { data: activities = [], isLoading, error } = useSocialActivities();
 
   const cardsPerPage = 3
@@ -29,8 +30,6 @@ const Activities = () => {
     })
   }
 
-
-
   return (
     <section id="activities" className="py-20 ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -42,14 +41,13 @@ const Activities = () => {
           className="text-center mb-16"
         >
           <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-            Recent{' '}
+            {t("activities.recent")}{' '}
             <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-              Activities
+              {t("activities.title")}
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Explore our vibrant community through engaging activities, workshops, and events 
-            that bring science to life and create lasting memories.
+            {t("activities.description")}
           </p>
         </motion.div>
 
@@ -84,7 +82,7 @@ const Activities = () => {
                     <div className={`absolute inset-0 bg-gradient-to-r ${activity.color} opacity-60`} />
                     <div className="absolute top-3 left-3 text-2xl">{activity.icon}</div>
                     <div className="absolute top-3 right-3 bg-blue-600/80 backdrop-blur-sm px-2 py-1 rounded-full">
-                      <span className="text-white font-semibold text-xs">Featured</span>
+                      <span className="text-white font-semibold text-xs">{t("activities.featured")}</span>
                     </div>
                   </div>
 
@@ -110,12 +108,12 @@ const Activities = () => {
                       </div>
                       <div className="flex items-center space-x-2 text-gray-700">
                         <Users className="h-4 w-4 text-blue-600" />
-                        <span>{activity.participants} participants</span>
+                        <span>{activity.participants} {t("activities.participants")}</span>
                       </div>
                     </div>
 
                     <button className="flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 rounded-lg hover:shadow-lg transition-all duration-300 hover:from-blue-700 hover:to-blue-800 font-semibold text-sm w-full">
-                      <span>Learn More</span>
+                      <span>{t("activities.learn_more_btn")}</span>
                       <ArrowRight className="h-4 w-4" />
                     </button>
                   </div>
@@ -129,7 +127,7 @@ const Activities = () => {
           <button
             onClick={() => paginate(-1)}
             className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-10 z-20 p-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-all duration-300 hover:scale-110 shadow-lg"
-            aria-label="Previous activities"
+            aria-label={t("activities.previous")}
           >
             <ChevronLeft className="h-6 w-6" />
           </button>
@@ -137,7 +135,7 @@ const Activities = () => {
           <button
             onClick={() => paginate(1)}
             className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-10 z-20 p-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-all duration-300 hover:scale-110 shadow-lg"
-            aria-label="Next activities"
+            aria-label={t("activities.next")}
           >
             <ChevronRight className="h-6 w-6" />
           </button>
@@ -157,7 +155,7 @@ const Activities = () => {
                   ? 'bg-blue-600 w-8'
                   : 'bg-blue-300 w-2 hover:bg-blue-400'
               }`}
-              aria-label={`Go to page ${index + 1}`}
+              aria-label={t("activities.goto_page", { page: index + 1 })}
             />
           ))}
         </div>

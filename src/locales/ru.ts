@@ -21,6 +21,15 @@ const ru = {
   "courses.learn_more_btn": "Подробнее",
   "courses.ready": "Готовы начать обучение?",
   "courses.join_students": "Присоединяйтесь к тысячам студентов, повышающих свои научные знания",
-  "courses.view_all": "Смотреть все курсы"
+  "courses.view_all": "Смотреть все курсы",
+  "activities.recent": "Недавние",
+  "activities.title": "Мероприятия",
+  "activities.description": "Откройте для себя наше активное сообщество через увлекательные мероприятия, мастер-классы и события, которые делают науку живой и создают незабываемые воспоминания.",
+  "activities.featured": "Избранное",
+  "activities.participants": "участников",
+  "activities.learn_more_btn": "Подробнее",
+  "activities.previous": "Предыдущие мероприятия",
+  "activities.next": "Следующие мероприятия",
+  "activities.goto_page": "Перейти на страницу {{page}}"
 };
 export default ru;

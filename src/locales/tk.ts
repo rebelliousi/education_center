@@ -21,6 +21,15 @@ const tk = {
   "courses.learn_more_btn": "Giňişleýin oka",
   "courses.ready": "Okuwa başlamak isleýärsiňizmi?",
   "courses.join_students": "Ýüzlerçe okuwçy bilen ylym başarnygyňy ösdür!",
-  "courses.view_all": "Ähli kurslary gör"
+  "courses.view_all": "Ähli kurslary gör",
+   "activities.recent": "Täze",
+  "activities.title": "Çäreler",
+  "activities.description": "Ylymly we täsirli çäreler, okuwlar we çäreler arkaly jemgyýetimize goşulyň. Täze bilim we ýatlama dörediň.",
+  "activities.featured": "Esasy",
+  "activities.participants": "gatnaşýan",
+  "activities.learn_more_btn": "Giňişleýin oka",
+  "activities.previous": "Öňki çäreler",
+  "activities.next": "Indiki çäreler",
+  "activities.goto_page": "{{page}} sahypa geç"
 };
 export default tk;
