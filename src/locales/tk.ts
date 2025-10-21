@@ -30,6 +30,14 @@ const tk = {
   "activities.learn_more_btn": "Giňişleýin oka",
   "activities.previous": "Öňki çäreler",
   "activities.next": "Indiki çäreler",
-  "activities.goto_page": "{{page}} sahypa geç"
+  "activities.goto_page": "{{page}} sahypa geç",
+   "videos.educational": "Bilim",
+  "videos.title": "Wideolar",
+  "videos.description": "Bilim we tehnologiýa boýunça dürli wideolarymyzdan peýdalanyp, täze bilimleri öwreniň",
+  "videos.featured": "Esasy",
+  "videos.views": "görüldi",
+  "videos.watch_now": "Şu wagt gör",
+  "videos.all_videos": "Hemmesi",
+  "videos.view_all": "Ähli wideolary gör"
 };
 export default tk;

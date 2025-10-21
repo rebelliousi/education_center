@@ -3,19 +3,19 @@ import { motion } from 'framer-motion'
 import { Play, Clock, Eye, Star } from 'lucide-react'
 import { useVideos } from "../hooks/useVideos"
 import { useCategories } from "../hooks/useCategories"
+import { useTranslation } from "react-i18next"
 
 const Videos = () => {
   const [activeCategory, setActiveCategory] = useState<string | number>('all')
+  const { t } = useTranslation()
 
   // Videoları çek
   const { data: videos = [], isLoading: videosLoading, error: videosError } = useVideos()
   // Kategorileri çek
   const { data: categories = [], isLoading: categoriesLoading, error: categoriesError } = useCategories()
 
- 
-
   // Kategorileri "All Videos" ile birlikte hazırla
-  const allCategory = { id: 'all', name: 'All Videos', count: videos.length }
+  const allCategory = { id: 'all', name: t("videos.all_videos"), count: videos.length }
   const categoryList = [allCategory, ...categories.map(cat => ({
     ...cat,
     count: videos.filter(v => v.category === cat.name).length
@@ -43,14 +43,13 @@ const Videos = () => {
           className="text-center mb-16"
         >
           <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-            Educational{' '}
+            {t("videos.educational")}{' '}
             <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-              Videos
+              {t("videos.title")}
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Immerse yourself in our comprehensive video library featuring promotional content
-            and in-depth educational tutorials across all scientific disciplines.
+            {t("videos.description")}
           </p>
         </motion.div>
 
@@ -82,7 +81,7 @@ const Videos = () => {
                   </motion.button>
                 </div>
                 <div className="absolute top-4 left-4 bg-blue-600/90 text-white px-3 py-1 rounded-full text-sm font-semibold shadow">
-                  Featured
+                  {t("videos.featured")}
                 </div>
               </div>
 
@@ -101,13 +100,13 @@ const Videos = () => {
                   </div>
                   <div className="flex items-center space-x-2 text-blue-600 font-semibold">
                     <Eye className="h-5 w-5 text-blue-500" />
-                    <span>{promotionalVideo.views} views</span>
+                    <span>{promotionalVideo.views} {t("videos.views")}</span>
                   </div>
                 </div>
 
                 <button className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3 rounded-full hover:shadow-lg transition-all duration-300 hover:from-blue-700 hover:to-blue-800 font-semibold">
                   <Play className="h-5 w-5" />
-                  <span>Watch Now</span>
+                  <span>{t("videos.watch_now")}</span>
                 </button>
               </div>
             </div>
@@ -209,7 +208,7 @@ const Videos = () => {
           className="text-center mt-12"
         >
           <button className="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-full hover:shadow-lg transition-all duration-300 hover:from-blue-700 hover:to-blue-800">
-            View All Videos
+            {t("videos.view_all")}
           </button>
         </motion.div>
       </div>

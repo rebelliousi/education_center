@@ -30,6 +30,14 @@ const en = {
   "activities.learn_more_btn": "Learn More",
   "activities.previous": "Previous activities",
   "activities.next": "Next activities",
-  "activities.goto_page": "Go to page {{page}}"
+  "activities.goto_page": "Go to page {{page}}",
+   "videos.educational": "Educational",
+  "videos.title": "Videos",
+  "videos.description": "Immerse yourself in our comprehensive video library featuring promotional content and in-depth educational tutorials across all scientific disciplines.",
+  "videos.featured": "Featured",
+  "videos.views": "views",
+  "videos.watch_now": "Watch Now",
+  "videos.all_videos": "All Videos",
+  "videos.view_all": "View All Videos"
 }
 export default en;

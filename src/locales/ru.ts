@@ -30,6 +30,14 @@ const ru = {
   "activities.learn_more_btn": "Подробнее",
   "activities.previous": "Предыдущие мероприятия",
   "activities.next": "Следующие мероприятия",
-  "activities.goto_page": "Перейти на страницу {{page}}"
+  "activities.goto_page": "Перейти на страницу {{page}}",
+   "videos.educational": "Образовательные",
+  "videos.title": "Видео",
+  "videos.description": "Погрузитесь в нашу обширную видеотеку с промо-материалами и подробными образовательными уроками по всем научным дисциплинам.",
+  "videos.featured": "Избранное",
+  "videos.views": "просмотров",
+  "videos.watch_now": "Смотреть сейчас",
+  "videos.all_videos": "Все видео",
+  "videos.view_all": "Смотреть все видео"
 };
 export default ru;
