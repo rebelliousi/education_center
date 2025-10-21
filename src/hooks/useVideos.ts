@@ -13,6 +13,8 @@ export interface VideosType {
   thumbnail: string;
   instructor: string;
   featured: boolean;
+   [key: string]: any;
+   video_file?: string;
 }
 
 // API'dan çekme fonksiyonu
