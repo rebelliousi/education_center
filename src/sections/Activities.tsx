@@ -8,7 +8,8 @@ import { useTranslation } from "react-i18next"
 const Activities = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [direction, setDirection] = useState(0)
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const lang = i18n.language || "en"
 
   const { data: activities = [], isLoading, error } = useSocialActivities();
 
@@ -76,7 +77,7 @@ const Activities = () => {
                   <div className="relative overflow-hidden">
                     <img
                       src={activity.image}
-                      alt={activity.name}
+                      alt={activity[`name_${lang}`] || activity.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     <div className={`absolute inset-0 bg-gradient-to-r ${activity.color} opacity-60`} />
@@ -90,10 +91,10 @@ const Activities = () => {
                   <div className="p-6 flex flex-col justify-between">
                     <div>
                       <h3 className="text-lg font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors line-clamp-2">
-                        {activity.name}
+                        {activity[`name_${lang}`] || activity.name}
                       </h3>
                       <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                        {activity.description}
+                        {activity[`description_${lang}`] || activity.description}
                       </p>
                     </div>
 
@@ -104,7 +105,7 @@ const Activities = () => {
                       </div>
                       <div className="flex items-center space-x-2 text-gray-700">
                         <MapPin className="h-4 w-4 text-blue-600" />
-                        <span className="line-clamp-1">{activity.location}</span>
+                        <span className="line-clamp-1">{activity[`location_${lang}`] || activity.location}</span>
                       </div>
                       <div className="flex items-center space-x-2 text-gray-700">
                         <Users className="h-4 w-4 text-blue-600" />

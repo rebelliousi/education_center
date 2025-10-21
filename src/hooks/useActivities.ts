@@ -19,6 +19,7 @@ export interface SocialActivityType {
   icon: string;
   color: string;
   image: string;
+  [key: string]: any; 
 }
 
 // API'dan sosyal aktiviteleri çekme fonksiyonu
