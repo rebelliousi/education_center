@@ -134,7 +134,7 @@ const Hero = () => {
               transition={{ delay: 0.4 }}
               className="text-5xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight"
             >
-              <span className="text-blue-600">Goshmaca</span> &{' '}
+              <span className="text-blue-600">{t("brand.name")}</span> {t("brand.and")} {' '}
               <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
                 {t("hero.continuous_science")}
               </span>{' '}

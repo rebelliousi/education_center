@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { motion } from 'framer-motion'
-import { Menu, X, BookOpen, Play, Users, Tag, Mail, Home, ChevronDown } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Menu, X, BookOpen, Play, Users, Tag, Mail, Home, ChevronDown, Check, GraduationCap } from 'lucide-react'
 import { useTranslation } from "react-i18next"
 
 const navItems = [
@@ -19,13 +19,37 @@ const languages = [
   { code: 'ru', label: 'RU', name: 'Русский' }
 ]
 
+function NavbarBrand({ isScrolled }: { isScrolled: boolean }) {
+  const { t } = useTranslation();
+
+  return (
+    <motion.div
+      whileHover={{ scale: 1.08 }}
+      className="flex items-center gap-3"
+    >
+      {/* Modern Logo Icon */}
+      <div className="w-11 h-11 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl flex items-center justify-center shadow-lg">
+        <GraduationCap className="w-6 h-6 text-white" />
+      </div>
+      {/* Brand Metni - Responsive, Translation */}
+      {/* <div className="hidden sm:flex flex-col">
+        <span className={`text-xl font-bold tracking-wide ${isScrolled ? "text-blue-700" : "text-blue-600"}`}>
+          {t("brand.name")}
+        </span>
+        <span className={`text-xs font-semibold tracking-wide ${isScrolled ? "text-blue-500" : "text-blue-300"}`}>
+          {t("brand.center")}
+        </span>
+      </div> */}
+    </motion.div>
+  );
+}
+
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false)
   const { t, i18n } = useTranslation()
 
-  // Ref for dropdown
   const desktopDropdownRef = useRef<HTMLDivElement>(null)
   const mobileDropdownRef = useRef<HTMLDivElement>(null)
 
@@ -71,6 +95,11 @@ const Navbar = () => {
     label: t(`nav.${item.id}`, item.label)
   }))
 
+  const dropdownVariants = {
+    hidden: { opacity: 0, scale: 0.95, y: -10 },
+    visible: { opacity: 1, scale: 1, y: 0 }
+  }
+
   return (
     <motion.nav
       initial={{ y: -100 }}
@@ -84,22 +113,8 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="flex items-center space-x-3"
-          >
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-lg">G</span>
-            </div>
-            <div className="hidden sm:block">
-              <h1 className={`font-bold text-lg transition-colors ${
-                isScrolled ? 'text-gray-900' : 'text-white'
-              }`}>
-                Goshmaca Science Center
-              </h1>
-            </div>
-          </motion.div>
+          {/* Modern Brand */}
+          <NavbarBrand isScrolled={isScrolled} />
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-1">
@@ -121,35 +136,47 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Language Dropdown (Desktop) */}
+          {/* Language Dropdown (Desktop, Modern) */}
           <div className="relative hidden lg:block" ref={desktopDropdownRef}>
             <button
               onClick={() => setIsLangDropdownOpen(prev => !prev)}
-              className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-full flex items-center space-x-2 hover:shadow-lg transition-all duration-300"
+              className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-full flex items-center space-x-2 shadow-md hover:shadow-lg transition-all duration-300"
               aria-label="Select language"
             >
               <span>{languages.find(l => l.code === i18n.language)?.label || "EN"}</span>
               <ChevronDown className="h-4 w-4" />
             </button>
-            {isLangDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-32 bg-white rounded-xl shadow-lg border border-blue-100 z-10">
-                {languages.map(lang => (
-                  <button
-                    key={lang.code}
-                    onClick={() => {
-                      i18n.changeLanguage(lang.code)
-                      setIsLangDropdownOpen(false)
-                    }}
-                    className={`w-full text-left px-4 py-2 rounded-lg font-semibold flex items-center space-x-2 hover:bg-blue-50 transition-all duration-200 ${
-                      i18n.language === lang.code ? "bg-blue-100 text-blue-700" : "text-gray-700"
-                    }`}
-                  >
-                
-                    <span className="text-md">{lang.name}</span>
-                  </button>
-                ))}
-              </div>
-            )}
+            <AnimatePresence>
+              {isLangDropdownOpen && (
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  exit="hidden"
+                  variants={dropdownVariants}
+                  transition={{ duration: 0.18 }}
+                  className="absolute right-0 mt-2 w-40 py-2 bg-white/80 backdrop-blur-xl rounded-xl shadow-2xl border border-blue-100 z-20 flex flex-col"
+                >
+                  {languages.map(lang => (
+                    <button
+                      key={lang.code}
+                      onClick={() => {
+                        i18n.changeLanguage(lang.code)
+                        setIsLangDropdownOpen(false)
+                      }}
+                      className={`flex items-center justify-between w-full px-5 py-2 rounded-lg font-semibold transition-all duration-200
+                        ${i18n.language === lang.code
+                          ? "bg-blue-100 text-blue-700 ring-2 ring-blue-400"
+                          : "text-gray-700 hover:bg-blue-50"}
+                      `}
+                    >
+                      <span>{lang.label}</span>
+                      {i18n.language === lang.code &&
+                        <Check className="w-4 h-4 text-blue-700" />}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Mobile Menu Button */}
@@ -188,36 +215,48 @@ const Navbar = () => {
               <span className="font-medium">{label}</span>
             </button>
           ))}
-          {/* Language dropdown (Mobile) */}
+          {/* Language dropdown (Mobile, Modern) */}
           <div className="pt-4 border-t border-blue-100 relative" ref={mobileDropdownRef}>
             <button
               onClick={() => setIsLangDropdownOpen(prev => !prev)}
-              className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg flex items-center justify-between transition-all duration-300"
+              className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg flex items-center justify-between shadow-md hover:shadow-lg transition-all duration-300"
               aria-label="Select language"
             >
               <span>{languages.find(l => l.code === i18n.language)?.label || "EN"}</span>
               <ChevronDown className="h-4 w-4" />
             </button>
-            {isLangDropdownOpen && (
-              <div className="absolute left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-blue-100 z-10">
-                {languages.map(lang => (
-                  <button
-                    key={lang.code}
-                    onClick={() => {
-                      i18n.changeLanguage(lang.code)
-                      setIsLangDropdownOpen(false)
-                      setIsMobileMenuOpen(false)
-                    }}
-                    className={`w-full text-left px-4 py-2 rounded-lg font-semibold flex items-center space-x-2 hover:bg-blue-50 transition-all duration-200 ${
-                      i18n.language === lang.code ? "bg-blue-100 text-blue-700" : "text-gray-700"
-                    }`}
-                  >
-                    <span>{lang.label}</span>
-                    <span className="text-xs">{lang.name}</span>
-                  </button>
-                ))}
-              </div>
-            )}
+            <AnimatePresence>
+              {isLangDropdownOpen && (
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  exit="hidden"
+                  variants={dropdownVariants}
+                  transition={{ duration: 0.18 }}
+                  className="absolute left-0 right-0 mt-2 bg-white/80 backdrop-blur-xl rounded-xl shadow-2xl border border-blue-100 z-20 flex flex-col"
+                >
+                  {languages.map(lang => (
+                    <button
+                      key={lang.code}
+                      onClick={() => {
+                        i18n.changeLanguage(lang.code)
+                        setIsLangDropdownOpen(false)
+                        setIsMobileMenuOpen(false)
+                      }}
+                      className={`flex items-center justify-between w-full px-5 py-2 rounded-lg font-semibold transition-all duration-200
+                        ${i18n.language === lang.code
+                          ? "bg-blue-100 text-blue-700 ring-2 ring-blue-400"
+                          : "text-gray-700 hover:bg-blue-50"}
+                      `}
+                    >
+                      <span>{lang.label}</span>
+                      {i18n.language === lang.code &&
+                        <Check className="w-4 h-4 text-blue-700" />}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </motion.div>

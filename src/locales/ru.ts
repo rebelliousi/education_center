@@ -1,4 +1,7 @@
 const ru = {
+ "brand.name": "Дополнительного",
+ "brand.center": "Научный центр",
+  "brand.and": "и",
   "hero.welcome": "Добро пожаловать в будущее обучения",
   "hero.continuous_science": "Непрерывная наука",
   "hero.center": "Центр",

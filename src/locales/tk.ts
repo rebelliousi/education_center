@@ -1,6 +1,9 @@
 const tk = {
-  "hero.welcome": "Okuwuň geljegi bilen tanyş boluň",
-  "hero.continuous_science": "Yzygiderli Ylym",
+"brand.name": "Goşmaça ",
+"brand.center": "Üznüksiz Bilim Merkezi",
+  "brand.and": "we",
+  "hero.welcome": "Kurs merkezimiz bilen tanyş boluň",
+  "hero.continuous_science": "Üznüksiz Bilim",
   "hero.center": "Merkezi",
   "hero.description": "Ylym we tehnologiýa bilen döredijiligi birleşdirýän täsin bilim merkezini synap görüň. Höwesleriňizi tapyň, höwesli mugallymlar bilen duşuşyň we ylham beriji okuw syýahatyna başlaň.",
   "hero.explore_courses": "Kurslary gözden geçiriň",

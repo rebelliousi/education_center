@@ -1,4 +1,7 @@
 const en = {
+ "brand.name": "Additional ",
+  "brand.center": "Science Center",
+  "brand.and": "and",
   "hero.welcome": "Welcome to the Future of Learning",
   "hero.continuous_science": "Continuous Science",
   "hero.center": "Center",
