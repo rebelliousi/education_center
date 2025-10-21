@@ -2,6 +2,7 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { Percent, Users, Clock, Star, Gift, Zap } from 'lucide-react'
 import { useDiscountItems } from "../hooks/useDiscounts"
+import { useTranslation } from "react-i18next"
 
 // API'dan gelen icon ismine göre bir ikon component'i döndür
 const getIconComponent = (iconName: string) => {
@@ -27,8 +28,7 @@ function parseRequirements(requirements: string | string[]) {
 
 const Discounts = () => {
   const { data: discounts = [], isLoading, error } = useDiscountItems();
-
-  
+  const { t } = useTranslation();
 
   return (
     <section id="discounts" className="py-24 bg-gradient-to-br from-blue-50 via-white to-blue-100">
@@ -41,14 +41,13 @@ const Discounts = () => {
           className="text-center mb-16"
         >
           <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-            Special{' '}
+            {t("discounts.special")}{' '}
             <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-              Discounts
+              {t("discounts.title")}
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Take advantage of our exclusive discount programs designed to make quality education 
-            more accessible. Multiple ways to save on your learning journey!
+            {t("discounts.description")}
           </p>
         </motion.div>
 
@@ -71,7 +70,7 @@ const Discounts = () => {
               >
                 {discount.popular && (
                   <div className="absolute top-4 right-4 bg-yellow-400 text-gray-900 px-3 py-1 rounded-full text-sm font-bold z-10">
-                    Most Popular
+                    {t("discounts.most_popular")}
                   </div>
                 )}
 
@@ -87,7 +86,7 @@ const Discounts = () => {
                         <span className="text-4xl font-bold text-gray-900">{discount.percentage}</span>
                         <Percent className="h-6 w-6 text-gray-900 mt-2" />
                       </div>
-                      <span className="text-gray-700 text-sm font-semibold">OFF</span>
+                      <span className="text-gray-700 text-sm font-semibold">{t("discounts.off")}</span>
                     </div>
                   </div>
 
@@ -99,7 +98,7 @@ const Discounts = () => {
                   </p>
 
                   <div className="mb-6">
-                    <h4 className="text-gray-900 font-semibold mb-3">Requirements:</h4>
+                    <h4 className="text-gray-900 font-semibold mb-3">{t("discounts.requirements")}</h4>
                     <ul className="space-y-2">
                       {requirements.map((requirement, i) => (
                         <li key={i} className="flex items-start space-x-2 text-gray-700 text-sm">
@@ -112,11 +111,11 @@ const Discounts = () => {
 
                   <div className="grid grid-cols-2 gap-4 mb-6 text-sm border-t border-blue-200/50 pt-6">
                     <div>
-                      <span className="text-gray-600">Valid Until:</span>
+                      <span className="text-gray-600">{t("discounts.valid_until")}</span>
                       <p className="text-gray-900 font-semibold">{discount.valid_until}</p>
                     </div>
                     <div>
-                      <span className="text-gray-600">Applies To:</span>
+                      <span className="text-gray-600">{t("discounts.applies_to")}</span>
                       <p className="text-gray-900 font-semibold">{discount.courses}</p>
                     </div>
                   </div>
@@ -153,7 +152,7 @@ const Discounts = () => {
                         <span className="text-4xl font-bold text-gray-900">{discount.percentage}</span>
                         <Percent className="h-6 w-6 text-gray-900 mt-2" />
                       </div>
-                      <span className="text-gray-700 text-sm font-semibold">OFF</span>
+                      <span className="text-gray-700 text-sm font-semibold">{t("discounts.off")}</span>
                     </div>
                   </div>
 
@@ -165,7 +164,7 @@ const Discounts = () => {
                   </p>
 
                   <div className="mb-6">
-                    <h4 className="text-gray-900 font-semibold mb-3">Requirements:</h4>
+                    <h4 className="text-gray-900 font-semibold mb-3">{t("discounts.requirements")}</h4>
                     <ul className="space-y-2">
                       {requirements.map((requirement, i) => (
                         <li key={i} className="flex items-start space-x-2 text-gray-700 text-sm">
@@ -178,11 +177,11 @@ const Discounts = () => {
 
                   <div className="grid grid-cols-2 gap-4 mb-6 text-sm border-t border-blue-200/50 pt-6">
                     <div>
-                      <span className="text-gray-600">Valid Until:</span>
+                      <span className="text-gray-600">{t("discounts.valid_until")}</span>
                       <p className="text-gray-900 font-semibold">{discount.valid_until}</p>
                     </div>
                     <div>
-                      <span className="text-gray-600">Applies To:</span>
+                      <span className="text-gray-600">{t("discounts.applies_to")}</span>
                       <p className="text-gray-900 font-semibold">{discount.courses}</p>
                     </div>
                   </div>
@@ -201,25 +200,25 @@ const Discounts = () => {
           className="bg-white/50 backdrop-blur-sm rounded-2xl p-8 border border-blue-200/50 shadow-lg mb-12"
         >
           <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-            💡 Important Discount Information
+            💡 {t("discounts.important_info")}
           </h3>
           <div className="grid md:grid-cols-2 gap-6 text-gray-700">
             <div>
-              <h4 className="text-gray-900 font-semibold mb-3">General Terms:</h4>
+              <h4 className="text-gray-900 font-semibold mb-3">{t("discounts.general_terms")}</h4>
               <ul className="space-y-2 text-sm">
-                <li>• Discounts cannot be combined with other offers</li>
-                <li>• Valid ID and documentation required for verification</li>
-                <li>• Discounts apply to tuition fees only</li>
-                <li>• Subject to availability and course capacity</li>
+                <li>{t("discounts.term_1")}</li>
+                <li>{t("discounts.term_2")}</li>
+                <li>{t("discounts.term_3")}</li>
+                <li>{t("discounts.term_4")}</li>
               </ul>
             </div>
             <div>
-              <h4 className="text-gray-900 font-semibold mb-3">How to Apply:</h4>
+              <h4 className="text-gray-900 font-semibold mb-3">{t("discounts.how_to_apply")}</h4>
               <ul className="space-y-2 text-sm">
-                <li>• Contact our admissions team for eligibility check</li>
-                <li>• Submit required documentation during enrollment</li>
-                <li>• Discount will be applied at checkout</li>
-                <li>• Questions? Email us at discounts@goshmaca.edu</li>
+                <li>{t("discounts.apply_1")}</li>
+                <li>{t("discounts.apply_2")}</li>
+                <li>{t("discounts.apply_3")}</li>
+                <li>{t("discounts.apply_4")}</li>
               </ul>
             </div>
           </div>
