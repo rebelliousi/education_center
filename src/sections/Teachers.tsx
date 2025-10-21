@@ -2,16 +2,34 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Heart, Award, Users, Star, Trophy } from 'lucide-react'
 import { useTeachers } from "../hooks/useTeachers"
+import { useLikeTeacher } from "../hooks/useLikeTeacher"
 import { useTranslation } from "react-i18next"
 
 const Teachers = () => {
   const [likedTeachers, setLikedTeachers] = useState<number[]>([])
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const lang = i18n.language || "en" // default en
 
   // Dinamik olarak öğretmenleri çek
   const { data: teachers = [], isLoading, error } = useTeachers();
 
+  // Like mutation hook
+  const { mutate: likeTeacher, isPending: likePending } = useLikeTeacher();
+
+  // Dil bazlı alan seçici
+  const getTranslated = (item: any, field: string) => {
+    const key = `${field}_${lang}`;
+    return item[key] || item[field] || ""; // Dil yoksa fallback
+  };
+
+  // Achievements çok dilli
+  const getAchievements = (teacher: any) => {
+    const key = `achievements_${lang}`;
+    return teacher[key] || teacher.achievements || [];
+  };
+
   const handleLike = (teacherId: number, currentLikes: number) => {
+    likeTeacher(teacherId); // Backend'e gönder
     if (likedTeachers.includes(teacherId)) {
       setLikedTeachers(likedTeachers.filter(id => id !== teacherId))
     } else {
@@ -82,18 +100,27 @@ const Teachers = () => {
                   <div className="relative mb-6">
                     <img
                       src={teacher.image}
-                      alt={teacher.name}
+                      alt={getTranslated(teacher, "name")}
                       className="w-24 h-24 rounded-full mx-auto object-cover border-4 border-white/40 group-hover:scale-110 transition-transform duration-300"
                     />
                     <div className="absolute -top-3 -right-3 bg-gradient-to-r from-yellow-300 to-yellow-400 text-gray-900 rounded-full w-10 h-10 flex items-center justify-center font-bold text-lg shadow-lg">
                       {index + 1}
                     </div>
                   </div>
-                  <h4 className="font-bold text-xl mb-2">{teacher.name}</h4>
-                  <p className="text-blue-100 text-sm mb-4">{teacher.specialization}</p>
+                  <h4 className="font-bold text-xl mb-2">{getTranslated(teacher, "name")}</h4>
+                  <p className="text-blue-100 text-sm mb-4">{getTranslated(teacher, "specialization")}</p>
                   <div className="flex items-center justify-center space-x-2 bg-white/10 rounded-full py-2 px-4 w-fit mx-auto">
                     <Heart className="h-5 w-5 text-red-300" />
                     <span className="font-bold text-lg">{currentLikes.toLocaleString()}</span>
+                  </div>
+                  <div className="mt-4">
+                    {getAchievements(teacher).length > 0 && (
+                      <ul className="text-xs text-blue-100">
+                        {getAchievements(teacher).map((ach: string, idx: number) => (
+                          <li key={idx}>🏅 {ach}</li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 </motion.div>
               )
@@ -121,7 +148,7 @@ const Teachers = () => {
                 <div className="relative h-56 overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200">
                   <img
                     src={teacher.image}
-                    alt={teacher.name}
+                    alt={getTranslated(teacher, "name")}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-blue-900/40 via-transparent to-transparent" />
@@ -141,6 +168,7 @@ const Teachers = () => {
                     whileHover={{ scale: 1.15 }}
                     whileTap={{ scale: 0.85 }}
                     onClick={() => handleLike(teacher.id, teacher.likes)}
+                    disabled={likePending}
                     className={`absolute top-4 right-4 w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
                       isLiked 
                         ? 'bg-red-500 text-white scale-110' 
@@ -170,11 +198,19 @@ const Teachers = () => {
                 {/* Teacher Content */}
                 <div className="p-6">
                   <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                    {teacher.name}
+                    {getTranslated(teacher, "name")}
                   </h3>
                   <p className="text-blue-600 font-semibold text-sm">
-                    {teacher.specialization}
+                    {getTranslated(teacher, "specialization")}
                   </p>
+                  <p className="text-gray-700 text-sm mt-2">{getTranslated(teacher, "bio")}</p>
+                  {getAchievements(teacher).length > 0 && (
+                    <ul className="text-xs text-blue-600 mt-2">
+                      {getAchievements(teacher).map((ach: string, idx: number) => (
+                        <li key={idx}>🏅 {ach}</li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </motion.div>
             )
