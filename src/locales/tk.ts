@@ -38,6 +38,16 @@ const tk = {
   "videos.views": "görüldi",
   "videos.watch_now": "Şu wagt gör",
   "videos.all_videos": "Hemmesi",
-  "videos.view_all": "Ähli wideolary gör"
+  "videos.view_all": "Ähli wideolary gör",
+   "teachers.meet_faculty": "Mugallymlar bilen tanyş boluň",
+  "teachers.world_class": "Tejribeli we ylham beriji",
+  "teachers.educators": "mugallymlar",
+  "teachers.description": "Öz ugrundan tejribeli mugallymlardan bilim alyň. ",
+  "teachers.top_rated": "Iň ýokary baha berlen mugallymlar",
+  "teachers.most_appreciated": "Okuwçylaryň iň köp halan mugallymlary",
+  "teachers.featured": "ESASY",
+  "teachers.join_team": "Ähli mugallymlarymyz bilen tanyş boluň",
+  "teachers.join_team_desc": "Bilim merkezimiziň ähli mugallymlary barada giňişleýin maglumat alyň.",
+  "teachers.apply_to_teach": "Ähli mugallymlary gör",
 };
 export default tk;

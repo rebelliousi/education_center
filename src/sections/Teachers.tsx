@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Heart, Award, Users, Star, Trophy } from 'lucide-react'
-import { useTeachers } from "../hooks/useTeachers" // Hook'unu import et
+import { useTeachers } from "../hooks/useTeachers"
+import { useTranslation } from "react-i18next"
 
 const Teachers = () => {
   const [likedTeachers, setLikedTeachers] = useState<number[]>([])
+  const { t } = useTranslation()
 
   // Dinamik olarak öğretmenleri çek
   const { data: teachers = [], isLoading, error } = useTeachers();
@@ -25,8 +27,6 @@ const Teachers = () => {
 
   const topTeachers = sortedTeachers.slice(0, 3)
 
-
-
   return (
     <section id="teachers" className="py-24 bg-gradient-to-br from-blue-50 via-white to-blue-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -40,18 +40,17 @@ const Teachers = () => {
           <div className="flex items-center justify-center mb-6">
             <div className="flex items-center space-x-2 bg-blue-100 px-4 py-2 rounded-full">
               <Users className="h-5 w-5 text-blue-600" />
-              <span className="text-blue-700 font-semibold">Meet Our Faculty</span>
+              <span className="text-blue-700 font-semibold">{t("teachers.meet_faculty")}</span>
             </div>
           </div>
           <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-            World-Class{' '}
+            {t("teachers.world_class")}{' '}
             <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-              Educators
+              {t("teachers.educators")}
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Learn from passionate educators and renowned researchers who bring cutting-edge knowledge 
-            and real-world experience to every lesson. Show your appreciation by liking your favorite teachers!
+            {t("teachers.description")}
           </p>
         </motion.div>
 
@@ -65,8 +64,8 @@ const Teachers = () => {
         >
           <div className="text-center mb-10">
             <Trophy className="h-16 w-16 mx-auto mb-4 text-yellow-300" />
-            <h3 className="text-3xl font-bold">Top Rated Teachers</h3>
-            <p className="text-blue-100 text-lg mt-2">Most appreciated by our community</p>
+            <h3 className="text-3xl font-bold">{t("teachers.top_rated")}</h3>
+            <p className="text-blue-100 text-lg mt-2">{t("teachers.most_appreciated")}</p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
@@ -133,7 +132,7 @@ const Teachers = () => {
                       animate={{ scale: 1 }}
                       className="absolute top-4 left-4 bg-gradient-to-r from-yellow-300 to-yellow-400 text-gray-900 px-3 py-1.5 rounded-full text-xs font-bold shadow-lg"
                     >
-                      ⭐ FEATURED
+                      ⭐ {t("teachers.featured")}
                     </motion.div>
                   )}
                   
@@ -192,14 +191,14 @@ const Teachers = () => {
         >
           <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-12 rounded-3xl shadow-xl border border-blue-500/30">
             <Award className="h-16 w-16 mx-auto mb-4" />
-            <h3 className="text-3xl font-bold mb-3">Join Our Teaching Team</h3>
-            <p className="text-blue-100 mb-8 text-lg max-w-2xl mx-auto">Are you passionate about science education? We're always looking for exceptional educators to inspire the next generation.</p>
+            <h3 className="text-3xl font-bold mb-3">{t("teachers.join_team")}</h3>
+            <p className="text-blue-100 mb-8 text-lg max-w-2xl mx-auto">{t("teachers.join_team_desc")}</p>
             <motion.button 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="px-10 py-4 bg-white text-blue-600 font-bold rounded-full hover:shadow-xl transition-all duration-300 text-lg"
             >
-              Apply to Teach
+              {t("teachers.apply_to_teach")}
             </motion.button>
           </div>
         </motion.div>

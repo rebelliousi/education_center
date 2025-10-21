@@ -38,6 +38,16 @@ const ru = {
   "videos.views": "просмотров",
   "videos.watch_now": "Смотреть сейчас",
   "videos.all_videos": "Все видео",
-  "videos.view_all": "Смотреть все видео"
+  "videos.view_all": "Смотреть все видео",
+  "teachers.meet_faculty": "Познакомьтесь с нашими преподавателями",
+  "teachers.world_class": "Опытные и вдохновляющие",
+  "teachers.educators": "преподаватели",
+  "teachers.description": "Учитесь у увлечённых преподавателей и известных исследователей, которые приносят передовые знания и практический опыт на каждый урок. Выражайте благодарность своим любимым учителям!",
+  "teachers.top_rated": "Лучшие преподаватели",
+  "teachers.most_appreciated": "Учителя, которых больше всего любят наши ученики",
+  "teachers.featured": "ИЗБРАННЫЙ",
+ "teachers.join_team": "Познакомьтесь со всеми нашими преподавателями",
+  "teachers.join_team_desc": "Узнайте больше о каждом учителе нашего научного центра.",
+  "teachers.apply_to_teach": "Смотреть всех преподавателей",
 };
 export default ru;

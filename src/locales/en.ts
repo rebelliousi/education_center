@@ -38,6 +38,16 @@ const en = {
   "videos.views": "views",
   "videos.watch_now": "Watch Now",
   "videos.all_videos": "All Videos",
-  "videos.view_all": "View All Videos"
+  "videos.view_all": "View All Videos",
+  "teachers.meet_faculty": "Meet Our Faculty",
+  "teachers.world_class": "Experienced and inspiring",
+  "teachers.educators": "teachers",
+  "teachers.description": "Learn from passionate educators and renowned researchers who bring cutting-edge knowledge and real-world experience to every lesson. Show your appreciation by liking your favorite teachers!",
+  "teachers.top_rated": "Top Rated Teachers",
+  "teachers.most_appreciated": "Teachers most loved by our students",
+  "teachers.featured": "FEATURED",
+  "teachers.join_team": "Meet All Our Teachers",
+  "teachers.join_team_desc": "Learn more about every educator in our science center.",
+  "teachers.apply_to_teach": "View All Teachers",
 }
 export default en;
