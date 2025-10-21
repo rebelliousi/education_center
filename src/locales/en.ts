@@ -67,6 +67,22 @@ const en = {
   "discounts.apply_1": "Contact our admissions team for eligibility check",
   "discounts.apply_2": "Submit required documentation during enrollment",
   "discounts.apply_3": "Discount will be applied at checkout",
-  "discounts.apply_4": "Questions? Email us at discounts@goshmaca.edu"
+  "discounts.apply_4": "Questions? Email us at discounts@goshmaca.edu",
+   "contact.ready": "Ready to Begin Your",
+  "contact.journey": "Journey?",
+  "contact.get_in_touch": "Get in touch with us and start your path to scientific discovery",
+  "contact.name_placeholder": "Your Name",
+  "contact.email_placeholder": "Your Email",
+  "contact.subject_placeholder": "Subject",
+  "contact.message_placeholder": "Your Message",
+  "contact.sending": "Sending...",
+  "contact.send_message": "Send Message",
+  "contact.success_message": "Your message has been sent!",
+  "contact.error_message": "Something went wrong. Please try again.",
+  "contact.verification_title": "Enter Verification Code",
+  "contact.verification_placeholder": "Verification Code",
+  "contact.cancel": "Cancel",
+  "contact.verify_and_send": "Verify & Send"
+
 }
 export default en;

@@ -67,6 +67,21 @@ const tk = {
   "discounts.apply_1": "Ulgama gatnaşmak üçin kabul ediş topary bilen habarlaşyň",
   "discounts.apply_2": "Okuw wagtynda zerur resminamalary tabşyryň",
   "discounts.apply_3": "Arzanladyş hasaplaşykda ulanylar",
-  "discounts.apply_4": "Soraglaryňyz bar bolsa discounts@goshmaca.edu email ýazyp bilersiňiz"
+  "discounts.apply_4": "Soraglaryňyz bar bolsa discounts@goshmaca.edu email ýazyp bilersiňiz",
+  "contact.ready": "Biziň ",
+  "contact.journey": "bilen bilim ýolunda täze başlangyç",
+  "contact.get_in_touch": "Soraglaryňyz ýa-da teklipleriňiz üçin bize ýüz tutuň.",
+  "contact.name_placeholder": "Adyňyz",
+  "contact.email_placeholder": "Email adresiňiz",
+  "contact.subject_placeholder": "Tema",
+  "contact.message_placeholder": "Teswiriňiz",
+  "contact.sending": "Ugradylýar...",
+  "contact.send_message": "Ugrat",
+  "contact.success_message": "Üstünlikli ugradyldy!",
+  "contact.error_message": "Ýalňyşlyk ýüze çykdy. Täzeden synanyşyň.",
+  "contact.verification_title": "Barlag koduny giriziň",
+  "contact.verification_placeholder": "Barlag kody",
+  "contact.cancel": "Goýbolsun",
+  "contact.verify_and_send": "Barla & Ugrat"
 };
 export default tk;

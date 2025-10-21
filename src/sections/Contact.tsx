@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Phone, Mail, MapPin, ArrowRight } from 'lucide-react'
 import { useContactForm } from "../hooks/useSendForms"
 import { useContactItems } from "../hooks/useFooter"
+import { useTranslation } from "react-i18next"
 
 const iconMap = {
   Phone: Phone,
@@ -24,6 +25,7 @@ const Contact = () => {
 
   const { mutate: submitContactForm, isPending, isSuccess, error } = useContactForm();
   const { data: contactItems = [], isLoading: contactLoading, error: contactError } = useContactItems();
+  const { t } = useTranslation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -72,13 +74,13 @@ const Contact = () => {
           className="text-center mb-16"
         >
           <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-            Ready to Begin Your{' '}
+            {t("contact.ready")}{' '}
             <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-              Journey?
+              {t("contact.journey")}
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Get in touch with us and start your path to scientific discovery
+            {t("contact.get_in_touch")}
           </p>
         </motion.div>
 
@@ -90,7 +92,6 @@ const Contact = () => {
           viewport={{ once: true }}
           className="grid md:grid-cols-3 gap-8 mb-16"
         >
-       
           {contactItems.map((item) => {
             const IconComponent = iconMap[item.icon as keyof typeof iconMap]  || Phone;
             return (
@@ -123,7 +124,7 @@ const Contact = () => {
                 whileFocus={{ scale: 1.02 }}
                 type="text"
                 name="name"
-                placeholder="Your Name"
+                placeholder={t("contact.name_placeholder")}
                 value={formData.name}
                 onChange={handleChange}
                 required
@@ -133,7 +134,7 @@ const Contact = () => {
                 whileFocus={{ scale: 1.02 }}
                 type="email"
                 name="email"
-                placeholder="Your Email"
+                placeholder={t("contact.email_placeholder")}
                 value={formData.email}
                 onChange={handleChange}
                 required
@@ -144,7 +145,7 @@ const Contact = () => {
               whileFocus={{ scale: 1.02 }}
               type="text"
               name="subject"
-              placeholder="Subject"
+              placeholder={t("contact.subject_placeholder")}
               value={formData.subject}
               onChange={handleChange}
               required
@@ -153,7 +154,7 @@ const Contact = () => {
             <motion.textarea
               whileFocus={{ scale: 1.02 }}
               name="message"
-              placeholder="Your Message"
+              placeholder={t("contact.message_placeholder")}
               rows={6}
               value={formData.message}
               onChange={handleChange}
@@ -168,14 +169,14 @@ const Contact = () => {
               className="w-full py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-bold text-lg hover:shadow-lg transition-all shadow-lg flex items-center justify-center gap-2 group"
               disabled={isPending}
             >
-              {isPending ? "Sending..." : "Send Message"}
+              {isPending ? t("contact.sending") : t("contact.send_message")}
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </motion.button>
             {isSuccess && (
-              <div className="text-green-600 font-semibold text-center">Your message has been sent!</div>
+              <div className="text-green-600 font-semibold text-center">{t("contact.success_message")}</div>
             )}
             {error && (
-              <div className="text-red-600 font-semibold text-center">Something went wrong. Please try again.</div>
+              <div className="text-red-600 font-semibold text-center">{t("contact.error_message")}</div>
             )}
           </form>
         </motion.div>
@@ -188,10 +189,10 @@ const Contact = () => {
               animate={{ scale: 1, opacity: 1 }}
               className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl border border-blue-200"
             >
-              <h3 className="text-xl font-bold mb-4 text-center">Enter Verification Code</h3>
+              <h3 className="text-xl font-bold mb-4 text-center">{t("contact.verification_title")}</h3>
               <input
                 type="text"
-                placeholder="Verification Code"
+                placeholder={t("contact.verification_placeholder")}
                 value={verificationCode}
                 onChange={e => setVerificationCode(e.target.value)}
                 className="w-full mb-4 px-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -201,13 +202,13 @@ const Contact = () => {
                   onClick={() => setShowVerification(false)}
                   className="w-full py-3 rounded-lg bg-gray-200 text-gray-700 font-semibold"
                 >
-                  Cancel
+                  {t("contact.cancel")}
                 </button>
                 <button
                   onClick={handleVerificationSubmit}
                   className="w-full py-3 rounded-lg bg-blue-700 text-white font-semibold"
                 >
-                  Verify & Send
+                  {t("contact.verify_and_send")}
                 </button>
               </div>
             </motion.div>

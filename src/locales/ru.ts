@@ -67,6 +67,21 @@ const ru = {
   "discounts.apply_1": "Свяжитесь с приемной комиссией для проверки",
   "discounts.apply_2": "Предоставьте необходимые документы при зачислении",
   "discounts.apply_3": "Скидка применяется при оформлении заказа",
-  "discounts.apply_4": "Вопросы? Напишите на discounts@goshmaca.edu"
+  "discounts.apply_4": "Вопросы? Напишите на discounts@goshmaca.edu",
+  "contact.ready": "Готовы начать свой",
+  "contact.journey": "путь?",
+  "contact.get_in_touch": "Свяжитесь с нами и начните путь к научным открытиям.",
+  "contact.name_placeholder": "Ваше имя",
+  "contact.email_placeholder": "Ваш Email",
+  "contact.subject_placeholder": "Тема",
+  "contact.message_placeholder": "Ваше сообщение",
+  "contact.sending": "Отправка...",
+  "contact.send_message": "Отправить сообщение",
+  "contact.success_message": "Ваше сообщение отправлено!",
+  "contact.error_message": "Что-то пошло не так. Пожалуйста, попробуйте еще раз.",
+  "contact.verification_title": "Введите код подтверждения",
+  "contact.verification_placeholder": "Код подтверждения",
+  "contact.cancel": "Отмена",
+  "contact.verify_and_send": "Проверить и отправить"
 };
 export default ru;
