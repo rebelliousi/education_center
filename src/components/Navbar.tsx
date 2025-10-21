@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { Menu, X, BookOpen, Play, Users, Tag, Mail, Home } from 'lucide-react'
+import { Menu, X, BookOpen, Play, Users, Tag, Mail, Home, ChevronDown } from 'lucide-react'
+import { useTranslation } from "react-i18next"
 
 const navItems = [
   { id: 'hero', label: 'Home', icon: Home },
@@ -12,15 +13,50 @@ const navItems = [
   { id: 'contact', label: 'Contact', icon: Mail },
 ]
 
+const languages = [
+  { code: 'en', label: 'EN', name: 'English' },
+  { code: 'tk', label: 'TK', name: 'Türkmen' },
+  { code: 'ru', label: 'RU', name: 'Русский' }
+]
+
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false)
+  const { t, i18n } = useTranslation()
+
+  // Ref for dropdown
+  const desktopDropdownRef = useRef<HTMLDivElement>(null)
+  const mobileDropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    if (!isLangDropdownOpen) return;
+    function handleClick(e: MouseEvent) {
+      const desktop = desktopDropdownRef.current
+      const mobile = mobileDropdownRef.current
+      if (
+        desktop &&
+        !desktop.contains(e.target as Node) &&
+        mobile &&
+        !mobile.contains(e.target as Node)
+      ) {
+        setIsLangDropdownOpen(false)
+      } else if (desktop && !desktop.contains(e.target as Node) && !mobile) {
+        setIsLangDropdownOpen(false)
+      } else if (mobile && !mobile.contains(e.target as Node) && !desktop) {
+        setIsLangDropdownOpen(false)
+      }
+    }
+    window.addEventListener('mousedown', handleClick)
+    return () => window.removeEventListener('mousedown', handleClick)
+  }, [isLangDropdownOpen])
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId)
@@ -29,6 +65,11 @@ const Navbar = () => {
       setIsMobileMenuOpen(false)
     }
   }
+
+  const localizedNavItems = navItems.map(item => ({
+    ...item,
+    label: t(`nav.${item.id}`, item.label)
+  }))
 
   return (
     <motion.nav
@@ -62,7 +103,7 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-1">
-            {navItems.map(({ id, label, icon: Icon }) => (
+            {localizedNavItems.map(({ id, label, icon: Icon }) => (
               <motion.button
                 key={id}
                 whileHover={{ scale: 1.05 }}
@@ -80,16 +121,35 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* CTA Button */}
-          <div className="hidden lg:block ">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => scrollToSection('courses')}
-              className="px-4 w-full h-auto py-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-full hover:shadow-lg transition-all duration-300"
+          {/* Language Dropdown (Desktop) */}
+          <div className="relative hidden lg:block" ref={desktopDropdownRef}>
+            <button
+              onClick={() => setIsLangDropdownOpen(prev => !prev)}
+              className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-full flex items-center space-x-2 hover:shadow-lg transition-all duration-300"
+              aria-label="Select language"
             >
-              Get Started
-            </motion.button>
+              <span>{languages.find(l => l.code === i18n.language)?.label || "EN"}</span>
+              <ChevronDown className="h-4 w-4" />
+            </button>
+            {isLangDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-32 bg-white rounded-xl shadow-lg border border-blue-100 z-10">
+                {languages.map(lang => (
+                  <button
+                    key={lang.code}
+                    onClick={() => {
+                      i18n.changeLanguage(lang.code)
+                      setIsLangDropdownOpen(false)
+                    }}
+                    className={`w-full text-left px-4 py-2 rounded-lg font-semibold flex items-center space-x-2 hover:bg-blue-50 transition-all duration-200 ${
+                      i18n.language === lang.code ? "bg-blue-100 text-blue-700" : "text-gray-700"
+                    }`}
+                  >
+                
+                    <span className="text-md">{lang.name}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -100,7 +160,7 @@ const Navbar = () => {
                 ? 'text-gray-700 hover:bg-blue-50' 
                 : 'text-white hover:bg-white/10'
             }`}
-            aria-label={isMobileMenuOpen ? "Menüyü Kapat" : "Menüyü Aç"}
+            aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
           >
             {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
@@ -118,7 +178,7 @@ const Navbar = () => {
         className="lg:hidden overflow-hidden bg-white/95 backdrop-blur-md border-t border-blue-100"
       >
         <div className="px-4 py-4 space-y-2">
-          {navItems.map(({ id, label, icon: Icon }) => (
+          {localizedNavItems.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               onClick={() => scrollToSection(id)}
@@ -128,13 +188,36 @@ const Navbar = () => {
               <span className="font-medium">{label}</span>
             </button>
           ))}
-          <div className="pt-4 border-t border-blue-100">
+          {/* Language dropdown (Mobile) */}
+          <div className="pt-4 border-t border-blue-100 relative" ref={mobileDropdownRef}>
             <button
-              onClick={() => scrollToSection('courses')}
-              className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300"
+              onClick={() => setIsLangDropdownOpen(prev => !prev)}
+              className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg flex items-center justify-between transition-all duration-300"
+              aria-label="Select language"
             >
-              Get Started
+              <span>{languages.find(l => l.code === i18n.language)?.label || "EN"}</span>
+              <ChevronDown className="h-4 w-4" />
             </button>
+            {isLangDropdownOpen && (
+              <div className="absolute left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-blue-100 z-10">
+                {languages.map(lang => (
+                  <button
+                    key={lang.code}
+                    onClick={() => {
+                      i18n.changeLanguage(lang.code)
+                      setIsLangDropdownOpen(false)
+                      setIsMobileMenuOpen(false)
+                    }}
+                    className={`w-full text-left px-4 py-2 rounded-lg font-semibold flex items-center space-x-2 hover:bg-blue-50 transition-all duration-200 ${
+                      i18n.language === lang.code ? "bg-blue-100 text-blue-700" : "text-gray-700"
+                    }`}
+                  >
+                    <span>{lang.label}</span>
+                    <span className="text-xs">{lang.name}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </motion.div>

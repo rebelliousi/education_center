@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { ArrowRight, Play, Sparkles, BookOpen } from 'lucide-react'
 import gsap from 'gsap'
 import img from '../../public/image 2.svg' // kendi görsel yolun
+import { useTranslation } from "react-i18next";
 
 const SHAPE_CLASSES = [
   "w-4 h-4 bg-blue-200 rounded-full",
@@ -17,6 +18,7 @@ const HERO_WIDTH = 1300
 const HERO_HEIGHT = 800
 
 const Hero = () => {
+  const { t } = useTranslation();
   const floatingRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -123,7 +125,7 @@ const Hero = () => {
             >
               <div className="flex items-center space-x-2 bg-blue-100 px-4 py-2 rounded-full">
                 <Sparkles className="h-5 w-5 text-blue-600" aria-hidden="true" />
-                <span className="text-blue-700 font-semibold">Welcome to the Future of Learning</span>
+                <span className="text-blue-700 font-semibold">{t("hero.welcome")}</span>
               </div>
             </motion.div>
             <motion.h1
@@ -134,9 +136,9 @@ const Hero = () => {
             >
               <span className="text-blue-600">Goshmaca</span> &{' '}
               <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-                Continuous Science
+                {t("hero.continuous_science")}
               </span>{' '}
-              <span className="text-gray-800">Center</span>
+              <span className="text-gray-800">{t("hero.center")}</span>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -144,8 +146,7 @@ const Hero = () => {
               transition={{ delay: 0.6 }}
               className="text-xl text-gray-600 mb-8 max-w-2xl leading-relaxed"
             >
-              Experience a unique education hub where science comes alive with creativity and technology.
-              Discover your passion, connect with passionate educators, and embark on an inspiring learning journey.
+              {t("hero.description")}
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -158,10 +159,10 @@ const Hero = () => {
                 whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(59, 130, 246, 0.3)" }}
                 whileTap={{ scale: 0.95 }}
                 className="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-full flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transition-all duration-300"
-                aria-label="Explore Courses"
+                aria-label={t("hero.explore_courses")}
               >
                 <BookOpen className="h-5 w-5" aria-hidden="true" />
-                <span>Explore Courses</span>
+                <span>{t("hero.explore_courses")}</span>
                 <ArrowRight className="h-5 w-5" aria-hidden="true" />
               </motion.button>
               <motion.button
@@ -169,10 +170,10 @@ const Hero = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="px-8 py-4 border-2 border-blue-600 text-blue-600 font-semibold rounded-full flex items-center justify-center space-x-2 hover:bg-blue-50 transition-all duration-300"
-                aria-label="Watch Videos"
+                aria-label={t("hero.watch_videos")}
               >
                 <Play className="h-5 w-5" aria-hidden="true" />
-                <span>Watch Videos</span>
+                <span>{t("hero.watch_videos")}</span>
               </motion.button>
             </motion.div>
             {/* Stats */}
@@ -184,15 +185,15 @@ const Hero = () => {
             >
               <div className="text-center">
                 <div className="text-3xl font-bold text-blue-600">16+</div>
-                <div className="text-gray-600 text-sm">Courses</div>
+                <div className="text-gray-600 text-sm">{t("hero.courses")}</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-blue-600">50+</div>
-                <div className="text-gray-600 text-sm">Teachers</div>
+                <div className="text-gray-600 text-sm">{t("hero.teachers")}</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-blue-600">1000+</div>
-                <div className="text-gray-600 text-sm">Students</div>
+                <div className="text-gray-600 text-sm">{t("hero.students")}</div>
               </div>
             </motion.div>
           </motion.div>
@@ -201,7 +202,7 @@ const Hero = () => {
           <div className="flex items-center justify-center w-[700px]">
             <img
               src={img}
-              alt="Science Center Visual"
+              alt={t("hero.visual_alt")}
               className="w-full rounded-2xl object-cover"
               style={{ boxShadow: 'none' }}
             />
