@@ -2,6 +2,7 @@ import React from 'react'
 import { GraduationCap, Facebook, Twitter, Linkedin, Phone, Mail, MapPin } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useContactItems } from "../hooks/useFooter"
+import { useTranslation } from "react-i18next"
 
 const iconMap = {
   Phone,
@@ -12,6 +13,7 @@ const iconMap = {
 
 const Footer = () => {
   const { data: contactItems = [], isLoading, error } = useContactItems()
+  const { t } = useTranslation();
 
   return (
     <footer className="bg-gradient-to-b from-white to-blue-50 text-gray-900 py-16 border-t border-blue-200/50">
@@ -29,17 +31,15 @@ const Footer = () => {
                 <GraduationCap className="w-7 h-7 text-white" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-gray-900">Goshmaca</h3>
-                <p className="text-sm text-blue-600 font-semibold">Science Center</p>
+                <h3 className="text-xl font-bold text-gray-900">{t("footer.brand_name")}</h3>
+                <p className="text-sm text-blue-600 font-semibold">{t("footer.brand_tagline")}</p>
               </div>
             </div>
             <p className="text-gray-600 leading-relaxed max-w-md">
-              Inspiring minds and shaping futures through innovative science education. Join our community of passionate learners and educators on a journey of scientific discovery.
+              {t("footer.description")}
             </p>
             {/* Contact Items API'dan */}
             <div className="mt-8 flex flex-col gap-4">
-              {isLoading && <span className="text-blue-600">Loading contact info...</span>}
-              {error && <span className="text-red-600">Contact info error!</span>}
               {contactItems.map(item => {
                 const IconComponent = iconMap[item.icon as keyof typeof iconMap] || Phone;
                 return (
@@ -61,7 +61,7 @@ const Footer = () => {
             viewport={{ once: true }}
             className="md:text-right"
           >
-            <h4 className="font-bold text-gray-900 mb-6">Connect With Us</h4>
+            <h4 className="font-bold text-gray-900 mb-6">{t("footer.connect_with_us")}</h4>
             <div className="flex gap-4 md:justify-end">
               <a href="#" className="w-12 h-12 bg-blue-100 hover:bg-blue-600 text-blue-600 hover:text-white rounded-lg flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg group">
                 <Facebook className="w-6 h-6 group-hover:scale-110 transition-transform" />
@@ -79,10 +79,10 @@ const Footer = () => {
         {/* Divider */}
         <div className="border-t border-blue-200/50 pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between text-sm text-gray-600">
-            <p>© 2024 Goshmaca & Continuous Science Center. All rights reserved.</p>
+            <p>{t("footer.copyright")}</p>
             <div className="flex gap-6 mt-4 md:mt-0">
-              <a href="#" className="hover:text-blue-600 transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-blue-600 transition-colors">Terms of Service</a>
+              <a href="#" className="hover:text-blue-600 transition-colors">{t("footer.privacy_policy")}</a>
+              <a href="#" className="hover:text-blue-600 transition-colors">{t("footer.terms_of_service")}</a>
             </div>
           </div>
         </div>

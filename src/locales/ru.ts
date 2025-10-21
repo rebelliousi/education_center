@@ -1,5 +1,5 @@
 const ru = {
- "brand.name": "Дополнительного",
+ "brand.name": "Дополнительного ",
  "brand.center": "Научный центр",
   "brand.and": "и",
   "hero.welcome": "Добро пожаловать в будущее обучения",
@@ -82,6 +82,14 @@ const ru = {
   "contact.verification_title": "Введите код подтверждения",
   "contact.verification_placeholder": "Код подтверждения",
   "contact.cancel": "Отмена",
-  "contact.verify_and_send": "Проверить и отправить"
+  "contact.verify_and_send": "Проверить и отправить",
+   "footer.brand_name": "Дополнительного и",
+  "footer.brand_tagline": "Центр непрерывных наук",
+  "footer.description": "Вдохновляем умы и формируем будущее через инновационное научное образование. Присоединяйтесь к нашему сообществу увлечённых учащихся и преподавателей на пути научных открытий.",
+  "footer.connect_with_us": "Свяжитесь с нами",
+  "footer.privacy_policy": "Политика конфиденциальности",
+  "footer.terms_of_service": "Условия использования",
+  "footer.copyright": "© 2025 Дополнительного и Центр непрерывных наук. Все права защищены.",
+  
 };
 export default ru;

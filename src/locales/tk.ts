@@ -82,6 +82,14 @@ const tk = {
   "contact.verification_title": "Barlag koduny giriziň",
   "contact.verification_placeholder": "Barlag kody",
   "contact.cancel": "Goýbolsun",
-  "contact.verify_and_send": "Barla & Ugrat"
+  "contact.verify_and_send": "Barla & Ugrat",
+    "footer.brand_name": "Goşmaça we",
+  "footer.brand_tagline": "Üznüksiz Bilim Merkezi",
+  "footer.description": "Täzeçillik bilim usullary bilen ylham berýän we geljegi gurýan merkez. Täze ylmy mümkinçilikler üçin bize ýüz tutuň",
+  "footer.connect_with_us": "Biziň bilen aragatnaşyň",
+  "footer.privacy_policy": "Gizlinlik syýasaty",
+  "footer.terms_of_service": "Ulanyş şertleri",
+   "footer.copyright": "© 2025 Goşmaça we Üznüksiz Bilim Merkezi. Ähli hukuklar goralan.",
+
 };
 export default tk;

@@ -82,7 +82,14 @@ const en = {
   "contact.verification_title": "Enter Verification Code",
   "contact.verification_placeholder": "Verification Code",
   "contact.cancel": "Cancel",
-  "contact.verify_and_send": "Verify & Send"
+  "contact.verify_and_send": "Verify & Send",
+   "footer.brand_name": "Additional and",
+  "footer.brand_tagline": "Continuous Science Center",
+  "footer.description": "Inspiring minds and shaping futures through innovative science education. Join our community of passionate learners and educators on a journey of scientific discovery.",
+  "footer.connect_with_us": "Connect With Us",
+  "footer.privacy_policy": "Privacy Policy",
+  "footer.terms_of_service": "Terms of Service",
+  "footer.copyright": "© 2025 Additional and Continuous Science Center. All rights reserved.",
 
 }
 export default en;
