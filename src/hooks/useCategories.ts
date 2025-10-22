@@ -5,7 +5,7 @@ import { api } from "../api";
 export interface CategoryType {
   id: number;
   name: string;
-  image: string;
+  image?: string;
 }
 
 // API'dan kategorileri çekme fonksiyonu

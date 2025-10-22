@@ -90,6 +90,21 @@ const en = {
   "footer.privacy_policy": "Privacy Policy",
   "footer.terms_of_service": "Terms of Service",
   "footer.copyright": "© 2025 Additional and Continuous Science Center. All rights reserved.",
-
+  "courses": {
+    "level": "Level",
+    "category": "Category",
+    "all": "All",
+    "all_courses": "All Courses",
+    "all_courses_desc": "Browse all courses and find the one for you!",
+    "all_levels": "All Levels",
+    "all_categories": "All Categories",
+    "search_placeholder": "Search courses...",
+    "learn_more_btn": "Learn More",
+    "levels": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    }
+  }
 }
 export default en;

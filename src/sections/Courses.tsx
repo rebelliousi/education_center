@@ -4,6 +4,7 @@ import { ArrowRight, Clock, Users, Star, BookOpen, Award } from "lucide-react";
 import { useCourses } from "../hooks/useCourses";
 import { useLevels } from "../hooks/useLevels";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 function getLevelColor(level: string) {
   switch (level) {
@@ -30,6 +31,7 @@ export default function CoursesSection() {
   const { data: levels = [], isLoading: levelsLoading, error: levelsError } = useLevels();
   const { t, i18n } = useTranslation();
   const lang = i18n.language || "en";
+  const navigate = useNavigate();
 
   // Sadece kursu olan seviyelerin id'lerini bul (TypeScript hatasız)
   const usedLevelIds = new Set(
@@ -212,7 +214,10 @@ export default function CoursesSection() {
             <Award className="h-12 w-12 mx-auto mb-4" />
             <h3 className="text-2xl font-bold mb-2">{t("courses.ready")}</h3>
             <p className="text-blue-100 mb-6">{t("courses.join_students")}</p>
-            <button className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105">
+            <button
+              className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105"
+              onClick={() => navigate("/courses")}
+            >
               {t("courses.view_all")}
             </button>
           </div>

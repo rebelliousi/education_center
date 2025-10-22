@@ -90,6 +90,22 @@ const tk = {
   "footer.privacy_policy": "Gizlinlik syýasaty",
   "footer.terms_of_service": "Ulanyş şertleri",
    "footer.copyright": "© 2025 Goşmaça we Üznüksiz Bilim Merkezi. Ähli hukuklar goralan.",
+   "courses": {
+    "level": "Dereje",
+    "category": "Kategoriýa",
+    "all": "Ähli",
+    "all_courses": "Ähli kurslar",
+    "all_courses_desc": "Kurslaryň hemmesine serediň we özüňe laýykyny tap!",
+    "all_levels": "Ähli derejeler",
+    "all_categories": "Ähli kategoriýalar",
+    "search_placeholder": "Kurs gözleg...",
+    "learn_more_btn": "Has giňişleýin",
+    "levels": {
+      "beginner": "Başlangyç",
+      "intermediate": "Orta",
+      "advanced": "Ýokary"
+    }
+  }
 
 };
 export default tk;

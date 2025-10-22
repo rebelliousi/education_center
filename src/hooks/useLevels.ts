@@ -6,6 +6,7 @@ export interface LevelType {
   id: number;
   name: string;
   order: number;
+  [key: string]: any;
 }
 
 // API'dan seviyeleri çekme fonksiyonu

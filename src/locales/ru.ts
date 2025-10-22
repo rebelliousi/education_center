@@ -90,6 +90,22 @@ const ru = {
   "footer.privacy_policy": "Политика конфиденциальности",
   "footer.terms_of_service": "Условия использования",
   "footer.copyright": "© 2025 Дополнительного и Центр непрерывных наук. Все права защищены.",
+  "courses": {
+    "level": "Уровень",
+    "category": "Категория",
+    "all": "Все",
+    "all_courses": "Все курсы",
+    "all_courses_desc": "Просмотрите все курсы и найдите подходящий!",
+    "all_levels": "Все уровни",
+    "all_categories": "Все категории",
+    "search_placeholder": "Поиск курса...",
+    "learn_more_btn": "Подробнее",
+    "levels": {
+      "beginner": "Новичок",
+      "intermediate": "Средний",
+      "advanced": "Продвинутый"
+    }
+  }
   
 };
 export default ru;
