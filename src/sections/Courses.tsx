@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Clock, Users, Star, BookOpen, Award } from "lucide-react";
+import { ArrowRight, Clock, Users, Star, BookOpen, Award, X } from "lucide-react";
 import { useCourses } from "../hooks/useCourses";
 import { useLevels } from "../hooks/useLevels";
 import { useTranslation } from "react-i18next";
@@ -27,13 +27,14 @@ function getLevelColor(level: string) {
 
 export default function CoursesSection() {
   const [filter, setFilter] = useState<string | number>("all");
-  const { data: courses = [], isLoading: coursesLoading, error: coursesError } = useCourses();
-  const { data: levels = [], isLoading: levelsLoading, error: levelsError } = useLevels();
+  const [activeCourse, setActiveCourse] = useState<any>(null); // MODAL için aktif kurs
+  const { data: courses = [], isLoading: coursesLoading } = useCourses();
+  const { data: levels = [] } = useLevels();
   const { t, i18n } = useTranslation();
   const lang = i18n.language || "en";
   const navigate = useNavigate();
 
-  // Sadece kursu olan seviyelerin id'lerini bul (TypeScript hatasız)
+  // Sadece kursu olan seviyelerin id'leri
   const usedLevelIds = new Set(
     courses
       .map(course =>
@@ -54,7 +55,6 @@ export default function CoursesSection() {
       }))
   ];
 
-  // Seçili filtreye göre kursları göster
   const filteredCourses =
     filter === "all"
       ? courses
@@ -119,17 +119,13 @@ export default function CoursesSection() {
         {/* Course Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {filteredCourses.map((course: any, index: number) => {
-            // Dil desteğiyle kurs alanlarını göster
             const displayName = course[`name_${lang}`] || course.name;
             const displayDescription = course[`description_${lang}`] || course.description;
             const displayDuration = course[`duration_${lang}`] || course.duration;
-
-            // Level adı
             let displayLevel = "";
             if (typeof course.level === "object" && course.level !== null) {
               displayLevel = course.level[`name_${lang}`] || course.level.name || "";
             }
-
             return (
               <motion.div
                 key={course.id}
@@ -167,7 +163,6 @@ export default function CoursesSection() {
                     </div>
                   </div>
                 </div>
-
                 {/* Course Content */}
                 <div className="flex flex-col flex-1 p-6">
                   <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors leading-tight min-h-[56px]">
@@ -176,7 +171,6 @@ export default function CoursesSection() {
                   <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed min-h-[48px]">
                     {displayDescription}
                   </p>
-
                   {/* Course Stats */}
                   <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                     <div className="flex items-center space-x-1">
@@ -188,10 +182,12 @@ export default function CoursesSection() {
                       <span>{course.students}</span>
                     </div>
                   </div>
-
                   {/* CTA Button */}
                   <div className="mt-auto">
-                    <button className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-xl hover:shadow-lg transition-all duration-300 group-hover:from-blue-700 group-hover:to-blue-800 font-semibold">
+                    <button
+                      className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 rounded-xl hover:shadow-lg transition-all duration-300 group-hover:from-blue-700 group-hover:to-blue-800 font-semibold"
+                      onClick={() => setActiveCourse(course)}
+                    >
                       <span>{t("courses.learn_more_btn")}</span>
                       <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                     </button>
@@ -201,6 +197,32 @@ export default function CoursesSection() {
             );
           })}
         </div>
+
+        {/* Modal */}
+        {activeCourse && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full relative"
+            >
+              <button
+                onClick={() => setActiveCourse(null)}
+                className="absolute top-4 right-4 text-gray-500 hover:text-blue-700"
+                aria-label="Close"
+              >
+                <X className="h-6 w-6" />
+              </button>
+              <img src={activeCourse.image} alt={activeCourse.name} className="w-full h-48 object-cover rounded-xl mb-6" />
+              <h2 className="text-2xl font-bold mb-4">{activeCourse[`name_${lang}`] || activeCourse.name}</h2>
+              <p className="text-gray-700 text-base mb-4">{activeCourse[`description_${lang}`] || activeCourse.description}</p>
+              <div className="font-bold text-blue-700 text-xl mb-2">
+                {t("courses.price")}: {activeCourse.price} TMT
+              </div>
+            </motion.div>
+          </div>
+        )}
 
         {/* Call to Action */}
         <motion.div

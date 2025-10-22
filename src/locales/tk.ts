@@ -22,6 +22,7 @@ const tk = {
   "courses.ready": "Okuwa başlamak isleýärsiňizmi?",
   "courses.join_students": "Ýüzlerçe okuwçy bilen ylym başarnygyňy ösdür!",
   "courses.view_all": "Ähli kurslary gör",
+  "courses.price": "Bahasy",
    "activities.recent": "Täze",
   "activities.title": "Çäreler",
   "activities.description": "Ylymly we täsirli çäreler, okuwlar we çäreler arkaly jemgyýetimize goşulyň. Täze bilim we ýatlama dörediň.",

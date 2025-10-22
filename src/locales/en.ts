@@ -14,6 +14,7 @@ const en = {
   "hero.visual_alt": "Science Center Visual",
   "courses.all": "All",
   "courses.curriculum": "Our Curriculum",
+  "courses.price": "Price",
   "courses.discover": "Discover Our",
   "courses.diverse": "Diverse Courses",
   "courses.explore_desc": "Explore carefully crafted courses designed to ignite your passion for science and technology.",

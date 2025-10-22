@@ -15,6 +15,7 @@ const ru = {
   "courses.all": "Все",
   "courses.curriculum": "Наша программа",
   "courses.discover": "Откройте для себя",
+  "courses.price": "Цена",
   "courses.diverse": "Разнообразные курсы",
   "courses.explore_desc": "Изучайте тщательно подготовленные курсы, которые пробудят вашу страсть к науке и технологиям.",
   "courses.learn_more": "Подробнее о {{name}}",

@@ -4,7 +4,7 @@ import { useCourses } from "../hooks/useCourses";
 import { useLevels } from "../hooks/useLevels";
 import { useCategories } from "../hooks/useCategories";
 import { useTranslation } from "react-i18next";
-import { Clock, Users, Star, ChevronDown } from "lucide-react";
+import { Clock, Users, Star, ChevronDown, X } from "lucide-react";
 
 // Seviye rengi fonksiyonu
 function getLevelColor(level: string) {
@@ -41,7 +41,8 @@ export default function AllCoursesPage() {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  // LOADING STATE EKLENDİ
+  const [activeCourse, setActiveCourse] = useState<any>(null); // MODAL için aktif kurs
+
   const { data: courses = [], isLoading: coursesLoading } = useCourses();
   const { data: levels = [] } = useLevels();
   const { data: categories = [] } = useCategories();
@@ -108,7 +109,6 @@ export default function AllCoursesPage() {
   const categoryRef = useRef<HTMLDivElement>(null);
   const levelRef = useRef<HTMLDivElement>(null);
 
-  // Dışarıya tıklanınca dropdown'ları kapat
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -129,12 +129,10 @@ export default function AllCoursesPage() {
       document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Filter değişince sayfayı 1'e döndür
   useEffect(() => {
     setCurrentPage(1);
   }, [activeFilter, category, level, search]);
 
-  // Button & dropdown handler'ları
   const handleAllClick = () => {
     setActiveFilter("all");
     setCategory("all");
@@ -343,13 +341,42 @@ export default function AllCoursesPage() {
                         <span>{course.students}</span>
                       </div>
                     </div>
-                    <button className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 rounded-xl hover:shadow-lg transition-all duration-300 font-semibold mt-auto">
+                    <button
+                      className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 rounded-xl hover:shadow-lg transition-all duration-300 font-semibold mt-auto"
+                      onClick={() => setActiveCourse(course)}
+                    >
                       {t("courses.learn_more_btn")}
                     </button>
                   </div>
                 </motion.div>
               );
             })}
+          </div>
+        )}
+
+        {/* Modal */}
+        {activeCourse && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full relative"
+            >
+              <button
+                onClick={() => setActiveCourse(null)}
+                className="absolute top-4 right-4 text-gray-500 hover:text-blue-700"
+                aria-label="Close"
+              >
+                <X className="h-6 w-6" />
+              </button>
+              <img src={activeCourse.image} alt={activeCourse.name} className="w-full h-48 object-cover rounded-xl mb-6" />
+              <h2 className="text-2xl font-bold mb-4">{activeCourse[`name_${lang}`] || activeCourse.name}</h2>
+              <p className="text-gray-700 text-base mb-4">{activeCourse[`description_${lang}`] || activeCourse.description}</p>
+              <div className="font-bold text-blue-700 text-xl mb-2">
+                {t("courses.price")}{activeCourse.price ? `: ${activeCourse.price} TMT` : ""}
+              </div>
+            </motion.div>
           </div>
         )}
 
