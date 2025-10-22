@@ -14,6 +14,7 @@ export interface DiscountItemType {
   color: string;
   bg_gradient: string;
   icon: string;
+  [key: string]: any; 
 }
 
 // API'dan indirimleri çekme fonksiyonu
