@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { motion } from 'framer-motion'
-import { Calendar, MapPin, Users, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Calendar, MapPin, Users, ArrowRight, ChevronLeft, ChevronRight, X } from 'lucide-react'
 import { useSocialActivities } from "../hooks/useActivities"
 import type { SocialActivityType } from '../hooks/useActivities'
 import { useTranslation } from "react-i18next"
@@ -12,6 +12,8 @@ const Activities = () => {
   const lang = i18n.language || "en"
 
   const { data: activities = [], isLoading, error } = useSocialActivities();
+  const [activeActivity, setActiveActivity] = useState<SocialActivityType|null>(null)
+  const [activeImageIndex, setActiveImageIndex] = useState(0)
 
   const cardsPerPage = 3
   const totalPages = Math.ceil(activities.length / cardsPerPage)
@@ -28,6 +30,18 @@ const Activities = () => {
       if (newIndex < 0) return totalPages - 1
       if (newIndex >= totalPages) return 0
       return newIndex
+    })
+  }
+
+  // Modal image slider (for gallery)
+  const handleImageNav = (dir: number) => {
+    if (!activeActivity) return
+    const total = activeActivity.images.length
+    setActiveImageIndex((prev) => {
+      const next = prev + dir
+      if (next < 0) return total - 1
+      if (next >= total) return 0
+      return next
     })
   }
 
@@ -63,7 +77,7 @@ const Activities = () => {
               transition={{ duration: 0.8, ease: "easeInOut" }}
               className="contents"
             >
-            {visibleActivities.map((activity:SocialActivityType, index:number) => (
+            {visibleActivities.map((activity, index) => (
               <motion.div
                 key={activity.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -113,7 +127,13 @@ const Activities = () => {
                       </div>
                     </div>
 
-                    <button className="flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 rounded-lg hover:shadow-lg transition-all duration-300 hover:from-blue-700 hover:to-blue-800 font-semibold text-sm w-full">
+                    <button
+                      className="flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 rounded-lg hover:shadow-lg transition-all duration-300 hover:from-blue-700 hover:to-blue-800 font-semibold text-sm w-full"
+                      onClick={() => {
+                        setActiveActivity(activity);
+                        setActiveImageIndex(0);
+                      }}
+                    >
                       <span>{t("activities.learn_more_btn")}</span>
                       <ArrowRight className="h-4 w-4" />
                     </button>
@@ -161,6 +181,88 @@ const Activities = () => {
           ))}
         </div>
       </div>
+
+      {/* MODAL - Modern, Gallery, Animated */}
+      <AnimatePresence>
+        {activeActivity && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 40 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 40 }}
+              transition={{ type: "spring", stiffness: 200, damping: 20 }}
+              className="bg-white rounded-2xl shadow-2xl max-w-xl w-full p-8 relative"
+            >
+              <button
+                className="absolute top-4 right-4 text-gray-500 hover:text-blue-700"
+                onClick={() => setActiveActivity(null)}
+                aria-label="Close"
+              >
+                <X className="h-6 w-6" />
+              </button>
+              {/* Gallery slider */}
+              <div className="relative mb-6">
+                <motion.img
+                  key={activeActivity.images[activeImageIndex]?.id}
+                  src={activeActivity.images[activeImageIndex]?.image}
+                  alt={activeActivity[`name_${lang}`] || activeActivity.name}
+                  initial={{ opacity: 0, scale: 0.95, x: 50 }}
+                  animate={{ opacity: 1, scale: 1, x: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, x: -50 }}
+                  transition={{ duration: 0.35 }}
+                  className="w-full h-64 object-cover rounded-xl shadow"
+                />
+                {/* Gallery navigation */}
+                {activeActivity.images.length > 1 && (
+                  <>
+                    <button
+                      className="absolute top-1/2 -translate-y-1/2 left-2 bg-blue-600 text-white p-2 rounded-full shadow hover:bg-blue-700 transition"
+                      onClick={() => handleImageNav(-1)}
+                      aria-label="Previous image"
+                    >
+                      <ChevronLeft className="h-5 w-5" />
+                    </button>
+                    <button
+                      className="absolute top-1/2 -translate-y-1/2 right-2 bg-blue-600 text-white p-2 rounded-full shadow hover:bg-blue-700 transition"
+                      onClick={() => handleImageNav(1)}
+                      aria-label="Next image"
+                    >
+                      <ChevronRight className="h-5 w-5" />
+                    </button>
+                  </>
+                )}
+                {/* Gallery indicators */}
+                <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-2">
+                  {activeActivity.images.map((img, idx) => (
+                    <button
+                      key={img.id}
+                      onClick={() => setActiveImageIndex(idx)}
+                      className={`h-2 rounded-full ${activeImageIndex === idx ? 'bg-blue-600 w-8' : 'bg-blue-300 w-2'}`}
+                      aria-label={`Go to image ${idx + 1}`}
+                    />
+                  ))}
+                </div>
+              </div>
+              {/* Modal content */}
+              <h2 className="text-2xl font-bold mb-2 text-blue-700">{activeActivity[`name_${lang}`] || activeActivity.name}</h2>
+              <p className="text-gray-600 text-base mb-6">{activeActivity[`description_${lang}`] || activeActivity.description}</p>
+              <div className="flex items-center gap-3 text-sm mb-2">
+                <Calendar className="h-4 w-4 text-blue-600" />
+                <span>{activeActivity.date}</span>
+                <MapPin className="h-4 w-4 text-blue-600" />
+                <span>{activeActivity[`location_${lang}`] || activeActivity.location}</span>
+                <Users className="h-4 w-4 text-blue-600" />
+                <span>{activeActivity.participants} {t("activities.participants")}</span>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   )
 }
