@@ -41,7 +41,8 @@ export default function AllCoursesPage() {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const { data: courses = [] } = useCourses();
+  // LOADING STATE EKLENDİ
+  const { data: courses = [], isLoading: coursesLoading } = useCourses();
   const { data: levels = [] } = useLevels();
   const { data: categories = [] } = useCategories();
   const { t, i18n } = useTranslation();
@@ -284,65 +285,73 @@ export default function AllCoursesPage() {
         </div>
 
         {/* Kurs grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
-          {paginatedCourses.map((course: any, idx: number) => {
-            const displayName = (course[`name_${lang}`] || course.name) ?? "";
-            const displayDescription = (course[`description_${lang}`] || course.description) ?? "";
-            const displayDuration = (course[`duration_${lang}`] || course.duration) ?? "";
-            let displayLevel = "";
-            if (typeof course.level === "object" && course.level !== null) {
-              displayLevel = (course.level[`name_${lang}`] || course.level.name) ?? "";
-            }
-            return (
-              <motion.div
-                key={course.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: idx * 0.04 }}
-                viewport={{ once: true }}
-                whileHover={{
-                  y: -10,
-                  boxShadow: "0 25px 50px rgba(59, 130, 246, 0.15)"
-                }}
-                className="bg-white rounded-2xl overflow-hidden border border-blue-100 hover:border-blue-300 transition-all duration-300 shadow-lg hover:shadow-xl flex flex-col"
-              >
-                <div className="relative h-44 overflow-hidden">
-                  <img
-                    src={course.image}
-                    alt={displayName}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute top-3 left-3">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getLevelColor(displayLevel)}`}>
-                      {displayLevel}
-                    </span>
-                  </div>
-                  <div className="absolute bottom-3 left-3 flex items-center space-x-2">
-                    <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                    <span className="text-sm font-semibold text-white bg-blue-500/60 px-2 py-1 rounded">{course.rating}</span>
-                  </div>
-                </div>
-                <div className="p-6 flex-1 flex flex-col">
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">{displayName}</h3>
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">{displayDescription}</p>
-                  <div className="flex items-center justify-between text-xs text-gray-500 mb-4 mt-auto">
-                    <div className="flex items-center space-x-1">
-                      <Clock className="h-4 w-4 text-blue-500" />
-                      <span>{displayDuration}</span>
+        {coursesLoading ? (
+          <div className="flex justify-center items-center min-h-[300px]">
+            <span className="text-blue-600 text-lg font-semibold">
+              {t("courses.loading") || "Loading courses..."}
+            </span>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
+            {paginatedCourses.map((course: any, idx: number) => {
+              const displayName = (course[`name_${lang}`] || course.name) ?? "";
+              const displayDescription = (course[`description_${lang}`] || course.description) ?? "";
+              const displayDuration = (course[`duration_${lang}`] || course.duration) ?? "";
+              let displayLevel = "";
+              if (typeof course.level === "object" && course.level !== null) {
+                displayLevel = (course.level[`name_${lang}`] || course.level.name) ?? "";
+              }
+              return (
+                <motion.div
+                  key={course.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: idx * 0.04 }}
+                  viewport={{ once: true }}
+                  whileHover={{
+                    y: -10,
+                    boxShadow: "0 25px 50px rgba(59, 130, 246, 0.15)"
+                  }}
+                  className="bg-white rounded-2xl overflow-hidden border border-blue-100 hover:border-blue-300 transition-all duration-300 shadow-lg hover:shadow-xl flex flex-col"
+                >
+                  <div className="relative h-44 overflow-hidden">
+                    <img
+                      src={course.image}
+                      alt={displayName}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-3 left-3">
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getLevelColor(displayLevel)}`}>
+                        {displayLevel}
+                      </span>
                     </div>
-                    <div className="flex items-center space-x-1">
-                      <Users className="h-4 w-4 text-blue-500" />
-                      <span>{course.students}</span>
+                    <div className="absolute bottom-3 left-3 flex items-center space-x-2">
+                      <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                      <span className="text-sm font-semibold text-white bg-blue-500/60 px-2 py-1 rounded">{course.rating}</span>
                     </div>
                   </div>
-                  <button className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 rounded-xl hover:shadow-lg transition-all duration-300 font-semibold mt-auto">
-                    {t("courses.learn_more_btn")}
-                  </button>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
+                  <div className="p-6 flex-1 flex flex-col">
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">{displayName}</h3>
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">{displayDescription}</p>
+                    <div className="flex items-center justify-between text-xs text-gray-500 mb-4 mt-auto">
+                      <div className="flex items-center space-x-1">
+                        <Clock className="h-4 w-4 text-blue-500" />
+                        <span>{displayDuration}</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <Users className="h-4 w-4 text-blue-500" />
+                        <span>{course.students}</span>
+                      </div>
+                    </div>
+                    <button className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 rounded-xl hover:shadow-lg transition-all duration-300 font-semibold mt-auto">
+                      {t("courses.learn_more_btn")}
+                    </button>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
 
         {/* Pagination */}
         {totalPages > 1 && (

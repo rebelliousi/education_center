@@ -9,7 +9,7 @@ import Teachers from "./sections/Teachers";
 import Discounts from "./sections/Discount";
 import Contact from "./sections/Contact";
 import Footer from "./sections/Footer";
-import AllCoursesPage from "./pages/AllCoursesPage"; // <- Tüm kurslar için ayrı sayfa
+import AllCoursesPage from "./pages/AllCoursesPage";
 
 export const App = () => {
   return (
@@ -42,10 +42,13 @@ export const App = () => {
               <AllCoursesPage />
               <Footer />
             </>
+
+           
           }
+       
         />
-        {/* ... Diğer sayfalar (isteğe bağlı) */}
+      <Route path="/" element={<Hero />} />
       </Routes>
-</>
+    </>
   );
 };

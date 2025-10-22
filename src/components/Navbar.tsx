@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, BookOpen, Play, Users, Tag, Mail, Home, ChevronDown, Check, GraduationCap } from 'lucide-react'
 import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router-dom"
 
 const navItems = [
   { id: 'hero', label: 'Home', icon: Home },
@@ -19,7 +20,7 @@ const languages = [
   { code: 'ru', label: 'RU', name: 'Русский' }
 ]
 
-function NavbarBrand({ isScrolled }: { isScrolled: boolean }) {
+function NavbarBrand({ isScrolled, scrollToSection }: { isScrolled: boolean, scrollToSection: (id: string, forceHome?: boolean) => void }) {
   const { t } = useTranslation();
 
   return (
@@ -28,9 +29,13 @@ function NavbarBrand({ isScrolled }: { isScrolled: boolean }) {
       className="flex items-center gap-3"
     >
       {/* Modern Logo Icon */}
-      <div className="w-11 h-11 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl flex items-center justify-center shadow-lg">
+      <button
+        className="w-11 h-11 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl flex items-center justify-center shadow-lg focus:outline-none"
+        onClick={() => scrollToSection("hero", true)}
+        aria-label="Go to Home"
+      >
         <GraduationCap className="w-6 h-6 text-white" />
-      </div>
+      </button>
       {/* Brand Metni - Responsive, Translation */}
       {/* <div className="hidden sm:flex flex-col">
         <span className={`text-xl font-bold tracking-wide ${isScrolled ? "text-blue-700" : "text-blue-600"}`}>
@@ -49,6 +54,7 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false)
   const { t, i18n } = useTranslation()
+  const navigate = useNavigate();
 
   const desktopDropdownRef = useRef<HTMLDivElement>(null)
   const mobileDropdownRef = useRef<HTMLDivElement>(null)
@@ -82,11 +88,19 @@ const Navbar = () => {
     return () => window.removeEventListener('mousedown', handleClick)
   }, [isLangDropdownOpen])
 
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId)
+  // Bu fonksiyonu güncelledik!
+  const scrollToSection = (sectionId: string, forceHome?: boolean) => {
+    const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
-      setIsMobileMenuOpen(false)
+      element.scrollIntoView({ behavior: 'smooth' });
+      setIsMobileMenuOpen(false);
+    } else if (forceHome) {
+      // Ana sayfaya git, sonra scroll'u dene!
+      navigate("/");
+      setTimeout(() => {
+        const el = document.getElementById(sectionId);
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+      }, 150); // 150ms sonra (isteğe göre artırılabilir)
     }
   }
 
@@ -114,7 +128,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Modern Brand */}
-          <NavbarBrand isScrolled={isScrolled} />
+          <NavbarBrand isScrolled={isScrolled} scrollToSection={scrollToSection} />
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-1">
