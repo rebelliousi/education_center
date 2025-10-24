@@ -5,7 +5,7 @@ import gsap from 'gsap'
 import img from '../../public/image 2.svg'
 import { useTranslation } from "react-i18next";
 import { useCenterStats } from '../hooks/useStats'
-import { useBanners } from '../hooks/useBanners' // <-- Banner hookunu import et
+import { useBanners } from '../hooks/useBanners'
 
 const SHAPE_CLASSES = [
   "w-4 h-4 bg-blue-200 rounded-full",
@@ -24,11 +24,9 @@ const HERO_HEIGHT = 800
 const AUTO_SLIDE_INTERVAL = 3500
 
 const Hero = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const floatingRef = useRef<HTMLDivElement>(null)
   const { data: stats, isLoading } = useCenterStats();
-
-  // Bannerları api'dan çekiyoruz
   const { data: banners = [], isLoading: bannersLoading } = useBanners();
 
   useEffect(() => {
@@ -49,6 +47,10 @@ const Hero = () => {
   const [hide, setHide] = useState(false)
   const bannerCount = banners.length
   const timerRef = useRef<number | null>(null)
+
+  // --- Çoklu dil alanı seçici ---
+  const lang = i18n.language || 'tr';
+  const getTranslated = (obj: any, field: string) => obj[`${field}_${lang}`] || obj[field] || "";
 
   // AUTO SLIDE
   useEffect(() => {
@@ -152,7 +154,7 @@ const Hero = () => {
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          <div className="relative flex items-center bg-white shadow-2xl rounded-3xl border border-blue-100 px-10 py-8 w-[420px] max-w-full space-x-7 transition-all duration-300">
+          <div className="relative flex items-center bg-white shadow-2xl rounded-3xl border border-blue-100 px-10 py-8 w-[420px] max-w-full space-x-9 transition-all duration-300">
             {/* Dots üstte, resmin sağında */}
             <div className="absolute top-4 right-5 flex gap-2 z-10">
               {banners.map((_, idx) => (
@@ -166,29 +168,35 @@ const Hero = () => {
                 />
               ))}
             </div>
-            <img src={banners[activeIndex].image} alt={banners[activeIndex].title} className="w-20 h-20 rounded-2xl object-cover border border-blue-200 shadow-md" />
+            {/* IMAGE -- BÜYÜTÜLDÜ */}
+            <img src={banners[activeIndex].image} alt={getTranslated(banners[activeIndex], "title")} className="w-24 h-24 rounded-2xl object-cover border border-blue-200 shadow-md" />
             <div className="flex flex-col flex-1 min-w-0">
-              <div className="font-bold text-xl text-blue-800 break-words mb-1">{banners[activeIndex].title}</div>
+              <div className="font-bold text-xl text-blue-800 break-words mb-1">
+                {getTranslated(banners[activeIndex], "title")}
+              </div>
               {/* Sadece 2 satır gösterilecek şekilde sınırlama */}
               <div className="text-base text-gray-600 mb-2 line-clamp-2" style={{
                 display: '-webkit-box',
                 WebkitLineClamp: 2,
                 WebkitBoxOrient: 'vertical',
                 overflow: 'hidden'
-              }}>{banners[activeIndex].desc}</div>
+              }}>
+                {getTranslated(banners[activeIndex], "desc")}
+              </div>
               {banners[activeIndex].url &&
                 <a
                   href={banners[activeIndex].url}
                   className="inline-flex items-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-full px-3 py-1 text-sm mt-1 hover:scale-105 transition"
                 >
-                  {banners[activeIndex].cta}
+                  {getTranslated(banners[activeIndex], "cta")}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </a>
               }
             </div>
+            {/* CLOSE ICON -- DAHA SOLDA */}
             <button
               onClick={closeBanner}
-              className="ml-2 bg-blue-50 hover:bg-blue-100 rounded-full p-2 text-blue-600 transition absolute top-4 left-4"
+              className="ml-2 bg-blue-50 hover:bg-blue-100 rounded-full p-2 text-blue-600 transition absolute top-4 left-1"
               title="Close announcement"
             >
               <span className="sr-only">Close</span>
