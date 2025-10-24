@@ -131,6 +131,9 @@ const en = {
     "search_placeholder": "Search teachers...",
     "featured": "Featured",
     "no_results": "No teachers found."
+  },
+  "hero": {
+    "videos": "Videos"
   }
 }
 export default en;

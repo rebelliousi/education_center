@@ -4,6 +4,7 @@ import { ArrowRight, Play, Sparkles, BookOpen } from 'lucide-react'
 import gsap from 'gsap'
 import img from '../../public/image 2.svg' // kendi görsel yolun
 import { useTranslation } from "react-i18next";
+import { useCenterStats } from '../hooks/useStats'
 
 const SHAPE_CLASSES = [
   "w-4 h-4 bg-blue-200 rounded-full",
@@ -20,6 +21,7 @@ const HERO_HEIGHT = 800
 const Hero = () => {
   const { t } = useTranslation();
   const floatingRef = useRef<HTMLDivElement>(null)
+  const { data: stats, isLoading, error } = useCenterStats();
 
   useEffect(() => {
     if (floatingRef.current) {
@@ -184,16 +186,22 @@ const Hero = () => {
               className="grid grid-cols-3 gap-8 mt-12"
             >
               <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600">16+</div>
+                <div className="text-3xl font-bold text-blue-600">
+                  {isLoading ? "..." : (stats?.courses ?? 0) + "+"}
+                </div>
                 <div className="text-gray-600 text-sm">{t("hero.courses")}</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600">50+</div>
+                <div className="text-3xl font-bold text-blue-600">
+                  {isLoading ? "..." : (stats?.teachers ?? 0) + "+"}
+                </div>
                 <div className="text-gray-600 text-sm">{t("hero.teachers")}</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600">1000+</div>
-                <div className="text-gray-600 text-sm">{t("hero.students")}</div>
+                <div className="text-3xl font-bold text-blue-600">
+                  {isLoading ? "..." : (stats?.videos ?? 0) + "+"}
+                </div>
+                <div className="text-gray-600 text-sm">{t("hero.videos")}</div>
               </div>
             </motion.div>
           </motion.div>

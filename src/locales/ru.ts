@@ -130,6 +130,9 @@ const ru = {
     "search_placeholder": "Поиск преподавателей...",
     "featured": "Выделенный",
     "no_results": "Преподаватели не найдены."
+  },
+  "hero": {
+    "videos": "Видео"
   }
 };
 export default ru;

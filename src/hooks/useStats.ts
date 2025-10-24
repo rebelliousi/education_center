@@ -1,17 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
+import { api } from "../api";
 
 // TypeScript interface for center stats
 export interface CenterStats {
   courses: number;
   teachers: number;
-  students: number;
+  videos: number;
 }
 
 // API fetch function
 const getCenterStats = async (): Promise<CenterStats> => {
-  const response = await fetch("/api/v1/center/stats/");
-  if (!response.ok) throw new Error("Failed to fetch center stats");
-  return response.json();
+  const response = await api.get("/stats/");
+  return response.data;
 };
 
 // React Query hook
@@ -21,3 +21,7 @@ export const useCenterStats = () => {
     queryFn: getCenterStats,
   });
 };
+
+
+
+

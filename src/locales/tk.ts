@@ -130,7 +130,11 @@ const tk = {
     "search_placeholder": "Mugallymlar gözle...",
     "featured": "Esasy",
     "no_results": "Hiç hili mugallym tapylmady."
-  }
+  },
+  "hero": {
+    "videos": "Wideo"
+  },
+  
 
 };
 export default tk;
