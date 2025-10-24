@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Star,Menu, X, BookOpen, Play, Users, Tag, Mail, Home, ChevronDown, Check, GraduationCap } from 'lucide-react'
+import { Star, Menu, X, BookOpen, Play, Users, Tag, Mail, Home, ChevronDown, Check, GraduationCap } from 'lucide-react'
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
@@ -26,7 +26,6 @@ function NavbarBrand({ scrollToSection }: { isScrolled: boolean, scrollToSection
       whileHover={{ scale: 1.08 }}
       className="flex items-center gap-3"
     >
-      {/* Modern Logo Icon ONLY */}
       <button
         className="w-11 h-11 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl flex items-center justify-center shadow-lg focus:outline-none"
         onClick={() => scrollToSection("hero", true)}
@@ -194,71 +193,73 @@ const Navbar = () => {
       </div>
 
       {/* Mobil Menü */}
-      <motion.div
-        initial={{ opacity: 0, height: 0 }}
-        animate={{ 
-          opacity: isMobileMenuOpen ? 1 : 0, 
-          height: isMobileMenuOpen ? 'auto' : 0 
-        }}
-        transition={{ duration: 0.3 }}
-        className="lg:hidden overflow-hidden bg-white/95 backdrop-blur-md border-t border-blue-100"
-      >
-        <div className="px-4 py-4 space-y-2">
-          {localizedNavItems.map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              onClick={() => scrollToSection(id)}
-              className="w-full flex items-center space-x-3 px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 text-left"
-            >
-              <Icon className="h-5 w-5" />
-              <span className="font-medium">{label}</span>
-            </button>
-          ))}
-          {/* Dil Dropdown Mobil */}
-          <div className="pt-4 border-t border-blue-100 relative" ref={mobileDropdownRef}>
-            <button
-              onClick={() => setIsLangDropdownOpen(prev => !prev)}
-              className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg flex items-center justify-between shadow-md hover:shadow-lg transition-all duration-300"
-              aria-label="Select language"
-            >
-              <span>{languages.find(l => l.code === i18n.language)?.label || "EN"}</span>
-              <ChevronDown className="h-4 w-4" />
-            </button>
-            <AnimatePresence>
-              {isLangDropdownOpen && (
-                <motion.div
-                  initial="hidden"
-                  animate="visible"
-                  exit="hidden"
-                  variants={dropdownVariants}
-                  transition={{ duration: 0.18 }}
-                  className="absolute left-0 right-0 mt-2 bg-white/80 backdrop-blur-xl rounded-xl shadow-2xl border border-blue-100 z-20 flex flex-col"
-                >
-                  {languages.map(lang => (
-                    <button
-                      key={lang.code}
-                      onClick={() => {
-                        i18n.changeLanguage(lang.code)
-                        setIsLangDropdownOpen(false)
-                        setIsMobileMenuOpen(false)
-                      }}
-                      className={`flex items-center justify-between w-full px-5 py-2 rounded-lg font-semibold transition-all duration-200
-                        ${i18n.language === lang.code
-                          ? "bg-blue-100 text-blue-700 ring-2 ring-blue-400"
-                          : "text-gray-700 hover:bg-blue-50"}
-                      `}
-                    >
-                      <span>{lang.label}</span>
-                      {i18n.language === lang.code &&
-                        <Check className="w-4 h-4 text-blue-700" />}
-                    </button>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
+      <AnimatePresence>
+      {isMobileMenuOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: -10, height: 0 }}
+          animate={{ opacity: 1, y: 0, height: 'auto' }}
+          exit={{ opacity: 0, y: -10, height: 0 }}
+          transition={{ duration: 0.3 }}
+          className="lg:hidden bg-white/95 backdrop-blur-md border-t border-blue-100 shadow-2xl"
+        >
+          <div className="px-2 py-4 space-y-2">
+            {localizedNavItems.map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                onClick={() => scrollToSection(id)}
+                className="w-full flex items-center space-x-3 px-4 py-3 text-blue-700 hover:text-blue-900 hover:bg-blue-50 rounded-xl font-semibold text-base"
+              >
+                <Icon className="h-5 w-5" />
+                <span>{label}</span>
+              </button>
+            ))}
+            {/* Dil Dropdown Mobil */}
+            <div className="pt-2 border-t border-blue-100 relative" ref={mobileDropdownRef}>
+              <button
+                onClick={() => setIsLangDropdownOpen(prev => !prev)}
+                className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl flex items-center justify-between shadow hover:shadow-lg transition-all duration-300"
+                aria-label="Select language"
+              >
+                <span>{languages.find(l => l.code === i18n.language)?.label || "EN"}</span>
+                <ChevronDown className="h-4 w-4" />
+              </button>
+              <AnimatePresence>
+                {isLangDropdownOpen && (
+                  <motion.div
+                    initial="hidden"
+                    animate="visible"
+                    exit="hidden"
+                    variants={dropdownVariants}
+                    transition={{ duration: 0.18 }}
+                    className="absolute left-0 right-0 mt-2 bg-white/90 backdrop-blur-xl rounded-xl shadow-2xl border border-blue-100 z-20 flex flex-col"
+                  >
+                    {languages.map(lang => (
+                      <button
+                        key={lang.code}
+                        onClick={() => {
+                          i18n.changeLanguage(lang.code)
+                          setIsLangDropdownOpen(false)
+                          setIsMobileMenuOpen(false)
+                        }}
+                        className={`flex items-center justify-between w-full px-5 py-2 rounded-lg font-semibold transition-all duration-200
+                          ${i18n.language === lang.code
+                            ? "bg-blue-100 text-blue-700 ring-2 ring-blue-400"
+                            : "text-gray-700 hover:bg-blue-50"}
+                        `}
+                      >
+                        <span>{lang.label}</span>
+                        {i18n.language === lang.code &&
+                          <Check className="w-4 h-4 text-blue-700" />}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
+      )}
+      </AnimatePresence>
     </motion.nav>
   )
 }
