@@ -6,28 +6,18 @@ import { useLevels } from "../hooks/useLevels";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
+// Statik mavi gradient fonksiyonu
+function getCardGradient() {
+  return "from-blue-200 via-blue-400 to-blue-700";
+}
+// Seviye rozet rengi (istersen mavi tonları, istersen eskisi gibi seviye bazlı tutabilirsin)
 function getLevelColor(level: string) {
-  switch (level) {
-    case "Beginner":
-    case "Başlangyç":
-    case "Новичок":
-      return "bg-green-100 text-green-700";
-    case "Intermediate":
-    case "Orta":
-    case "Средний":
-      return "bg-yellow-100 text-yellow-700";
-    case "Advanced":
-    case "Ýokary":
-    case "Продвинутый":
-      return "bg-red-100 text-red-700";
-    default:
-      return "bg-blue-100 text-blue-700";
-  }
+  return "bg-blue-100 text-blue-700";
 }
 
 export default function CoursesSection() {
   const [filter, setFilter] = useState<string | number>("all");
-  const [activeCourse, setActiveCourse] = useState<any>(null); // MODAL için aktif kurs
+  const [activeCourse, setActiveCourse] = useState<any>(null);
   const { data: courses = [], isLoading: coursesLoading } = useCourses();
   const { data: levels = [] } = useLevels();
   const { t, i18n } = useTranslation();
@@ -125,7 +115,10 @@ export default function CoursesSection() {
             let displayLevel = "";
             if (typeof course.level === "object" && course.level !== null) {
               displayLevel = course.level[`name_${lang}`] || course.level.name || "";
+            } else {
+              displayLevel = course.level;
             }
+
             return (
               <motion.div
                 key={course.id}
@@ -149,7 +142,8 @@ export default function CoursesSection() {
                     alt={displayName}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
-                  <div className={`absolute inset-0 bg-gradient-to-t ${course.color} opacity-70`} />
+                  {/* Statik mavi gradient arka plan */}
+                  <div className={`absolute inset-0 bg-gradient-to-t ${getCardGradient()} opacity-70`} />
                   <div className="absolute top-4 right-4 text-3xl drop-shadow-lg">{course.icon}</div>
                   <div className="absolute top-4 left-4">
                     <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getLevelColor(displayLevel)}`}>
