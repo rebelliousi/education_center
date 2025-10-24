@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Users, Heart, Star, Search } from 'lucide-react'
 import { useTeachers } from "../hooks/useTeachers"
 import { useTranslation } from "react-i18next"
+import { useLocation } from "react-router-dom"
 import placeholder from '../../public/placeholder2.png'
 
 const DEFAULT_TEACHER_IMAGE = placeholder;
@@ -10,8 +11,14 @@ const DEFAULT_TEACHER_IMAGE = placeholder;
 const AllTeachersPage = () => {
   const { t, i18n } = useTranslation()
   const lang = i18n.language || "en"
-  const { data: teachers = [], isLoading, error } = useTeachers();
+  const { data: teachers = [], isLoading, error, refetch } = useTeachers();
   const [search, setSearch] = useState("")
+  const location = useLocation();
+
+  // SPA'da route değişiminde tekrar fetch et!
+  useEffect(() => {
+    refetch();
+  }, [location.pathname]);
 
   // Helper for image fallback
   const getTeacherImage = (teacher: any) => {

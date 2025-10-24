@@ -5,6 +5,7 @@ import { useLevels } from "../hooks/useLevels";
 import { useCategories } from "../hooks/useCategories";
 import { useTranslation } from "react-i18next";
 import { Clock, Users, Star, ChevronDown, X } from "lucide-react";
+import { useLocation } from "react-router-dom";
 
 // Seviye rengi fonksiyonu
 function getLevelColor(level: string) {
@@ -35,6 +36,13 @@ type CategoryButtonType = {
 const PAGE_SIZE = 8;
 
 export default function AllCoursesPage() {
+  // SPA navigasyonunda da veri gelsin diye refetch eklenir!
+  const { refetch, data: courses = [], isLoading: coursesLoading } = useCourses();
+  const location = useLocation();
+  useEffect(() => {
+    refetch();
+  }, [location.pathname]);
+
   const [activeFilter, setActiveFilter] = useState<"all" | "category" | "level">("all");
   const [category, setCategory] = useState<string>("all");
   const [level, setLevel] = useState<number | string>("all");
@@ -43,7 +51,6 @@ export default function AllCoursesPage() {
 
   const [activeCourse, setActiveCourse] = useState<any>(null); // MODAL için aktif kurs
 
-  const { data: courses = [], isLoading: coursesLoading } = useCourses();
   const { data: levels = [] } = useLevels();
   const { data: categories = [] } = useCategories();
   const { t, i18n } = useTranslation();

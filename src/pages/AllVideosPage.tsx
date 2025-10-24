@@ -4,6 +4,7 @@ import { useVideos } from "../hooks/useVideos";
 import { useCategories } from "../hooks/useCategories";
 import { useTranslation } from "react-i18next";
 import { Play, Clock, Eye, Star, X, ChevronDown } from "lucide-react";
+import { useLocation } from "react-router-dom";
 
 const PAGE_SIZE = 8;
 
@@ -31,10 +32,16 @@ export default function AllVideosPage() {
 
   const [activeVideo, setActiveVideo] = useState<any>(null); // MODAL için aktif video
 
-  const { data: videos = [], isLoading: videosLoading } = useVideos();
+  const { data: videos = [], isLoading: videosLoading, refetch } = useVideos();
   const { data: categories = [] } = useCategories();
   const { t, i18n } = useTranslation();
   const lang = i18n.language || "en";
+  const location = useLocation();
+
+  // SPA'da route değişiminde tekrar fetch et!
+  useEffect(() => {
+    refetch();
+  }, [location.pathname]);
 
   // Çoklu dil için label fonksiyonu
   function getCategoryLabel(cat: CategoryType) {
