@@ -5,6 +5,11 @@ import { useSocialActivities } from "../hooks/useActivities"
 import type { SocialActivityType } from '../hooks/useActivities'
 import { useTranslation } from "react-i18next"
 
+function getCardColor() {
+  // Sabit mavi gradient
+  return "from-blue-200 via-blue-400 to-blue-700";
+}
+
 const Activities = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [direction, setDirection] = useState(0)
@@ -94,7 +99,8 @@ const Activities = () => {
                       alt={activity[`name_${lang}`] || activity.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
-                    <div className={`absolute inset-0 bg-gradient-to-r ${activity.color} opacity-60`} />
+                    {/* Static mavi gradient arka plan */}
+                    <div className={`absolute inset-0 bg-gradient-to-r ${getCardColor()} opacity-60`} />
                     <div className="absolute top-3 left-3 text-2xl">{activity.icon}</div>
                     <div className="absolute top-3 right-3 bg-blue-600/80 backdrop-blur-sm px-2 py-1 rounded-full">
                       <span className="text-white font-semibold text-xs">{t("activities.featured")}</span>
