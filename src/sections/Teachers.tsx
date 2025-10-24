@@ -4,6 +4,10 @@ import { Heart, Award, Users, Star, Trophy } from 'lucide-react'
 import { useTeachers } from "../hooks/useTeachers"
 import { useLikeTeacher } from "../hooks/useLikeTeacher"
 import { useTranslation } from "react-i18next"
+import placeholder from '../../public/placeholder2.png'
+
+// Default teacher image path
+const DEFAULT_TEACHER_IMAGE = placeholder;
 
 const Teachers = () => {
   const [likedTeachers, setLikedTeachers] = useState<number[]>([])
@@ -44,6 +48,11 @@ const Teachers = () => {
   })
 
   const topTeachers = sortedTeachers.slice(0, 3)
+
+  // Helper for image fallback
+  const getTeacherImage = (teacher: any) => {
+    return teacher.image && teacher.image.trim() !== "" ? teacher.image : DEFAULT_TEACHER_IMAGE;
+  }
 
   return (
     <section id="teachers" className="py-24 bg-gradient-to-br from-blue-50 via-white to-blue-100">
@@ -99,7 +108,7 @@ const Teachers = () => {
                 >
                   <div className="relative mb-6">
                     <img
-                      src={teacher.image}
+                      src={getTeacherImage(teacher)}
                       alt={getTranslated(teacher, "name")}
                       className="w-24 h-24 rounded-full mx-auto object-cover border-4 border-white/40 group-hover:scale-110 transition-transform duration-300"
                     />
@@ -147,7 +156,7 @@ const Teachers = () => {
                 {/* Teacher Image */}
                 <div className="relative h-56 overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200">
                   <img
-                    src={teacher.image}
+                    src={getTeacherImage(teacher)}
                     alt={getTranslated(teacher, "name")}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
