@@ -10,6 +10,7 @@ import Discounts from "./sections/Discount";
 import Contact from "./sections/Contact";
 import Footer from "./sections/Footer";
 import AllCoursesPage from "./pages/AllCoursesPage";
+import AllVideosPage from "./pages/AllVideosPage"; // <-- YENİ!
 
 export const App = () => {
   return (
@@ -42,12 +43,18 @@ export const App = () => {
               <AllCoursesPage />
               <Footer />
             </>
-
-           
           }
-       
         />
-      <Route path="/" element={<Hero />} />
+        {/* Tüm Videolar sayfası */}
+        <Route
+          path="/videos"
+          element={
+            <>
+              <AllVideosPage />
+              <Footer />
+            </>
+          }
+        />
       </Routes>
     </>
   );

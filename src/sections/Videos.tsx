@@ -1,15 +1,17 @@
 import React, { useState } from 'react'
-import { motion } from 'framer-motion'
-import { Play, Clock, Eye, Star } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Play, Clock, Eye, Star, X } from 'lucide-react'
 import { useVideos } from "../hooks/useVideos"
 import { useCategories } from "../hooks/useCategories"
 import { useViewVideo } from "../hooks/useViewVideo"
 import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router-dom"
 
 const Videos = () => {
   const [activeCategory, setActiveCategory] = useState<string | number>('all')
   const { t, i18n } = useTranslation()
   const lang = i18n.language || "tk"
+  const navigate = useNavigate();
 
   // Videoları çek
   const { data: videos = [], isLoading: videosLoading, error: videosError } = useVideos()
@@ -19,24 +21,29 @@ const Videos = () => {
   // İzlenme mutation hook'u
   const { mutate: viewVideo, isPending: viewPending } = useViewVideo()
 
-  // Kategorileri "All Videos" ile birlikte hazırla
+  // Modal state - sadece grid videoları için
+  const [modalVideo, setModalVideo] = useState<any>(null)
+  const [featuredPlaying, setFeaturedPlaying] = useState<boolean>(false)
+
+  // Kategorileri "All Videos" ile birlikte hazırla (ID ile eşleşme!)
   const allCategory = { id: 'all', name: t("videos.all_videos"), count: videos.length }
   const categoryList = [allCategory, ...categories.map(cat => ({
     ...cat,
-    count: videos.filter(v => v.category === cat.name).length
+    count: videos.filter(v => String(v.category) === String(cat.id)).length
   }))]
 
   // İlk "featured" videoyu bul (varsa)
   const promotionalVideo = videos.find(v => v.featured) || videos[0]
 
-  // Gridde sadece featured olmayan videoları göster
+  // Gridde sadece featured olmayan videoları göster (ID ile eşleşme!)
   const filteredVideos = activeCategory === 'all'
     ? videos.filter(video => !video.featured)
-    : videos.filter(video => video.category === activeCategory && !video.featured)
+    : videos.filter(video => String(video.category) === String(activeCategory) && !video.featured)
 
   return (
     <section id="videos" className="py-24 min-h-screen ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Başlık */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -55,7 +62,7 @@ const Videos = () => {
           </p>
         </motion.div>
 
-        {/* Promotional Video */}
+        {/* Featured/Promotional Video */}
         {promotionalVideo && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -67,39 +74,43 @@ const Videos = () => {
           <div className="relative bg-white/40 backdrop-blur-sm rounded-3xl overflow-hidden border border-blue-200/50 hover:border-blue-300 transition-all duration-300 group shadow-lg hover:shadow-xl">
             <div className="grid lg:grid-cols-2 gap-8 items-center">
               <div className="relative h-64 lg:h-80 overflow-hidden">
-                {promotionalVideo.video_file ? (
-                  <video
-                    controls
-                    className="w-full h-full object-cover"
-                    poster={promotionalVideo.thumbnail}
-                  >
-                    <source src={promotionalVideo.video_file} type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
+                {/* Thumbnail + Play Icon or Video */}
+                {!featuredPlaying ? (
+                  <>
+                    <img
+                      src={promotionalVideo.thumbnail}
+                      alt={promotionalVideo[`title_${lang}`] || promotionalVideo.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/60 to-blue-600/60" />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="w-20 h-20 bg-white/20 backdrop-blur-2xl rounded-full flex items-center justify-center border-2 border-white/60 hover:bg-white/30 transition-all duration-300 shadow-md"
+                        onClick={() => {
+                          setFeaturedPlaying(true)
+                          viewVideo(promotionalVideo.id)
+                        }}
+                        disabled={viewPending}
+                      >
+                        <Play className="h-8 w-8 text-white ml-1" fill="currentColor" />
+                      </motion.button>
+                    </div>
+                    <div className="absolute top-4 left-4 bg-blue-600/90 text-white px-3 py-1 rounded-full text-sm font-semibold shadow">
+                      {t("videos.featured")}
+                    </div>
+                  </>
                 ) : (
-                  <img
-                    src={promotionalVideo.thumbnail}
-                    alt={promotionalVideo[`title_${lang}`] || promotionalVideo.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  <video
+                    src={promotionalVideo.video_file}
+                    controls
+                    autoPlay
+                    className="w-full h-full object-cover rounded-xl"
+                    poster={promotionalVideo.thumbnail}
                   />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/60 to-blue-600/60" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    className="w-20 h-20 bg-white/20 backdrop-blur-2xl rounded-full flex items-center justify-center border-2 border-white/60 hover:bg-white/30 transition-all duration-300 shadow-md"
-                    onClick={() => viewVideo(promotionalVideo.id)}
-                    disabled={viewPending}
-                  >
-                    <Play className="h-8 w-8 text-white ml-1" fill="currentColor" />
-                  </motion.button>
-                </div>
-                <div className="absolute top-4 left-4 bg-blue-600/90 text-white px-3 py-1 rounded-full text-sm font-semibold shadow">
-                  {t("videos.featured")}
-                </div>
               </div>
-
               <div className="p-8">
                 <h3 className="text-3xl font-bold text-gray-900 mb-4">
                   {promotionalVideo[`title_${lang}`] || promotionalVideo.title}
@@ -163,6 +174,7 @@ const Videos = () => {
               viewport={{ once: true }}
               whileHover={{ y: -10 }}
               className="bg-white/40 backdrop-blur-sm rounded-2xl overflow-hidden border border-blue-200/50 hover:border-blue-300 transition-all duration-300 group cursor-pointer shadow-md hover:shadow-lg"
+              onClick={() => setModalVideo(video)}
             >
               <div className="relative h-40 overflow-hidden">
                 {video.video_file ? (
@@ -187,7 +199,6 @@ const Videos = () => {
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     className="w-14 h-14 bg-white/25 backdrop-blur-2xl rounded-full flex items-center justify-center border-2 border-white/60 shadow-md"
-                    onClick={() => viewVideo(video.id)}
                     disabled={viewPending}
                   >
                     <Play className="h-5 w-5 text-white ml-1" fill="currentColor" />
@@ -225,6 +236,69 @@ const Videos = () => {
           ))}
         </div>
 
+        {/* Modal sadece grid videoları için */}
+        <AnimatePresence>
+          {modalVideo && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+            >
+              <motion.div
+                initial={{ scale: 0.96, y: 40 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.96, y: 0 }}
+                transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                className="bg-white rounded-2xl shadow-2xl max-w-4xl w-[80vw] h-[340px] flex items-center p-8 relative"
+              >
+                <button
+                  className="absolute top-4 right-4 text-gray-500 hover:text-blue-700 z-10"
+                  onClick={() => setModalVideo(null)}
+                  aria-label="Close"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+                <div className="flex-shrink-0 w-1/3 h-full flex items-center justify-center">
+                  {modalVideo.video_file ? (
+                    <video
+                      src={modalVideo.video_file}
+                      controls
+                      autoPlay
+                      className="w-full h-full object-contain rounded-xl bg-black"
+                      poster={modalVideo.thumbnail}
+                    />
+                  ) : (
+                    <img
+                      src={modalVideo.thumbnail}
+                      alt={modalVideo[`title_${lang}`] || modalVideo.title}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                </div>
+                <div className="flex-1 flex flex-col justify-center px-8">
+                  <h2 className="text-2xl font-bold mb-2 text-blue-700">
+                    {modalVideo[`title_${lang}`] || modalVideo.title}
+                  </h2>
+                  <p className="text-gray-700 text-base mb-2">
+                    {modalVideo[`description_${lang}`] || modalVideo.description}
+                  </p>
+                  <div className="flex items-center gap-4 text-sm mb-2">
+                    <Clock className="h-4 w-4 text-blue-600" />
+                    <span>{modalVideo.duration}</span>
+                    <Eye className="h-4 w-4 text-blue-600" />
+                    <span>{modalVideo.views} {t("videos.views")}</span>
+                    <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                    <span>{modalVideo.rating}</span>
+                  </div>
+                  <p className="text-blue-600 text-xs font-semibold">
+                    {modalVideo[`instructor_${lang}`] || modalVideo.instructor}
+                  </p>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -232,7 +306,10 @@ const Videos = () => {
           viewport={{ once: true }}
           className="text-center mt-12"
         >
-          <button className="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-full hover:shadow-lg transition-all duration-300 hover:from-blue-700 hover:to-blue-800">
+          <button
+            className="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-full hover:shadow-lg transition-all duration-300 hover:from-blue-700 hover:to-blue-800"
+            onClick={() => navigate("/videos")}
+          >
             {t("videos.view_all")}
           </button>
         </motion.div>

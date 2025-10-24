@@ -106,6 +106,19 @@ const ru = {
       "intermediate": "Средний",
       "advanced": "Продвинутый"
     }
+  },
+  "videos": {
+    "all_videos": "Все видео",
+    "all_videos_desc": "Просмотрите все обучающие видео.",
+    "all_categories": "Все категории",
+    "category": "Категория",
+    "all": "Все",
+    "search_placeholder": "Поиск видео...",
+    "loading": "Загрузка видео...",
+    "watch_now": "Смотреть",
+    "featured": "Рекомендуемое",
+    "view_all": "Смотреть все видео",
+    "views": "просмотров"
   }
   
 };

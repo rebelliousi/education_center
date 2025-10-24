@@ -106,6 +106,19 @@ const tk = {
       "intermediate": "Orta",
       "advanced": "Ýokary"
     }
+  },
+  "videos": {
+    "all_videos": "Ähli Wideolar",
+    "all_videos_desc": "Ähli bilim wideolaryny gözden geçiriň.",
+    "all_categories": "Ähli Kategoriýalar",
+    "category": "Kategoriýa",
+    "all": "Ähli",
+    "search_placeholder": "Wideolardan gözleg...",
+    "loading": "Wideolar ýüklenýär...",
+    "watch_now": "Görüň!",
+    "featured": "Esasy",
+    "view_all": "Ähli wideolary gör",
+    "views": "görlen"
   }
 
 };

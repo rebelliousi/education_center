@@ -106,6 +106,19 @@ const en = {
       "intermediate": "Intermediate",
       "advanced": "Advanced"
     }
+  },
+  "videos": {
+    "all_videos": "All Videos",
+    "all_videos_desc": "Browse all educational videos.",
+    "all_categories": "All Categories",
+    "category": "Category",
+    "all": "All",
+    "search_placeholder": "Search videos...",
+    "loading": "Loading videos...",
+    "watch_now": "Watch Now",
+    "featured": "Featured",
+    "view_all": "View All Videos",
+    "views": "views"
   }
 }
 export default en;
