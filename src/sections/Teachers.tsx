@@ -13,29 +13,23 @@ const DEFAULT_TEACHER_IMAGE = placeholder;
 const Teachers = () => {
   const [likedTeachers, setLikedTeachers] = useState<number[]>([])
   const { t, i18n } = useTranslation()
-  const lang = i18n.language || "en" // default en
+  const lang = i18n.language || "en"
   const navigate = useNavigate();
 
-  // Dinamik olarak öğretmenleri çek
   const { data: teachers = [], isLoading, error } = useTeachers();
-
-  // Like mutation hook
   const { mutate: likeTeacher, isPending: likePending } = useLikeTeacher();
 
-  // Dil bazlı alan seçici
   const getTranslated = (item: any, field: string) => {
     const key = `${field}_${lang}`;
-    return item[key] || item[field] || ""; // Dil yoksa fallback
+    return item[key] || item[field] || "";
   };
-
-  // Achievements çok dilli
   const getAchievements = (teacher: any) => {
     const key = `achievements_${lang}`;
     return teacher[key] || teacher.achievements || [];
   };
 
   const handleLike = (teacherId: number, currentLikes: number) => {
-    likeTeacher(teacherId); // Backend'e gönder
+    likeTeacher(teacherId);
     if (likedTeachers.includes(teacherId)) {
       setLikedTeachers(likedTeachers.filter(id => id !== teacherId))
     } else {
@@ -43,13 +37,14 @@ const Teachers = () => {
     }
   }
 
+  // Sıralama ve slice'lar
   const sortedTeachers = [...teachers].sort((a, b) => {
     const aLikes = likedTeachers.includes(a.id) ? a.likes + 1 : a.likes
     const bLikes = likedTeachers.includes(b.id) ? b.likes + 1 : b.likes
     return bLikes - aLikes
   })
-
-  const topTeachers = sortedTeachers.slice(0, 3)
+  const top3Teachers = sortedTeachers.slice(0, 3)
+  const top8Teachers = sortedTeachers.slice(0, 8)
 
   // Helper for image fallback
   const getTeacherImage = (teacher: any) => {
@@ -83,7 +78,7 @@ const Teachers = () => {
           </p>
         </motion.div>
 
-        {/* Top Teachers Leaderboard */}
+        {/* Top Teachers Leaderboard - sadece 3 kişi! */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -98,7 +93,7 @@ const Teachers = () => {
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
-            {topTeachers.map((teacher, index) => {
+            {top3Teachers.map((teacher, index) => {
               const currentLikes = likedTeachers.includes(teacher.id) ? teacher.likes + 1 : teacher.likes
               return (
                 <motion.div
@@ -139,9 +134,9 @@ const Teachers = () => {
           </div>
         </motion.div>
 
-        {/* All Teachers Grid */}
+        {/* All Teachers Grid - en iyi 8 kişi */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {sortedTeachers.map((teacher, index) => {
+          {top8Teachers.map((teacher, index) => {
             const isLiked = likedTeachers.includes(teacher.id)
             const currentLikes = isLiked ? teacher.likes + 1 : teacher.likes
             
