@@ -12,7 +12,7 @@ const iconMap = {
 }
 
 const Footer = () => {
-  const { data: contactItems = [], isLoading, error } = useContactItems()
+  // const { data: contactItems = [], isLoading, error } = useContactItems()
   const { t } = useTranslation();
 
   return (
@@ -38,7 +38,7 @@ const Footer = () => {
             <p className="text-gray-600 leading-relaxed max-w-md">
               {t("footer.description")}
             </p>
-            {/* Contact Items API'dan */}
+            {/* Contact Items API'dan
             <div className="mt-8 flex flex-col gap-4">
               {contactItems.map(item => {
                 const IconComponent = iconMap[item.icon as keyof typeof iconMap] || Phone;
@@ -50,7 +50,7 @@ const Footer = () => {
                   </div>
                 )
               })}
-            </div>
+            </div> */}
           </motion.div>
 
           {/* Social Links */}

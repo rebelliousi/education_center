@@ -4,11 +4,10 @@ import { Percent, Users, Clock, Star, Gift, Zap } from 'lucide-react'
 import { useDiscountItems } from "../hooks/useDiscounts"
 import { useTranslation } from "react-i18next"
 
-// Statik kart görsel/tasarım bilgisi
+// Statik kart görsel/tasarım bilgisi (percentage alanı çıkarıldı)
 const discountCards = [
   {
     id: 1,
-    percentage: 50,
     icon: Clock,
     color: "from-yellow-500 to-orange-600",
     bgGradient: "from-yellow-500/20 to-orange-600/20",
@@ -18,7 +17,6 @@ const discountCards = [
   },
   {
     id: 2,
-    percentage: 30,
     icon: Users,
     color: "from-blue-500 to-purple-600",
     bgGradient: "from-blue-500/20 to-purple-600/20",
@@ -28,7 +26,6 @@ const discountCards = [
   },
   {
     id: 3,
-    percentage: 25,
     icon: Star,
     color: "from-purple-500 to-pink-600",
     bgGradient: "from-purple-500/20 to-pink-600/20",
@@ -38,7 +35,6 @@ const discountCards = [
   },
   {
     id: 4,
-    percentage: 20,
     icon: Zap,
     color: "from-green-500 to-teal-600",
     bgGradient: "from-green-500/20 to-teal-600/20",
@@ -48,7 +44,6 @@ const discountCards = [
   },
   {
     id: 5,
-    percentage: 15,
     icon: Gift,
     color: "from-emerald-500 to-cyan-600",
     bgGradient: "from-emerald-500/20 to-cyan-600/20",
@@ -78,12 +73,12 @@ const Discounts = () => {
   const { t, i18n } = useTranslation();
   const lang = i18n.language || "en";
 
-  // Metinleri discountCards ile eşleştir
+  // discountCards ile backend discountları id üzerinden eşleştir, percentage backend'den gelsin
   const discountsWithText = discountCards.map(card => {
-    // Backend'den id ile discount metinlerini bul
     const discount = discounts.find(d => d.id === card.id)
     return {
       ...card,
+      percentage: discount?.percentage ?? 0,
       title: getTranslated(discount, "title", lang),
       description: getTranslated(discount, "description", lang),
       requirements: parseRequirements(discount?.[`requirements_${lang}`] || discount?.requirements || []),
@@ -180,8 +175,6 @@ const Discounts = () => {
                       <p className="text-gray-900 font-semibold">{discount.courses}</p>
                     </div>
                   </div>
-
-                 
                 </div>
               </motion.div>
             )
@@ -247,8 +240,6 @@ const Discounts = () => {
                       <p className="text-gray-900 font-semibold">{discount.courses}</p>
                     </div>
                   </div>
-
-                
                 </div>
               </motion.div>
             )
