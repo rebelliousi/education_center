@@ -22,7 +22,7 @@ const en = {
   "courses.learn_more_btn": "Learn More",
   "courses.ready": "Ready to Start Learning?",
   "courses.join_students": "Join thousands of students advancing their scientific knowledge",
-  "courses.view_all": "View All Courses",
+  "courses.view_all": "Learn more about our courses",
   "activities.recent": "Recent",
   "activities.title": "Activities",
   "activities.description": "Explore our vibrant community through engaging activities, workshops, and events that bring science to life and create lasting memories.",

@@ -21,7 +21,7 @@ const tk = {
   "courses.learn_more_btn": "Giňişleýin oka",
   "courses.ready": "Okuwa başlamak isleýärsiňizmi?",
   "courses.join_students": "Ýüzlerçe okuwçy bilen ylym başarnygyňy ösdür!",
-  "courses.view_all": "Ähli kurslary gör",
+ "courses.view_all": "Kurslarymyz hakynda giňişleýin öwreniň",
   "courses.price": "Bahasy",
    "activities.recent": "Täze",
   "activities.title": "Çäreler",
