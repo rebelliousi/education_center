@@ -118,7 +118,11 @@ const en = {
     "watch_now": "Watch Now",
     "featured": "Featured",
     "view_all": "View All Videos",
-    "views": "views"
+    "views": "views",
+    "latest_videos": "Our Latest Videos",
+    "featured_section_title": "About Our Center",
+     "educational_grid_title": "Educational Videos",
+   
   }
 }
 export default en;

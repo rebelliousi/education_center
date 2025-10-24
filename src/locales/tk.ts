@@ -118,7 +118,10 @@ const tk = {
     "watch_now": "Görüň!",
     "featured": "Esasy",
     "view_all": "Ähli wideolary gör",
-    "views": "görlen"
+    "views": "görlen",
+     "latest_videos": "Täze wideolarymyz",
+     "featured_section_title": "Merkezimiz hakynda",
+    "educational_grid_title": "Täze kurslar we okuw wideolary"
   }
 
 };

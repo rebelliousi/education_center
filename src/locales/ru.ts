@@ -118,8 +118,10 @@ const ru = {
     "watch_now": "Смотреть",
     "featured": "Рекомендуемое",
     "view_all": "Смотреть все видео",
-    "views": "просмотров"
+    "views": "просмотров",
+    "latest_videos": "Наши новейшие видео",
+    "featured_section_title": "О нашем центре",
+    "educational_grid_title": "Образовательные видео"
   }
-  
 };
 export default ru;

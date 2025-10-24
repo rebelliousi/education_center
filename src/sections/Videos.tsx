@@ -2,21 +2,17 @@ import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Play, Clock, Eye, Star, X } from 'lucide-react'
 import { useVideos } from "../hooks/useVideos"
-import { useCategories } from "../hooks/useCategories"
 import { useViewVideo } from "../hooks/useViewVideo"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
 const Videos = () => {
-  const [activeCategory, setActiveCategory] = useState<string | number>('all')
   const { t, i18n } = useTranslation()
   const lang = i18n.language || "tk"
   const navigate = useNavigate();
 
   // Videoları çek
   const { data: videos = [], isLoading: videosLoading, error: videosError } = useVideos()
-  // Kategorileri çek
-  const { data: categories = [], isLoading: categoriesLoading, error: categoriesError } = useCategories()
 
   // İzlenme mutation hook'u
   const { mutate: viewVideo, isPending: viewPending } = useViewVideo()
@@ -25,25 +21,19 @@ const Videos = () => {
   const [modalVideo, setModalVideo] = useState<any>(null)
   const [featuredPlaying, setFeaturedPlaying] = useState<boolean>(false)
 
-  // Kategorileri "All Videos" ile birlikte hazırla (ID ile eşleşme!)
-  const allCategory = { id: 'all', name: t("videos.all_videos"), count: videos.length }
-  const categoryList = [allCategory, ...categories.map(cat => ({
-    ...cat,
-    count: videos.filter(v => String(v.category) === String(cat.id)).length
-  }))]
-
   // İlk "featured" videoyu bul (varsa)
   const promotionalVideo = videos.find(v => v.featured) || videos[0]
 
-  // Gridde sadece featured olmayan videoları göster (ID ile eşleşme!)
-  const filteredVideos = activeCategory === 'all'
-    ? videos.filter(video => !video.featured)
-    : videos.filter(video => String(video.category) === String(activeCategory) && !video.featured)
+  // Sadece en yeni 8 video (id veya created alanına göre sıralama yapılabilir)
+  const sortedVideos = [...videos]
+    .filter(video => !video.featured)
+    .sort((a, b) => (b.created || b.id) - (a.created || a.id))
+    .slice(0, 8)
 
   return (
     <section id="videos" className="py-24 min-h-screen ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Başlık */}
+        {/* Featured Section Title (i18n) */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -51,11 +41,8 @@ const Videos = () => {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-            {t("videos.educational")}{' '}
-            <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-              {t("videos.title")}
-            </span>
+          <h2 className="text-4xl lg:text-5xl font-bold text-blue-700 mb-6">
+            {t("videos.featured_section_title") || "Merkezimiz hakynda"}
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             {t("videos.description")}
@@ -130,7 +117,8 @@ const Videos = () => {
                 </div>
                 <button className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3 rounded-full hover:shadow-lg transition-all duration-300 hover:from-blue-700 hover:to-blue-800 font-semibold">
                   <Play className="h-5 w-5" />
-                  <span>{t("videos.watch_now")}</span>
+                  <span>{t("videos.watch_now")}
+                  </span>
                 </button>
               </div>
             </div>
@@ -138,34 +126,22 @@ const Videos = () => {
         </motion.div>
         )}
 
-        {/* Category Filter */}
+        {/* Grid Section Title (i18n - Egitici wideolar) */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           viewport={{ once: true }}
-          className="mb-12"
+          className="text-center mb-12"
         >
-          <div className="flex flex-wrap justify-center gap-3">
-            {categoryList.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => setActiveCategory(category.id)}
-                className={`px-6 py-2 rounded-full font-semibold transition-all duration-300 ${
-                  activeCategory === category.id
-                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg'
-                    : 'bg-white/40 text-gray-900 hover:bg-white/60 border border-blue-200/50'
-                }`}
-              >
-                {category.name} ({category.count})
-              </button>
-            ))}
-          </div>
+          <h3 className="text-3xl lg:text-4xl font-extrabold text-blue-700 mb-4">
+            {t("videos.educational_grid_title") || "Egitici wideolar"}
+          </h3>
         </motion.div>
 
         {/* Educational Videos Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredVideos.map((video, index) => (
+          {sortedVideos.map((video, index) => (
             <motion.div
               key={video.id}
               initial={{ opacity: 0, y: 20 }}
