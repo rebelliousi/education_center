@@ -15,6 +15,27 @@ function getLevelColor(level: string) {
   return "bg-blue-100 text-blue-700";
 }
 
+// Kategorilerden sadece birer kurs
+function getCategoryCourses(courses: any[], lang: string) {
+  const uniqueCourses: any[] = [];
+  const seenCategories = new Set();
+  for (const course of courses) {
+    // Kategori seçimi dil desteği ile
+    const category =
+      course[`category_${lang}`] ||
+      course.category_en ||
+      course.category_tk ||
+      course.category_ru ||
+      course.category ||
+      "";
+    if (!seenCategories.has(category)) {
+      uniqueCourses.push(course);
+      seenCategories.add(category);
+    }
+  }
+  return uniqueCourses;
+}
+
 export default function CoursesSection() {
   const [filter, setFilter] = useState<string | number>("all");
   const [activeCourse, setActiveCourse] = useState<any>(null);
@@ -53,6 +74,9 @@ export default function CoursesSection() {
             ? course.level.id === filter
             : false
         );
+
+  // Burada her kategoriden bir kursu filtreliyoruz!
+  const categoryCourses = getCategoryCourses(filteredCourses, lang);
 
   return (
     <section id="courses" className="py-20">
@@ -106,9 +130,9 @@ export default function CoursesSection() {
           ))}
         </motion.div>
 
-        {/* Course Cards */}
+        {/* Course Cards: sadece her kategoriden bir tane */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {filteredCourses.map((course: any, index: number) => {
+          {categoryCourses.map((course: any, index: number) => {
             const displayName = course[`name_${lang}`] || course.name;
             const displayDescription = course[`description_${lang}`] || course.description;
             const displayDuration = course[`duration_${lang}`] || course.duration;
