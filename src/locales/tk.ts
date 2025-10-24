@@ -135,6 +135,16 @@ const tk = {
     "videos": "Wideo"
   },
   
+  "nav": {
+    "hero": "Baş sahypa",
+    "courses": "Kurslar",
+    "activities": "Çäreler",
+    "videos": "Wideolar",
+    "teachers": "Mugallymlar",
+    "discounts": "Arzanladyşlar",
+    "contact": "Habarlaşmak"
+  }
+  
 
 };
 export default tk;

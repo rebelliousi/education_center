@@ -11,7 +11,8 @@ import Contact from "./sections/Contact";
 import Footer from "./sections/Footer";
 import AllCoursesPage from "./pages/AllCoursesPage";
 import AllVideosPage from "./pages/AllVideosPage";
-import AllTeachersPage from "./pages/AllTeachersPage"; // <-- YENİ!
+import AllTeachersPage from "./pages/AllTeachersPage";
+import BannerDetailPage from "./pages/BannerDetail"; // <-- EKLENDİ!
 
 export const App = () => {
   return (
@@ -62,6 +63,16 @@ export const App = () => {
           element={
             <>
               <AllTeachersPage />
+              <Footer />
+            </>
+          }
+        />
+        {/* Banner Detay Sayfası */}
+        <Route
+          path="/banner/:id"
+          element={
+            <>
+              <BannerDetailPage />
               <Footer />
             </>
           }

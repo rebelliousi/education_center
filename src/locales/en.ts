@@ -134,6 +134,16 @@ const en = {
   },
   "hero": {
     "videos": "Videos"
+  },
+ 
+  "nav": {
+    "hero": "Home",
+    "courses": "Courses",
+    "activities": "Activities",
+    "videos": "Videos",
+    "teachers": "Teachers",
+    "discounts": "Discounts",
+    "contact": "Contact"
   }
 }
 export default en;

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowRight, Play, Sparkles, BookOpen } from 'lucide-react'
 import gsap from 'gsap'
@@ -23,11 +24,12 @@ const HERO_HEIGHT = 800
 
 const AUTO_SLIDE_INTERVAL = 3500
 
-const Hero = () => {
+const HeroSection = () => {
   const { t, i18n } = useTranslation();
   const floatingRef = useRef<HTMLDivElement>(null)
   const { data: stats, isLoading } = useCenterStats();
   const { data: banners = [], isLoading: bannersLoading } = useBanners();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (floatingRef.current) {
@@ -50,7 +52,7 @@ const Hero = () => {
 
   // --- Çoklu dil alanı seçici ---
   const lang = i18n.language || 'tr';
-  const getTranslated = (obj: any, field: string) => obj[`${field}_${lang}`] || obj[field] || "";
+  const getTranslated = (obj: any, field: string) => obj && (obj[`${field}_${lang}`] || obj[field]) || "";
 
   // AUTO SLIDE
   useEffect(() => {
@@ -77,6 +79,12 @@ const Hero = () => {
 
   const closeBanner = () => setHide(true)
   const handleDotClick = (idx: number) => setActiveIndex(idx)
+
+  // Detay sayfasına yönlendirme (id ile)
+  const handleBannerClick = () => {
+    const id = banners[activeIndex]?.id;
+    if (id) navigate(`/banner/${id}`);
+  };
 
   // Animated background shapes/icons
   const randomShapes = React.useMemo(() =>
@@ -184,13 +192,13 @@ const Hero = () => {
                 {getTranslated(banners[activeIndex], "desc")}
               </div>
               {banners[activeIndex].url &&
-                <a
-                  href={banners[activeIndex].url}
+                <button
+                  onClick={handleBannerClick}
                   className="inline-flex items-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-full px-3 py-1 text-sm mt-1 hover:scale-105 transition"
                 >
                   {getTranslated(banners[activeIndex], "cta")}
                   <ArrowRight className="ml-2 h-4 w-4" />
-                </a>
+                </button>
               }
             </div>
             {/* CLOSE ICON -- DAHA SOLDA */}
@@ -332,4 +340,4 @@ const Hero = () => {
   )
 }
 
-export default Hero
+export default HeroSection

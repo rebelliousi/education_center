@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, BookOpen, Play, Users, Tag, Mail, Home, ChevronDown, Check, GraduationCap } from 'lucide-react'
+import { Star,Menu, X, BookOpen, Play, Users, Tag, Mail, Home, ChevronDown, Check, GraduationCap } from 'lucide-react'
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
 const navItems = [
-  { id: 'hero', label: 'Home', icon: Home },
-  { id: 'courses', label: 'Courses', icon: BookOpen },
-  { id: 'activities', label: 'Activities', icon: Play },
-  { id: 'videos', label: 'Videos', icon: Play },
-  { id: 'teachers', label: 'Teachers', icon: Users },
-  { id: 'discounts', label: 'Discounts', icon: Tag },
-  { id: 'contact', label: 'Contact', icon: Mail },
+  { id: 'hero', icon: Home },
+  { id: 'courses', icon: BookOpen },
+  { id: 'activities', icon: Star },
+  { id: 'videos', icon: Play },
+  { id: 'teachers', icon: Users },
+  { id: 'discounts', icon: Tag },
+  { id: 'contact', icon: Mail },
 ]
 
 const languages = [
@@ -20,15 +20,13 @@ const languages = [
   { code: 'ru', label: 'RU', name: 'Русский' }
 ]
 
-function NavbarBrand({ isScrolled, scrollToSection }: { isScrolled: boolean, scrollToSection: (id: string, forceHome?: boolean) => void }) {
-  const { t } = useTranslation();
-
+function NavbarBrand({ scrollToSection }: { isScrolled: boolean, scrollToSection: (id: string, forceHome?: boolean) => void }) {
   return (
     <motion.div
       whileHover={{ scale: 1.08 }}
       className="flex items-center gap-3"
     >
-      {/* Modern Logo Icon */}
+      {/* Modern Logo Icon ONLY */}
       <button
         className="w-11 h-11 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl flex items-center justify-center shadow-lg focus:outline-none"
         onClick={() => scrollToSection("hero", true)}
@@ -36,15 +34,6 @@ function NavbarBrand({ isScrolled, scrollToSection }: { isScrolled: boolean, scr
       >
         <GraduationCap className="w-6 h-6 text-white" />
       </button>
-      {/* Brand Metni - Responsive, Translation */}
-      {/* <div className="hidden sm:flex flex-col">
-        <span className={`text-xl font-bold tracking-wide ${isScrolled ? "text-blue-700" : "text-blue-600"}`}>
-          {t("brand.name")}
-        </span>
-        <span className={`text-xs font-semibold tracking-wide ${isScrolled ? "text-blue-500" : "text-blue-300"}`}>
-          {t("brand.center")}
-        </span>
-      </div> */}
     </motion.div>
   );
 }
@@ -65,7 +54,6 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     if (!isLangDropdownOpen) return;
     function handleClick(e: MouseEvent) {
@@ -88,25 +76,23 @@ const Navbar = () => {
     return () => window.removeEventListener('mousedown', handleClick)
   }, [isLangDropdownOpen])
 
-  // Bu fonksiyonu güncelledik!
   const scrollToSection = (sectionId: string, forceHome?: boolean) => {
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
       setIsMobileMenuOpen(false);
     } else if (forceHome) {
-      // Ana sayfaya git, sonra scroll'u dene!
       navigate("/");
       setTimeout(() => {
         const el = document.getElementById(sectionId);
         if (el) el.scrollIntoView({ behavior: "smooth" });
-      }, 150); // 150ms sonra (isteğe göre artırılabilir)
+      }, 150);
     }
   }
 
   const localizedNavItems = navItems.map(item => ({
     ...item,
-    label: t(`nav.${item.id}`, item.label)
+    label: t(`nav.${item.id}`)
   }))
 
   const dropdownVariants = {
@@ -127,10 +113,9 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Modern Brand */}
           <NavbarBrand isScrolled={isScrolled} scrollToSection={scrollToSection} />
 
-          {/* Desktop Navigation */}
+          {/* Masaüstü Menü */}
           <div className="hidden lg:flex items-center space-x-1">
             {localizedNavItems.map(({ id, label, icon: Icon }) => (
               <motion.button
@@ -150,7 +135,7 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Language Dropdown (Desktop, Modern) */}
+          {/* Dil Dropdown Desktop */}
           <div className="relative hidden lg:block" ref={desktopDropdownRef}>
             <button
               onClick={() => setIsLangDropdownOpen(prev => !prev)}
@@ -193,7 +178,7 @@ const Navbar = () => {
             </AnimatePresence>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobil Menü Butonu */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className={`lg:hidden p-2 rounded-lg transition-colors ${
@@ -208,7 +193,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobil Menü */}
       <motion.div
         initial={{ opacity: 0, height: 0 }}
         animate={{ 
@@ -229,7 +214,7 @@ const Navbar = () => {
               <span className="font-medium">{label}</span>
             </button>
           ))}
-          {/* Language dropdown (Mobile, Modern) */}
+          {/* Dil Dropdown Mobil */}
           <div className="pt-4 border-t border-blue-100 relative" ref={mobileDropdownRef}>
             <button
               onClick={() => setIsLangDropdownOpen(prev => !prev)}

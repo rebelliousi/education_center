@@ -133,6 +133,16 @@ const ru = {
   },
   "hero": {
     "videos": "Видео"
+  },
+ 
+  "nav": {
+    "hero": "Главная",
+    "courses": "Курсы",
+    "activities": "Активности",
+    "videos": "Видео",
+    "teachers": "Преподаватели",
+    "discounts": "Скидки",
+    "contact": "Контакты"
   }
 };
 export default ru;
