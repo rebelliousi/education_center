@@ -123,6 +123,14 @@ const en = {
     "featured_section_title": "About Our Center",
      "educational_grid_title": "Educational Videos",
    
+  },
+  "teachers": {
+    "all_faculty": "All Teachers",
+    "meet_all": "Meet All Our Teachers",
+    "all_faculty_desc": "Explore our diverse faculty and find your ideal instructor.",
+    "search_placeholder": "Search teachers...",
+    "featured": "Featured",
+    "no_results": "No teachers found."
   }
 }
 export default en;

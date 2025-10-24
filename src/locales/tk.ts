@@ -122,6 +122,14 @@ const tk = {
      "latest_videos": "Täze wideolarymyz",
      "featured_section_title": "Merkezimiz hakynda",
     "educational_grid_title": "Täze kurslar we okuw wideolary"
+  },
+  "teachers": {
+    "all_faculty": "Ähli mugallymlar",
+    "meet_all": "Ähli mugallymlar bilen tanyşyň",
+    "all_faculty_desc": "Dürli tejribeli mugallymlarymyz bilen tanyşyň ",
+    "search_placeholder": "Mugallymlar gözle...",
+    "featured": "Esasy",
+    "no_results": "Hiç hili mugallym tapylmady."
   }
 
 };
