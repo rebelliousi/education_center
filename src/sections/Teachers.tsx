@@ -4,6 +4,7 @@ import { Heart, Award, Users, Star, Trophy } from 'lucide-react'
 import { useTeachers } from "../hooks/useTeachers"
 import { useLikeTeacher } from "../hooks/useLikeTeacher"
 import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router-dom"
 import placeholder from '../../public/placeholder2.png'
 
 // Default teacher image path
@@ -13,6 +14,7 @@ const Teachers = () => {
   const [likedTeachers, setLikedTeachers] = useState<number[]>([])
   const { t, i18n } = useTranslation()
   const lang = i18n.language || "en" // default en
+  const navigate = useNavigate();
 
   // Dinamik olarak öğretmenleri çek
   const { data: teachers = [], isLoading, error } = useTeachers();
@@ -242,6 +244,7 @@ const Teachers = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="px-10 py-4 bg-white text-blue-600 font-bold rounded-full hover:shadow-xl transition-all duration-300 text-lg"
+              onClick={() => navigate("/teachers")}
             >
               {t("teachers.apply_to_teach")}
             </motion.button>

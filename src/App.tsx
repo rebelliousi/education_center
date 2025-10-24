@@ -10,7 +10,8 @@ import Discounts from "./sections/Discount";
 import Contact from "./sections/Contact";
 import Footer from "./sections/Footer";
 import AllCoursesPage from "./pages/AllCoursesPage";
-import AllVideosPage from "./pages/AllVideosPage"; // <-- YENİ!
+import AllVideosPage from "./pages/AllVideosPage";
+import AllTeachersPage from "./pages/AllTeachersPage"; // <-- YENİ!
 
 export const App = () => {
   return (
@@ -51,6 +52,16 @@ export const App = () => {
           element={
             <>
               <AllVideosPage />
+              <Footer />
+            </>
+          }
+        />
+        {/* Tüm Öğretmenler sayfası */}
+        <Route
+          path="/teachers"
+          element={
+            <>
+              <AllTeachersPage />
               <Footer />
             </>
           }
