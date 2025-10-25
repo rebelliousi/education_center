@@ -135,11 +135,14 @@ const HeroSection = () => {
   return (
     <section 
       id="hero" 
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-50 via-white to-blue-100 pt-16 pb-12 lg:pt-0 lg:pb-0" 
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-50 via-white to-blue-100   pb-12 lg:pt-0 lg:pb-0" 
       aria-label="Hero section"
     >
-      {/* Navbar - Mobile için optimize edildi */}
+      {/* Navbar */}
       <Navbar />
+
+      {/* Navbar Separator Line - Mobile Only */}
+      <div className="absolute top-14 sm:top-[4.5rem] left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-200 to-transparent lg:hidden z-20" />
 
       {/* Animated Background Elements */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
@@ -253,7 +256,7 @@ const HeroSection = () => {
       )}
       </AnimatePresence>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 -mt-8 sm:-mt-12 lg:mt-0">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 items-center">
           {/* Content */}
           <motion.div
