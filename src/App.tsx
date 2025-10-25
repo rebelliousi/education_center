@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
+
 import Hero from "./sections/HeroSection";
 import Courses from "./sections/Courses";
 import Activities from "./sections/Activities";
@@ -28,7 +28,7 @@ function CenterSpinner() {
 export const App = () => {
   return (
     <>
-      <Navbar />
+     
       <Routes>
         {/* Ana sayfa */}
         <Route

@@ -24,14 +24,14 @@ function NavbarBrand({ scrollToSection }: { isScrolled: boolean, scrollToSection
   return (
     <motion.div
       whileHover={{ scale: 1.08 }}
-      className="flex items-center gap-3"
+      className="flex items-center gap-2 sm:gap-3"
     >
       <button
-        className="w-11 h-11 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl flex items-center justify-center shadow-lg focus:outline-none"
+        className="w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-md lg:shadow-lg focus:outline-none"
         onClick={() => scrollToSection("hero", true)}
         aria-label="Go to Home"
       >
-        <GraduationCap className="w-6 h-6 text-white" />
+        <GraduationCap className="w-5 h-5 sm:w-5.5 sm:h-5.5 lg:w-6 lg:h-6 text-white" />
       </button>
     </motion.div>
   );
@@ -106,12 +106,12 @@ const Navbar = () => {
       transition={{ duration: 0.6 }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled 
-          ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-blue-100' 
+          ? 'bg-white/95 backdrop-blur-md shadow-md lg:shadow-lg border-b border-blue-100' 
           : 'bg-transparent'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+        <div className="flex items-center justify-between h-14 sm:h-15 lg:h-16">
           <NavbarBrand isScrolled={isScrolled} scrollToSection={scrollToSection} />
 
           {/* Masaüstü Menü */}
@@ -180,14 +180,14 @@ const Navbar = () => {
           {/* Mobil Menü Butonu */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className={`lg:hidden p-2 rounded-lg transition-colors ${
+            className={`lg:hidden p-1.5 sm:p-2 rounded-lg transition-colors ${
               isScrolled 
                 ? 'text-gray-700 hover:bg-blue-50' 
                 : 'text-white hover:bg-white/10'
             }`}
             aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
           >
-            {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {isMobileMenuOpen ? <X className="h-5 w-5 sm:h-6 sm:w-6" /> : <Menu className="h-5 w-5 sm:h-6 sm:w-6" />}
           </button>
         </div>
       </div>
@@ -200,28 +200,31 @@ const Navbar = () => {
           animate={{ opacity: 1, y: 0, height: 'auto' }}
           exit={{ opacity: 0, y: -10, height: 0 }}
           transition={{ duration: 0.3 }}
-          className="lg:hidden bg-white/95 backdrop-blur-md border-t border-blue-100 shadow-2xl"
+          className="lg:hidden bg-white/95 backdrop-blur-md border-t border-blue-100 shadow-lg"
         >
-          <div className="px-2 py-4 space-y-2">
+          <div className="px-2 sm:px-3 py-3 sm:py-4 space-y-1 sm:space-y-2 max-h-[calc(100vh-3.5rem)] overflow-y-auto">
             {localizedNavItems.map(({ id, label, icon: Icon }) => (
               <button
                 key={id}
                 onClick={() => scrollToSection(id)}
-                className="w-full flex items-center space-x-3 px-4 py-3 text-blue-700 hover:text-blue-900 hover:bg-blue-50 rounded-xl font-semibold text-base"
+                className="w-full flex items-center space-x-2.5 sm:space-x-3 px-3 py-2 sm:px-4 sm:py-2.5 text-blue-700 hover:text-blue-900 hover:bg-blue-50 rounded-lg sm:rounded-xl font-semibold text-sm sm:text-base transition-colors"
               >
-                <Icon className="h-5 w-5" />
-                <span>{label}</span>
+                <Icon className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+                <span className="truncate">{label}</span>
               </button>
             ))}
             {/* Dil Dropdown Mobil */}
             <div className="pt-2 border-t border-blue-100 relative" ref={mobileDropdownRef}>
               <button
                 onClick={() => setIsLangDropdownOpen(prev => !prev)}
-                className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl flex items-center justify-between shadow hover:shadow-lg transition-all duration-300"
+                className="w-full px-3 py-2 sm:px-4 sm:py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg sm:rounded-xl flex items-center justify-between shadow hover:shadow-md transition-all duration-300 text-sm sm:text-base"
                 aria-label="Select language"
               >
-                <span>{languages.find(l => l.code === i18n.language)?.label || "EN"}</span>
-                <ChevronDown className="h-4 w-4" />
+                <span className="flex items-center space-x-2">
+                  <span className="text-xs sm:text-sm opacity-90">Language:</span>
+                  <span>{languages.find(l => l.code === i18n.language)?.label || "EN"}</span>
+                </span>
+                <ChevronDown className={`h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform ${isLangDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
               <AnimatePresence>
                 {isLangDropdownOpen && (
@@ -231,7 +234,7 @@ const Navbar = () => {
                     exit="hidden"
                     variants={dropdownVariants}
                     transition={{ duration: 0.18 }}
-                    className="absolute left-0 right-0 mt-2 bg-white/90 backdrop-blur-xl rounded-xl shadow-2xl border border-blue-100 z-20 flex flex-col"
+                    className="absolute left-0 right-0 mt-1.5 sm:mt-2 bg-white/95 backdrop-blur-xl rounded-lg sm:rounded-xl shadow-xl border border-blue-100 z-20 flex flex-col overflow-hidden"
                   >
                     {languages.map(lang => (
                       <button
@@ -241,15 +244,18 @@ const Navbar = () => {
                           setIsLangDropdownOpen(false)
                           setIsMobileMenuOpen(false)
                         }}
-                        className={`flex items-center justify-between w-full px-5 py-2 rounded-lg font-semibold transition-all duration-200
+                        className={`flex items-center justify-between w-full px-3 py-2 sm:px-4 sm:py-2.5 font-semibold transition-all duration-200 text-sm sm:text-base
                           ${i18n.language === lang.code
-                            ? "bg-blue-100 text-blue-700 ring-2 ring-blue-400"
+                            ? "bg-blue-100 text-blue-700"
                             : "text-gray-700 hover:bg-blue-50"}
                         `}
                       >
-                        <span>{lang.label}</span>
+                        <span className="flex items-center space-x-2 sm:space-x-3">
+                          <span className="font-bold">{lang.label}</span>
+                          <span className="text-xs sm:text-sm opacity-70">{lang.name}</span>
+                        </span>
                         {i18n.language === lang.code &&
-                          <Check className="w-4 h-4 text-blue-700" />}
+                          <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-700 flex-shrink-0" />}
                       </button>
                     ))}
                   </motion.div>
