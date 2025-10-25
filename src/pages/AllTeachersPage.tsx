@@ -85,8 +85,8 @@ const AllTeachersPage = () => {
           </div>
         </div>
         
-        {/* All Teachers Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        {/* All Teachers Grid - Mobile 2 columns, Desktop unchanged */}
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
           {filteredTeachers.map((teacher: any, index: number) => (
             <motion.div
               key={teacher.id}
@@ -98,7 +98,7 @@ const AllTeachersPage = () => {
               className="bg-white/60 backdrop-blur-md rounded-2xl overflow-hidden border border-blue-200/50 hover:border-blue-300 transition-all duration-300 group shadow-lg hover:shadow-xl"
             >
               {/* Teacher Image */}
-              <div className="relative h-56 overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200">
+              <div className="relative h-36 sm:h-40 md:h-48 lg:h-56 overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200">
                 <img
                   src={getTeacherImage(teacher)}
                   alt={getTranslated(teacher, "name")}
@@ -109,21 +109,21 @@ const AllTeachersPage = () => {
                   <motion.div 
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="absolute top-4 left-4 bg-gradient-to-r from-yellow-300 to-yellow-400 text-gray-900 px-3 py-1.5 rounded-full text-xs font-bold shadow-lg"
+                    className="absolute top-2 sm:top-3 md:top-4 left-2 sm:left-3 md:left-4 bg-gradient-to-r from-yellow-300 to-yellow-400 text-gray-900 px-2 sm:px-2.5 md:px-3 py-1 sm:py-1 md:py-1.5 rounded-full text-[10px] sm:text-xs font-bold shadow-lg"
                   >
                     ⭐ {t("teachers.featured")}
                   </motion.div>
                 )}
                 {/* Stats Overlay */}
-                <div className="absolute bottom-4 left-4 right-4">
-                  <div className="bg-white/20 backdrop-blur-md rounded-xl p-3 border border-white/30">
-                    <div className="flex items-center justify-between text-white text-sm font-semibold">
-                      <div className="flex items-center space-x-2">
-                        <Star className="h-4 w-4 text-yellow-300 fill-current" />
+                <div className="absolute bottom-2 sm:bottom-3 md:bottom-4 left-2 sm:left-3 md:left-4 right-2 sm:right-3 md:right-4">
+                  <div className="bg-white/20 backdrop-blur-md rounded-lg sm:rounded-xl p-2 sm:p-2.5 md:p-3 border border-white/30">
+                    <div className="flex items-center justify-between text-white text-[10px] sm:text-xs md:text-sm font-semibold">
+                      <div className="flex items-center space-x-1 sm:space-x-1.5 md:space-x-2">
+                        <Star className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 text-yellow-300 fill-current" />
                         <span>{teacher.rating}</span>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <Heart className="h-4 w-4 text-red-300" />
+                      <div className="flex items-center space-x-1 sm:space-x-1.5 md:space-x-2">
+                        <Heart className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 text-red-300" />
                         <span>{teacher.likes.toLocaleString()}</span>
                       </div>
                     </div>
@@ -131,18 +131,18 @@ const AllTeachersPage = () => {
                 </div>
               </div>
               {/* Teacher Content */}
-              <div className="p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+              <div className="p-3 sm:p-4 md:p-5 lg:p-6">
+                <h3 className="text-sm sm:text-base md:text-lg font-bold text-gray-900 mb-1 sm:mb-1.5 md:mb-2 group-hover:text-blue-600 transition-colors line-clamp-1">
                   {getTranslated(teacher, "name")}
                 </h3>
-                <p className="text-blue-600 font-semibold text-sm">
+                <p className="text-blue-600 font-semibold text-xs sm:text-sm line-clamp-1">
                   {getTranslated(teacher, "specialization")}
                 </p>
-                <p className="text-gray-700 text-sm mt-2">{getTranslated(teacher, "bio")}</p>
+                <p className="text-gray-700 text-xs sm:text-sm mt-1 sm:mt-1.5 md:mt-2 line-clamp-2">{getTranslated(teacher, "bio")}</p>
                 {getAchievements(teacher).length > 0 && (
-                  <ul className="text-xs text-blue-600 mt-2">
-                    {getAchievements(teacher).map((ach: string, idx: number) => (
-                      <li key={idx}>🏅 {ach}</li>
+                  <ul className="text-[10px] sm:text-xs text-blue-600 mt-1 sm:mt-1.5 md:mt-2 space-y-0.5">
+                    {getAchievements(teacher).slice(0, 2).map((ach: string, idx: number) => (
+                      <li key={idx} className="truncate">🏅 {ach}</li>
                     ))}
                   </ul>
                 )}

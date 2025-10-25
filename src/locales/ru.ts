@@ -144,6 +144,15 @@ const ru = {
     "discounts": "Скидки",
     "contact": "Контакты",
     "select_language": "Язык"
-  }
+  },
+  "common": {
+      "loading": "Загрузка...",
+      "not_found": "Баннер не найден.",
+      "back": "Назад"
+    },
+    "banner": {
+      "announcement": "Объявление",
+      "learn_more": "Узнать больше"
+    }
 };
 export default ru;

@@ -144,7 +144,16 @@ const tk = {
     "discounts": "Arzanladyşlar",
     "contact": "Habarlaşmak",
     "select_language": "Dil"
-  }
+  },
+  "common": {
+      "loading": "Ýüklenýär...",
+      "not_found": "Banner tapylmady.",
+      "back": "Yza"
+    },
+    "banner": {
+      "announcement": "Bildiriş",
+      "learn_more": "Has giňişleýin"
+    }
   
 
 };

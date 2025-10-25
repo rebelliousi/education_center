@@ -145,6 +145,15 @@ const en = {
     "discounts": "Discounts",
     "contact": "Contact",
     "select_language": "Language"
-  }
+  },
+  "common": {
+      "loading": "Loading...",
+      "not_found": "Banner not found.",
+      "back": "Back"
+    },
+    "banner": {
+      "announcement": "Announcement",
+      "learn_more": "Learn More"
+    }
 }
 export default en;

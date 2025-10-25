@@ -115,8 +115,8 @@ export default function AllVideosPage() {
   };
 
   return (
-    <section className="py-24 min-h-[80vh] bg-gradient-to-br from-blue-50 via-white to-blue-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-12 sm:py-16 lg:py-24 min-h-[80vh] bg-gradient-to-br from-blue-50 via-white to-blue-100">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
 
         {/* Header */}
         <motion.div
@@ -124,24 +124,24 @@ export default function AllVideosPage() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
+          className="text-center mb-6 sm:mb-8 lg:mb-12"
         >
-          <h1 className="text-4xl lg:text-5xl font-extrabold text-gray-900 mb-2">
+          <h1 className="text-2xl sm:text-3xl lg:text-5xl font-extrabold text-gray-900 mb-2 px-2">
             {t("videos.all_videos")}
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base lg:text-lg text-gray-600 max-w-2xl mx-auto px-4">
             {t("videos.all_videos_desc")}
           </p>
         </motion.div>
 
         {/* Search Bar */}
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-6 sm:mb-8">
           <input
             type="text"
             placeholder={t("videos.search_placeholder")}
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="px-4 py-2 rounded-full text-sm w-full max-w-md bg-white border-none outline-none shadow focus:ring-2 focus:ring-blue-300 transition"
+            className="px-4 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm w-full max-w-md bg-white border-none outline-none shadow focus:ring-2 focus:ring-blue-300 transition"
             style={{
               boxShadow: "0 1px 8px 0 rgba(59,130,246,.08)"
             }}
@@ -149,11 +149,11 @@ export default function AllVideosPage() {
         </div>
 
         {/* Filtre Button Alanı */}
-        <div className="flex flex-wrap items-center justify-center gap-4 mb-8 relative">
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 lg:gap-4 mb-6 sm:mb-8 relative">
           {/* All Button */}
           <button
             onClick={handleAllClick}
-            className={`px-6 py-2 rounded-full text-sm font-semibold shadow transition duration-200 border-none outline-none ${
+            className={`px-4 py-1.5 sm:px-5 sm:py-2 lg:px-6 rounded-full text-xs sm:text-sm font-semibold shadow transition duration-200 border-none outline-none ${
               activeFilter === "all"
                 ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg scale-105"
                 : "bg-white text-blue-700 hover:bg-blue-50"
@@ -168,33 +168,33 @@ export default function AllVideosPage() {
               onClick={() => {
                 setShowCategoryDropdown(!showCategoryDropdown);
               }}
-              className={`px-6 py-2 rounded-full text-sm font-semibold shadow transition duration-200 border-none outline-none flex items-center gap-2 ${
+              className={`px-4 py-1.5 sm:px-5 sm:py-2 lg:px-6 rounded-full text-xs sm:text-sm font-semibold shadow transition duration-200 border-none outline-none flex items-center gap-1.5 sm:gap-2 ${
                 activeFilter === "category"
                   ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg scale-105"
                   : "bg-white text-blue-700 hover:bg-blue-50"
               }`}
             >
-              <span>
+              <span className="truncate max-w-[100px] sm:max-w-none">
                 {category !== "all"
                   ? CATEGORIES.find(cat => String(cat.value) === String(category))?.label || t("videos.category")
                   : t("videos.category") || "Category"}
               </span>
-              <ChevronDown className="h-4 w-4" />
+              <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
             </button>
             {/* Dropdown */}
             {showCategoryDropdown && (
-              <div className="absolute left-0 top-full z-10 mt-2 w-44 bg-white rounded-2xl shadow-lg border border-blue-100 py-2">
+              <div className="absolute left-0 top-full z-10 mt-2 w-36 sm:w-44 bg-white rounded-xl sm:rounded-2xl shadow-lg border border-blue-100 py-2 max-h-60 overflow-y-auto">
                 {CATEGORIES.map(cat => (
                   <button
                     key={cat.value}
                     onClick={() => handleCategorySelect(cat.value)}
-                    className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium transition ${
+                    className={`w-full text-left px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition ${
                       String(category) === String(cat.value)
                         ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white"
                         : "text-blue-700 hover:bg-blue-50"
                     }`}
                   >
-                    {cat.label}
+                    <span className="line-clamp-1">{cat.label}</span>
                   </button>
                 ))}
               </div>
@@ -205,12 +205,12 @@ export default function AllVideosPage() {
         {/* Video grid */}
         {videosLoading ? (
           <div className="flex justify-center items-center min-h-[300px]">
-            <span className="text-blue-600 text-lg font-semibold">
+            <span className="text-blue-600 text-sm sm:text-base lg:text-lg font-semibold">
               {t("videos.loading") || "Loading videos..."}
             </span>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
             {paginatedVideos.map((video: any, idx: number) => {
               const displayTitle = (video[`title_${lang}`] || video.title) ?? "";
               const displayDescription = (video[`description_${lang}`] || video.description) ?? "";
@@ -226,10 +226,10 @@ export default function AllVideosPage() {
                     y: -10,
                     boxShadow: "0 25px 50px rgba(59, 130, 246, 0.15)"
                   }}
-                  className="bg-white rounded-2xl overflow-hidden border border-blue-100 hover:border-blue-300 transition-all duration-300 shadow-lg hover:shadow-xl flex flex-col cursor-pointer"
+                  className="bg-white rounded-xl sm:rounded-2xl overflow-hidden border border-blue-100 hover:border-blue-300 transition-all duration-300 shadow-lg hover:shadow-xl flex flex-col cursor-pointer"
                   onClick={() => setActiveVideo(video)}
                 >
-                  <div className="relative h-44 overflow-hidden">
+                  <div className="relative h-32 sm:h-36 lg:h-44 overflow-hidden">
                     {video.video_file ? (
                       <video
                         src={video.video_file}
@@ -244,26 +244,26 @@ export default function AllVideosPage() {
                         className="w-full h-full object-cover"
                       />
                     )}
-                    <div className="absolute top-3 left-3 bg-blue-600/90 text-white px-3 py-1 rounded-full text-xs font-semibold shadow">
+                    <div className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-blue-600/90 text-white px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-semibold shadow">
                       {video.duration}
                     </div>
-                    <div className="absolute bottom-3 left-3 flex items-center space-x-2">
-                      <Eye className="h-4 w-4 text-blue-500" />
-                      <span className="text-sm font-semibold text-white bg-blue-500/60 px-2 py-1 rounded">{video.views}</span>
-                      <Star className="h-4 w-4 text-yellow-400 fill-current ml-2" />
-                      <span className="text-sm font-semibold text-white bg-yellow-500/60 px-2 py-1 rounded">{video.rating}</span>
+                    <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 flex items-center space-x-1 sm:space-x-2">
+                      <Eye className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500" />
+                      <span className="text-xs sm:text-sm font-semibold text-white bg-blue-500/60 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded">{video.views}</span>
+                      <Star className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400 fill-current ml-1 sm:ml-2" />
+                      <span className="text-xs sm:text-sm font-semibold text-white bg-yellow-500/60 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded">{video.rating}</span>
                     </div>
                   </div>
-                  <div className="p-6 flex-1 flex flex-col">
-                    <h3 className="text-lg font-bold text-gray-900 mb-2">{displayTitle}</h3>
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">{displayDescription}</p>
-                    <div className="flex items-center justify-between text-xs text-gray-500 mb-4 mt-auto">
-                      <span>{displayInstructor}</span>
+                  <div className="p-3 sm:p-4 lg:p-6 flex-1 flex flex-col">
+                    <h3 className="text-sm sm:text-base lg:text-lg font-bold text-gray-900 mb-1 sm:mb-2 line-clamp-2">{displayTitle}</h3>
+                    <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2">{displayDescription}</p>
+                    <div className="flex items-center justify-between text-[10px] sm:text-xs text-gray-500 mb-3 sm:mb-4 mt-auto">
+                      <span className="line-clamp-1">{displayInstructor}</span>
                     </div>
                     <button
-                      className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 rounded-xl hover:shadow-lg transition-all duration-300 font-semibold mt-auto"
+                      className="w-full flex items-center justify-center space-x-1.5 sm:space-x-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-1.5 sm:py-2 rounded-lg sm:rounded-xl hover:shadow-lg transition-all duration-300 font-semibold text-xs sm:text-sm mt-auto"
                     >
-                      <Play className="h-4 w-4" />
+                      <Play className="h-3 w-3 sm:h-4 sm:w-4" />
                       <span>{t("videos.watch_now")}</span>
                     </button>
                   </div>
@@ -275,19 +275,19 @@ export default function AllVideosPage() {
 
         {/* Modal */}
         {activeVideo && (
-          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-3 sm:px-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
-              className="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl w-full relative flex flex-col md:flex-row items-center gap-8"
+              className="bg-white rounded-xl sm:rounded-2xl shadow-2xl p-5 sm:p-6 lg:p-8 max-w-2xl w-full relative flex flex-col md:flex-row items-center gap-4 sm:gap-6 lg:gap-8 max-h-[90vh] overflow-y-auto"
             >
               <button
                 onClick={() => setActiveVideo(null)}
-                className="absolute top-4 right-4 text-gray-500 hover:text-blue-700"
+                className="absolute top-3 right-3 sm:top-4 sm:right-4 text-gray-500 hover:text-blue-700 bg-white rounded-full p-1"
                 aria-label="Close"
               >
-                <X className="h-6 w-6" />
+                <X className="h-5 w-5 sm:h-6 sm:w-6" />
               </button>
               <div className="md:w-1/2 w-full flex items-center justify-center">
                 {activeVideo.video_file ? (
@@ -295,33 +295,39 @@ export default function AllVideosPage() {
                     src={activeVideo.video_file}
                     controls
                     autoPlay
-                    className="w-full h-56 object-contain rounded-xl bg-black"
+                    className="w-full h-40 sm:h-48 lg:h-56 object-contain rounded-lg sm:rounded-xl bg-black"
                     poster={activeVideo.thumbnail}
                   />
                 ) : (
                   <img
                     src={activeVideo.thumbnail}
                     alt={activeVideo[`title_${lang}`] || activeVideo.title}
-                    className="w-full h-56 object-cover"
+                    className="w-full h-40 sm:h-48 lg:h-56 object-cover rounded-lg sm:rounded-xl"
                   />
                 )}
               </div>
               <div className="md:w-1/2 w-full flex flex-col">
-                <h2 className="text-2xl font-bold mb-2 text-blue-700">
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2 text-blue-700 pr-6">
                   {activeVideo[`title_${lang}`] || activeVideo.title}
                 </h2>
-                <p className="text-gray-700 text-base mb-2">
+                <p className="text-gray-700 text-xs sm:text-sm lg:text-base mb-2">
                   {activeVideo[`description_${lang}`] || activeVideo.description}
                 </p>
-                <div className="flex items-center gap-4 text-sm mb-2">
-                  <Clock className="h-4 w-4 text-blue-600" />
-                  <span>{activeVideo.duration}</span>
-                  <Eye className="h-4 w-4 text-blue-600" />
-                  <span>{activeVideo.views} {t("videos.views")}</span>
-                  <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                  <span>{activeVideo.rating}</span>
+                <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 text-xs sm:text-sm mb-2 flex-wrap">
+                  <div className="flex items-center gap-1">
+                    <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
+                    <span>{activeVideo.duration}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Eye className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
+                    <span>{activeVideo.views} {t("videos.views")}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Star className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400 fill-current" />
+                    <span>{activeVideo.rating}</span>
+                  </div>
                 </div>
-                <p className="text-blue-600 text-xs font-semibold">
+                <p className="text-blue-600 text-[10px] sm:text-xs lg:text-sm font-semibold line-clamp-1">
                   {activeVideo[`instructor_${lang}`] || activeVideo.instructor}
                 </p>
               </div>
@@ -331,12 +337,12 @@ export default function AllVideosPage() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex justify-center mt-12">
-            <nav className="flex items-center gap-2">
+          <div className="flex justify-center mt-8 sm:mt-10 lg:mt-12">
+            <nav className="flex items-center gap-1.5 sm:gap-2">
               <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
-                className="px-3 py-1 rounded-lg font-medium border border-blue-300 bg-white hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-2.5 py-1 sm:px-3 text-xs sm:text-sm rounded-lg font-medium border border-blue-300 bg-white hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {"<"}
               </button>
@@ -344,7 +350,7 @@ export default function AllVideosPage() {
                 <button
                   key={idx + 1}
                   onClick={() => setCurrentPage(idx + 1)}
-                  className={`px-3 py-1 rounded-lg font-medium border ${
+                  className={`px-2.5 py-1 sm:px-3 text-xs sm:text-sm rounded-lg font-medium border ${
                     currentPage === idx + 1
                       ? "border-blue-600 bg-blue-600 text-white"
                       : "border-blue-300 bg-white hover:bg-blue-50"
@@ -356,7 +362,7 @@ export default function AllVideosPage() {
               <button
                 onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
-                className="px-3 py-1 rounded-lg font-medium border border-blue-300 bg-white hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-2.5 py-1 sm:px-3 text-xs sm:text-sm rounded-lg font-medium border border-blue-300 bg-white hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {">"}
               </button>
