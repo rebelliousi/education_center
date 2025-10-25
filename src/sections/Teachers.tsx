@@ -317,18 +317,18 @@ const Teachers = () => {
                 })}
               </motion.div>
               {/* Slider Arrows - üstünde ve ortada */}
-              <button
+              {/* <button
                 onClick={handleGridPrev}
                 className="absolute top-[38%] -translate-y-1/2 left-3 z-10 w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-all shadow-lg"
               >
                 <ChevronLeft className="h-5 w-5" />
-              </button>
-              <button
+              </button> */}
+              {/* <button
                 onClick={handleGridNext}
                 className="absolute top-[38%] -translate-y-1/2 right-3 z-10 w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-all shadow-lg"
               >
                 <ChevronRight className="h-5 w-5" />
-              </button>
+              </button> */}
             </div>
             {/* Dots */}
             <div className="flex justify-center gap-2 mt-4">
