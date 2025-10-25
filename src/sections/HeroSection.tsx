@@ -17,12 +17,41 @@ const SHAPE_CLASSES = [
 const SHAPE_COUNT = 20
 const ICONS = [
   '⚛️', '🔬', '🧪', '🌟', '💫', '🔭',
-  '⚛️', '🔬', '🧪', '🌟', '💫', '🔭'
+  '⚛️', '🔬', '🧪', '🌟', '💫', '🔭',
+  '⚛️', '🔬', '🧪', '🌟', '💫', '🔭',
+  '⚛️', '🔬', '🧪', '🌟', '💫', '🔭',
+  '⚛️', '🔬', '🧪', '🌟', '💫', '🔭',
+  '⚛️', '🔬', '🧪', '🌟', '💫', '🔭',
+  '⚛️', '🔬', '🧪', '🌟', '💫', '🔭',
+  '⚛️', '🔬', '🧪', '🌟', '💫', '🔭',
 ]
 const HERO_WIDTH = 1300
 const HERO_HEIGHT = 800
 
 const AUTO_SLIDE_INTERVAL = 3500
+
+function getRandomShapes(count:number, width:number, height:number) {
+  return Array.from({ length: count }, () => ({
+    x: Math.random() * width,
+    y: Math.random() * height,
+    className: SHAPE_CLASSES[Math.floor(Math.random() * SHAPE_CLASSES.length)],
+    duration: Math.random() * 8 + 4,
+    delay: Math.random() * 2,
+    rotate: Math.random() * 360,
+    targetY: Math.random() * height
+  }))
+}
+function getRandomIcons(iconCount:number, width:number, height:number) {
+  return ICONS.slice(0, iconCount).map(icon => ({
+    icon,
+    x: Math.random() * width,
+    y: Math.random() * height,
+    duration: Math.random() * 10 + 5,
+    delay: Math.random() * 3,
+    rotate: Math.random() * 360,
+    targetY: Math.random() * height
+  }))
+}
 
 const HeroSection = () => {
   const { t, i18n } = useTranslation();
@@ -30,6 +59,30 @@ const HeroSection = () => {
   const { data: stats, isLoading } = useCenterStats();
   const { data: banners = [], isLoading: bannersLoading } = useBanners();
   const navigate = useNavigate();
+  
+  // Mobile detection
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+
+  // Shape/Icon state (her ekran boyutunda değişsin diye)
+  const [randomShapes, setRandomShapes] = useState(() => 
+    getRandomShapes(window.innerWidth < 768 ? 18 : SHAPE_COUNT, window.innerWidth, window.innerHeight < 600 ? 400 : HERO_HEIGHT)
+  );
+  const [randomIcons, setRandomIcons] = useState(() => 
+    getRandomIcons(window.innerWidth < 768 ? 35 : ICONS.length, window.innerWidth, window.innerHeight < 600 ? 400 : HERO_HEIGHT)
+  );
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+      // Her seferinde güncelle
+      const width = window.innerWidth < 768 ? window.innerWidth : HERO_WIDTH
+      const height = window.innerWidth < 768 ? (window.innerHeight < 600 ? 400 : window.innerHeight) : HERO_HEIGHT
+      setRandomShapes(getRandomShapes(window.innerWidth < 768 ? 18 : SHAPE_COUNT, width, height))
+      setRandomIcons(getRandomIcons(window.innerWidth < 768 ? 35 : ICONS.length, width, height))
+    }
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   useEffect(() => {
     if (floatingRef.current) {
@@ -86,28 +139,12 @@ const HeroSection = () => {
     if (id) navigate(`/banner/${id}`);
   };
 
-  // Animated background shapes/icons
-  const randomShapes = React.useMemo(() =>
-    Array.from({ length: SHAPE_COUNT }, () => ({
-      x: Math.random() * HERO_WIDTH,
-      y: Math.random() * HERO_HEIGHT,
-      className: SHAPE_CLASSES[Math.floor(Math.random() * SHAPE_CLASSES.length)],
-      duration: Math.random() * 8 + 4,
-      delay: Math.random() * 2,
-    })), []
-  )
-  const randomIcons = React.useMemo(() =>
-    ICONS.map(icon => ({
-      icon,
-      x: Math.random() * HERO_WIDTH,
-      y: Math.random() * HERO_HEIGHT,
-      duration: Math.random() * 10 + 5,
-      delay: Math.random() * 3,
-    })), []
-  )
-
   return (
-    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-50 via-white to-blue-100" aria-label="Hero section">
+    <section 
+      id="hero" 
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-50 via-white to-blue-100 py-20 lg:py-0" 
+      aria-label="Hero section"
+    >
       {/* Animated Background Elements */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         {randomShapes.map((shape, i) => (
@@ -115,10 +152,10 @@ const HeroSection = () => {
             key={i}
             className={`absolute ${shape.className} opacity-20`}
             style={{ left: shape.x, top: shape.y }}
-            initial={{ y: 0, rotate: 0, opacity: 0.1 }}
+            initial={{ y: 0, rotate: shape.rotate, opacity: 0.1 }}
             animate={{
-              y: Math.random() * HERO_HEIGHT,
-              rotate: 360,
+              y: shape.targetY,
+              rotate: shape.rotate + 360,
               opacity: [0.1, 0.3, 0.1],
             }}
             transition={{
@@ -133,10 +170,10 @@ const HeroSection = () => {
             key={i}
             className="absolute text-2xl opacity-20"
             style={{ left: iconObj.x, top: iconObj.y }}
-            initial={{ y: 0, rotate: 0 }}
+            initial={{ y: 0, rotate: iconObj.rotate }}
             animate={{
-              y: Math.random() * HERO_HEIGHT,
-              rotate: 360,
+              y: iconObj.targetY,
+              rotate: iconObj.rotate + 360,
             }}
             transition={{
               duration: iconObj.duration,
@@ -150,7 +187,7 @@ const HeroSection = () => {
         ))}
       </div>
 
-      {/* Sağ alt köşede otomatik modern slider duyuru */}
+      {/* BANNER - Mobile responsive */}
       <AnimatePresence>
       {(!hide && !bannersLoading && banners.length > 0) && (
         <motion.div
@@ -158,32 +195,36 @@ const HeroSection = () => {
           animate={{ scale: 1, opacity: 1, x: 0 }}
           exit={{ opacity: 0, scale: 0.9 }}
           transition={{ duration: 0.5 }}
-          className="fixed bottom-8 right-8 z-40 flex flex-col items-end"
+          className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-40 flex flex-col items-end"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          <div className="relative flex items-center bg-white shadow-2xl rounded-3xl border border-blue-100 px-10 py-8 w-[420px] max-w-full space-x-9 transition-all duration-300">
-            {/* Dots üstte, resmin sağında */}
-            <div className="absolute top-4 right-5 flex gap-2 z-10">
+          <div className="relative flex items-center bg-white shadow-2xl rounded-2xl md:rounded-3xl border border-blue-100 px-4 py-4 md:px-10 md:py-8 w-[calc(100vw-2rem)] max-w-[340px] md:max-w-[420px] space-x-3 md:space-x-9 transition-all duration-300">
+            {/* Dots üstte */}
+            <div className="absolute top-2 md:top-4 right-3 md:right-5 flex gap-1.5 md:gap-2 z-10">
               {banners.map((_, idx) => (
                 <button
                   key={idx}
                   onClick={() => handleDotClick(idx)}
-                  className={`w-3 h-3 rounded-full border 
+                  className={`w-2 h-2 md:w-3 md:h-3 rounded-full border 
                     ${activeIndex === idx ? 'bg-blue-600 border-blue-800 scale-110' : 'bg-blue-200 border-blue-200'} 
                     transition`}
                   aria-label={`Go to slide ${idx + 1}`}
                 />
               ))}
             </div>
-            {/* IMAGE -- BÜYÜTÜLDÜ */}
-            <img src={banners[activeIndex].image} alt={getTranslated(banners[activeIndex], "title")} className="w-24 h-24 rounded-2xl object-cover border border-blue-200 shadow-md" />
+            {/* IMAGE - Responsive */}
+            <img 
+              src={banners[activeIndex].image} 
+              alt={getTranslated(banners[activeIndex], "title")} 
+              className="w-16 h-16 md:w-24 md:h-24 rounded-xl md:rounded-2xl object-cover border border-blue-200 shadow-md flex-shrink-0" 
+            />
             <div className="flex flex-col flex-1 min-w-0">
-              <div className="font-bold text-xl text-blue-800 break-words mb-1">
+              <div className="font-bold text-sm md:text-xl text-blue-800 break-words mb-1">
                 {getTranslated(banners[activeIndex], "title")}
               </div>
-              {/* Sadece 2 satır gösterilecek şekilde sınırlama */}
-              <div className="text-base text-gray-600 mb-2 line-clamp-2" style={{
+              {/* Text responsive */}
+              <div className="text-xs md:text-base text-gray-600 mb-2 line-clamp-2" style={{
                 display: '-webkit-box',
                 WebkitLineClamp: 2,
                 WebkitBoxOrient: 'vertical',
@@ -194,21 +235,21 @@ const HeroSection = () => {
               {banners[activeIndex].url &&
                 <button
                   onClick={handleBannerClick}
-                  className="inline-flex items-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-full px-3 py-1 text-sm mt-1 hover:scale-105 transition"
+                  className="inline-flex items-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-full px-2 py-1 md:px-3 md:py-1 text-xs md:text-sm mt-1 hover:scale-105 transition"
                 >
                   {getTranslated(banners[activeIndex], "cta")}
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowRight className="ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4" />
                 </button>
               }
             </div>
-            {/* CLOSE ICON -- DAHA SOLDA */}
+            {/* CLOSE ICON - Responsive */}
             <button
               onClick={closeBanner}
-              className="ml-2 bg-blue-50 hover:bg-blue-100 rounded-full p-2 text-blue-600 transition absolute top-4 left-1"
+              className="bg-blue-50 hover:bg-blue-100 rounded-full p-1.5 md:p-2 text-blue-600 transition absolute top-2 md:top-4 left-2 md:left-1"
               title="Close announcement"
             >
               <span className="sr-only">Close</span>
-              <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+              <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 md:w-5 md:h-5">
                 <path fillRule="evenodd" d="M10 8.586l4.95-4.95a1 1 0 111.414 1.414L11.414 10l4.95 4.95a1 1 0 01-1.414 1.414L10 11.414l-4.95 4.95a1 1 0 01-1.414-1.414L8.586 10l-4.95-4.95A1 1 0 115.05 3.636L10 8.586z" clipRule="evenodd" />
               </svg>
             </button>
@@ -218,8 +259,8 @@ const HeroSection = () => {
       </AnimatePresence>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          {/* Content - Mobile responsive */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
@@ -230,18 +271,18 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="flex items-center space-x-2 mb-6"
+              className="flex items-center space-x-2 mb-4 md:mb-6"
             >
-              <div className="flex items-center space-x-2 bg-blue-100 px-4 py-2 rounded-full">
-                <Sparkles className="h-5 w-5 text-blue-600" aria-hidden="true" />
-                <span className="text-blue-700 font-semibold">{t("hero.welcome")}</span>
+              <div className="flex items-center space-x-2 bg-blue-100 px-3 py-1.5 md:px-4 md:py-2 rounded-full">
+                <Sparkles className="h-4 w-4 md:h-5 md:w-5 text-blue-600" aria-hidden="true" />
+                <span className="text-sm md:text-base text-blue-700 font-semibold">{t("hero.welcome")}</span>
               </div>
             </motion.div>
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="text-5xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-gray-900 mb-4 md:mb-6 leading-tight"
             >
               <span className="text-blue-600">{t("brand.name")}</span> {t("brand.and")} {' '}
               <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
@@ -253,7 +294,7 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
-              className="text-xl text-gray-600 mb-8 max-w-2xl leading-relaxed"
+              className="text-base sm:text-lg md:text-xl text-gray-600 mb-6 md:mb-8 max-w-2xl leading-relaxed"
             >
               {t("hero.description")}
             </motion.p>
@@ -261,60 +302,60 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
-              className="flex flex-col sm:flex-row gap-4"
+              className="flex flex-col sm:flex-row gap-3 md:gap-4"
             >
               <motion.button
                 onClick={() => scrollToSection('courses')}
                 whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(59, 130, 246, 0.3)" }}
                 whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-full flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transition-all duration-300"
+                className="w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-full flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transition-all duration-300 text-sm md:text-base"
                 aria-label={t("hero.explore_courses")}
               >
-                <BookOpen className="h-5 w-5" aria-hidden="true" />
+                <BookOpen className="h-4 w-4 md:h-5 md:w-5" aria-hidden="true" />
                 <span>{t("hero.explore_courses")}</span>
-                <ArrowRight className="h-5 w-5" aria-hidden="true" />
+                <ArrowRight className="h-4 w-4 md:h-5 md:w-5" aria-hidden="true" />
               </motion.button>
               <motion.button
                 onClick={() => scrollToSection('videos')}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 border-2 border-blue-600 text-blue-600 font-semibold rounded-full flex items-center justify-center space-x-2 hover:bg-blue-50 transition-all duration-300"
+                className="w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 border-2 border-blue-600 text-blue-600 font-semibold rounded-full flex items-center justify-center space-x-2 hover:bg-blue-50 transition-all duration-300 text-sm md:text-base"
                 aria-label={t("hero.watch_videos")}
               >
-                <Play className="h-5 w-5" aria-hidden="true" />
+                <Play className="h-4 w-4 md:h-5 md:w-5" aria-hidden="true" />
                 <span>{t("hero.watch_videos")}</span>
               </motion.button>
             </motion.div>
-            {/* Stats */}
+            {/* Stats - Mobile 2 column, Desktop 3 */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1 }}
-              className="grid grid-cols-3 gap-8 mt-12"
+              className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8 mt-8 md:mt-12"
             >
               <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600">
+                <div className="text-2xl md:text-3xl font-bold text-blue-600">
                   {isLoading ? "..." : (stats?.courses ?? 0) + "+"}
                 </div>
-                <div className="text-gray-600 text-sm">{t("hero.courses")}</div>
+                <div className="text-gray-600 text-xs md:text-sm">{t("hero.courses")}</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600">
+                <div className="text-2xl md:text-3xl font-bold text-blue-600">
                   {isLoading ? "..." : (stats?.teachers ?? 0) + "+"}
                 </div>
-                <div className="text-gray-600 text-sm">{t("hero.teachers")}</div>
+                <div className="text-gray-600 text-xs md:text-sm">{t("hero.teachers")}</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600">
+              <div className="text-center col-span-2 md:col-span-1">
+                <div className="text-2xl md:text-3xl font-bold text-blue-600">
                   {isLoading ? "..." : (stats?.videos ?? 0) + "+"}
                 </div>
-                <div className="text-gray-600 text-sm">{t("hero.videos")}</div>
+                <div className="text-gray-600 text-xs md:text-sm">{t("hero.videos")}</div>
               </div>
             </motion.div>
           </motion.div>
 
-          {/* Modern ve sade görsel alanı */}
-          <div className="flex items-center justify-center w-[700px]">
+          {/* Görsel - Mobile responsive */}
+          <div className="flex items-center justify-center w-full max-w-md mx-auto lg:max-w-none lg:w-[700px]">
             <img
               src={img}
               alt={t("hero.visual_alt")}
@@ -329,7 +370,7 @@ const HeroSection = () => {
       <motion.div
         animate={{ y: [0, 10, 0] }}
         transition={{ duration: 2, repeat: Infinity }}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 hidden md:block"
         aria-hidden="true"
       >
         <div className="w-6 h-10 border-2 border-blue-600 rounded-full flex justify-center">
