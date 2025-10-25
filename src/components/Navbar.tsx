@@ -46,6 +46,7 @@ const Navbar = () => {
 
   const desktopDropdownRef = useRef<HTMLDivElement>(null)
   const mobileDropdownRef = useRef<HTMLDivElement>(null)
+  const mobileMenuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50)
@@ -75,11 +76,30 @@ const Navbar = () => {
     return () => window.removeEventListener('mousedown', handleClick)
   }, [isLangDropdownOpen])
 
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+    function handleClick(e: MouseEvent) {
+      const menu = mobileMenuRef.current;
+      if (menu && !menu.contains(e.target as Node)) {
+        setIsMobileMenuOpen(false);
+      }
+    }
+    window.addEventListener('mousedown', handleClick);
+    return () => window.removeEventListener('mousedown', handleClick);
+  }, [isMobileMenuOpen]);
+
+  // GÜNCEL: Menü itemine tıklandığında önce menüyü kapatıp sonra scroll yapıyoruz (mobilde)
   const scrollToSection = (sectionId: string, forceHome?: boolean) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-      setIsMobileMenuOpen(false);
+      if (isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }, 350); // animasyon süresiyle uyumlu
+      } else {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
     } else if (forceHome) {
       navigate("/");
       setTimeout(() => {
@@ -198,6 +218,7 @@ const Navbar = () => {
       <AnimatePresence>
       {isMobileMenuOpen && (
         <motion.div
+          ref={mobileMenuRef}
           initial={{ opacity: 0, y: -10, height: 0 }}
           animate={{ opacity: 1, y: 0, height: 'auto' }}
           exit={{ opacity: 0, y: -10, height: 0 }}
