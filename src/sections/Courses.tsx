@@ -101,23 +101,62 @@ export default function CoursesSection() {
           </p>
         </motion.div>
 
-        {/* Filter Buttons (Slider on Mobile) */}
+        {/* Filter Buttons */}
+        {/* Mobile: Scrollable, sola yaslı */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           viewport={{ once: true }}
-          className="flex lg:flex-wrap lg:justify-center gap-2 lg:gap-3 mb-8 lg:mb-12 overflow-x-auto scrollbar-hide px-1"
+          className="
+            flex gap-2 mb-8 lg:mb-0 overflow-x-auto scrollbar-hide
+            snap-x snap-mandatory pb-2 pt-1 -mx-3 px-3 relative
+            before:content-[''] before:absolute before:inset-y-0 before:left-0 before:w-6 before:pointer-events-none before:bg-gradient-to-r before:from-white before:to-transparent
+            after:content-[''] after:absolute after:inset-y-0 after:right-0 after:w-6 after:pointer-events-none after:bg-gradient-to-l after:from-white after:to-transparent
+            lg:hidden
+          "
+          style={{
+            WebkitOverflowScrolling: 'touch',
+            scrollbarWidth: 'none'
+          }}
         >
           {LEVELS.map(lvl => (
             <button
               key={lvl.value}
               onClick={() => setFilter(lvl.value)}
-              className={`flex-shrink-0 px-4 py-1.5 lg:px-6 lg:py-2 rounded-full text-xs lg:text-sm font-semibold transition-colors duration-200 border ${
-                filter === lvl.value
+              className={`
+                flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-colors duration-200 border
+                ${filter === lvl.value
                   ? "bg-blue-600 text-white border-blue-700"
                   : "bg-white text-blue-700 border-blue-200 hover:bg-blue-50"
-              }`}
+                }
+                snap-center
+              `}
+              aria-pressed={filter === lvl.value}
+            >
+              {lvl.label}
+            </button>
+          ))}
+        </motion.div>
+        {/* Desktop: Ortalanmış filter bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          viewport={{ once: true }}
+          className="hidden lg:flex flex-wrap justify-center gap-3 mb-12"
+        >
+          {LEVELS.map(lvl => (
+            <button
+              key={lvl.value}
+              onClick={() => setFilter(lvl.value)}
+              className={`
+                px-6 py-2 rounded-full text-sm font-semibold transition-colors duration-200 border
+                ${filter === lvl.value
+                  ? "bg-blue-600 text-white border-blue-700"
+                  : "bg-white text-blue-700 border-blue-200 hover:bg-blue-50"
+                }
+              `}
               aria-pressed={filter === lvl.value}
             >
               {lvl.label}
@@ -246,7 +285,7 @@ export default function CoursesSection() {
             <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-1 sm:mb-2">{t("courses.ready")}</h3>
             <p className="text-xs sm:text-base lg:text-lg text-blue-100 mb-4 sm:mb-6">{t("courses.join_students")}</p>
             <button
-              className="w-full sm:w-auto px-6 py-3 sm:px-8 sm:py-4 bg-white text-blue-600 font-semibold rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105 text-base sm:text-lg"
+              className="w-full sm:w-auto px-4 py-2 sm:px-8 sm:py-4 bg-white text-blue-600 font-semibold rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105 text-sm sm:text-lg"
               onClick={() => navigate("/courses")}
             >
               {t("courses.view_all")}
@@ -257,3 +296,13 @@ export default function CoursesSection() {
     </section>
   );
 }
+
+/* Ek CSS (global veya component-level, Tailwind dışında eklemen gerekirse) */
+/*
+.scrollbar-hide {
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+*/
