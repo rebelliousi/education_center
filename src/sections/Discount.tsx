@@ -45,8 +45,9 @@ const discountCards = [
   {
     id: 5,
     icon: Gift,
-    color: "from-emerald-500 to-cyan-600",
-    bgGradient: "from-emerald-500/20 to-cyan-600/20",
+    // Burayı MAVİ yaptık:
+    color: "from-blue-500 to-blue-700",
+    bgGradient: "from-blue-500/20 to-blue-700/20",
     popular: false,
     validKey: "valid_until",
     coursesKey: "courses",
@@ -172,7 +173,7 @@ const Discounts = () => {
                     </div>
                     <div>
                       <span className="text-gray-600 block mb-1">{t("discounts.applies_to")}</span>
-                      <p className="text-gray-900 font-semibold line-clamp-1">{discount.courses}</p>
+                      <p className="text-gray-900 font-semibold line-clamp-3">{discount.courses}</p>
                     </div>
                   </div>
                 </div>
@@ -237,7 +238,7 @@ const Discounts = () => {
                     </div>
                     <div>
                       <span className="text-gray-600 block mb-1">{t("discounts.applies_to")}</span>
-                      <p className="text-gray-900 font-semibold line-clamp-1">{discount.courses}</p>
+                      <p className="text-gray-900 font-semibold line-clamp-3">{discount.courses}</p>
                     </div>
                   </div>
                 </div>
