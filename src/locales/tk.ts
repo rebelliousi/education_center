@@ -142,7 +142,8 @@ const tk = {
     "videos": "Wideolar",
     "teachers": "Mugallymlar",
     "discounts": "Arzanladyşlar",
-    "contact": "Habarlaşmak"
+    "contact": "Habarlaşmak",
+    "select_language": "Dil"
   }
   
 

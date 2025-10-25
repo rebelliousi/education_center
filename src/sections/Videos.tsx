@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Play, Clock, Eye, Star, X } from 'lucide-react'
+import { Play, Clock, Eye, Star, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useVideos } from "../hooks/useVideos"
 import { useViewVideo } from "../hooks/useViewVideo"
 import { useTranslation } from "react-i18next"
@@ -13,27 +13,40 @@ const Videos = () => {
 
   // Videoları çek
   const { data: videos = [], isLoading: videosLoading, error: videosError } = useVideos()
-
-  // İzlenme mutation hook'u
   const { mutate: viewVideo, isPending: viewPending } = useViewVideo()
 
-  // Modal state - sadece grid videoları için
+  // Modal state
   const [modalVideo, setModalVideo] = useState<any>(null)
-  const [featuredPlaying, setFeaturedPlaying] = useState<boolean>(false)
+  const [sliderIndex, setSliderIndex] = useState(0)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 640)
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   // İlk "featured" videoyu bul (varsa)
   const promotionalVideo = videos.find(v => v.featured) || videos[0]
 
-  // Sadece en yeni 8 video (id veya created alanına göre sıralama yapılabilir)
+  // Sadece en yeni 8 video
   const sortedVideos = [...videos]
     .filter(video => !video.featured)
     .sort((a, b) => (b.created || b.id) - (a.created || a.id))
     .slice(0, 8)
 
+  // Slider için mobilde gösterilecek videolar
+  const sliderVideos = isMobile ? sortedVideos : []
+
+  // Slider ileri/geri fonksiyonları
+  const nextSlide = () => setSliderIndex(i => (i + 1) % sliderVideos.length)
+  const prevSlide = () => setSliderIndex(i => (i - 1 + sliderVideos.length) % sliderVideos.length)
+
   return (
-    <section id="videos" className="py-24 min-h-screen ">
+    <section id="videos" className="py-24 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Featured Section Title (i18n) */}
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -49,84 +62,87 @@ const Videos = () => {
           </p>
         </motion.div>
 
-        {/* Featured/Promotional Video */}
+        {/* Featured Video */}
         {promotionalVideo && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="mb-8 sm:mb-12 lg:mb-16"
-        >
-          <div className="relative bg-white/40 backdrop-blur-sm rounded-2xl sm:rounded-3xl overflow-hidden border border-blue-200/50 hover:border-blue-300 transition-all duration-300 group shadow-lg hover:shadow-xl">
-            <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 items-center">
-              <div className="relative h-48 sm:h-56 lg:h-80 overflow-hidden">
-                {/* Thumbnail + Play Icon or Video */}
-                {!featuredPlaying ? (
-                  <>
-                    <img
-                      src={promotionalVideo.thumbnail}
-                      alt={promotionalVideo[`title_${lang}`] || promotionalVideo.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="mb-8 sm:mb-12 lg:mb-16"
+          >
+            <div className="relative bg-white/40 backdrop-blur-sm rounded-2xl sm:rounded-3xl overflow-hidden border border-blue-200/50 hover:border-blue-300 transition-all duration-300 group shadow-lg hover:shadow-xl">
+              <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 items-center">
+                <div className="relative h-48 sm:h-56 lg:h-80 overflow-hidden">
+                  {!isMobile || !promotionalVideo.video_file ? (
+                    !isMobile ? (
+                      <>
+                        <img
+                          src={promotionalVideo.thumbnail}
+                          alt={promotionalVideo[`title_${lang}`] || promotionalVideo.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/60 to-blue-600/60" />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            className="w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-white/20 backdrop-blur-2xl rounded-full flex items-center justify-center border-2 border-white/60 hover:bg-white/30 transition-all duration-300 shadow-md"
+                            onClick={() => viewVideo(promotionalVideo.id)}
+                            disabled={viewPending}
+                          >
+                            <Play className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white ml-1" fill="currentColor" />
+                          </motion.button>
+                        </div>
+                        <div className="absolute top-2 left-2 sm:top-4 sm:left-4 bg-blue-600/90 text-white px-2 py-1 sm:px-3 rounded-full text-xs sm:text-sm font-semibold shadow">
+                          {t("videos.featured")}
+                        </div>
+                      </>
+                    ) : (
+                      <img
+                        src={promotionalVideo.thumbnail}
+                        alt={promotionalVideo[`title_${lang}`] || promotionalVideo.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                    )
+                  ) : (
+                    <video
+                      src={promotionalVideo.video_file}
+                      controls
+                      autoPlay
+                      className="w-full h-full object-cover rounded-xl"
+                      poster={promotionalVideo.thumbnail}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/60 to-blue-600/60" />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        className="w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-white/20 backdrop-blur-2xl rounded-full flex items-center justify-center border-2 border-white/60 hover:bg-white/30 transition-all duration-300 shadow-md"
-                        onClick={() => {
-                          setFeaturedPlaying(true)
-                          viewVideo(promotionalVideo.id)
-                        }}
-                        disabled={viewPending}
-                      >
-                        <Play className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white ml-1" fill="currentColor" />
-                      </motion.button>
-                    </div>
-                    <div className="absolute top-2 left-2 sm:top-4 sm:left-4 bg-blue-600/90 text-white px-2 py-1 sm:px-3 rounded-full text-xs sm:text-sm font-semibold shadow">
-                      {t("videos.featured")}
-                    </div>
-                  </>
-                ) : (
-                  <video
-                    src={promotionalVideo.video_file}
-                    controls
-                    autoPlay
-                    className="w-full h-full object-cover rounded-xl"
-                    poster={promotionalVideo.thumbnail}
-                  />
-                )}
-              </div>
-              <div className="p-4 sm:p-6 lg:p-8">
-                <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-2 sm:mb-3 lg:mb-4">
-                  {promotionalVideo[`title_${lang}`] || promotionalVideo.title}
-                </h3>
-                <p className="text-gray-600 text-sm sm:text-base lg:text-lg mb-4 sm:mb-5 lg:mb-6 line-clamp-3">
-                  {promotionalVideo[`description_${lang}`] || promotionalVideo.description}
-                </p>
-                <div className="flex items-center space-x-4 sm:space-x-6 mb-4 sm:mb-5 lg:mb-6">
-                  <div className="flex items-center space-x-1.5 sm:space-x-2 text-blue-600 font-semibold text-sm sm:text-base">
-                    <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
-                    <span>{promotionalVideo.duration}</span>
-                  </div>
-                  <div className="flex items-center space-x-1.5 sm:space-x-2 text-blue-600 font-semibold text-sm sm:text-base">
-                    <Eye className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
-                    <span>{promotionalVideo.views} {t("videos.views")}</span>
-                  </div>
+                  )}
                 </div>
-                <button className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-5 py-2 sm:px-6 sm:py-2.5 lg:px-8 lg:py-3 rounded-full hover:shadow-lg transition-all duration-300 hover:from-blue-700 hover:to-blue-800 font-semibold text-sm sm:text-base">
-                  <Play className="h-4 w-4 sm:h-5 sm:w-5" />
-                  <span>{t("videos.watch_now")}
-                  </span>
-                </button>
+                <div className="p-4 sm:p-6 lg:p-8">
+                  <h3 className="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-2 sm:mb-3 lg:mb-4">
+                    {promotionalVideo[`title_${lang}`] || promotionalVideo.title}
+                  </h3>
+                  <p className="text-gray-600 text-xs sm:text-base lg:text-lg mb-4 sm:mb-5 lg:mb-6 line-clamp-3">
+                    {promotionalVideo[`description_${lang}`] || promotionalVideo.description}
+                  </p>
+                  <div className="flex items-center space-x-4 sm:space-x-6 mb-3 sm:mb-5 lg:mb-6">
+                    <div className="flex items-center space-x-1.5 sm:space-x-2 text-blue-600 font-semibold text-xs sm:text-base">
+                      <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
+                      <span>{promotionalVideo.duration}</span>
+                    </div>
+                    <div className="flex items-center space-x-1.5 sm:space-x-2 text-blue-600 font-semibold text-xs sm:text-base">
+                      <Eye className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
+                      <span>{promotionalVideo.views} {t("videos.views")}</span>
+                    </div>
+                  </div>
+                  <button className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 sm:px-6 sm:py-2.5 lg:px-8 lg:py-3 rounded-full hover:shadow-lg transition-all duration-300 hover:from-blue-700 hover:to-blue-800 font-semibold text-xs sm:text-base">
+                    <Play className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <span>{t("videos.watch_now")}</span>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
         )}
 
-        {/* Grid Section Title (i18n - Egitici wideolar) */}
+        {/* Grid Section Title */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -139,8 +155,96 @@ const Videos = () => {
           </h3>
         </motion.div>
 
-        {/* Educational Videos Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
+        {/* Educational Videos Slider (mobile only) */}
+        <div className="block sm:hidden relative my-8">
+          <div className="overflow-hidden">
+            <motion.div
+              animate={{ x: `-${sliderIndex * 100}%` }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="flex"
+            >
+              {sliderVideos.map((video, idx) => (
+                <div key={video.id} className="w-full flex-shrink-0 px-2">
+                  <div
+                    className="bg-white/80 backdrop-blur-md rounded-xl overflow-hidden border border-blue-100 shadow-md cursor-pointer"
+                    onClick={() => setModalVideo(video)}
+                  >
+                    <div className="relative h-44 w-full overflow-hidden">
+                      {video.video_file ? (
+                        <video
+                          controls
+                          className="w-full h-full object-cover"
+                          poster={video.thumbnail}
+                        >
+                          <source src={video.video_file} type="video/mp4" />
+                          Your browser does not support the video tag.
+                        </video>
+                      ) : (
+                        <img
+                          src={video.thumbnail}
+                          alt={video[`title_${lang}`] || video.title}
+                          className="w-full h-full object-cover"
+                        />
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-blue-900/40 to-transparent" />
+                      <div className="absolute bottom-2 right-2 bg-blue-600/90 text-white px-2 py-1 rounded text-xs font-semibold shadow">
+                        {video.duration}
+                      </div>
+                    </div>
+                    <div className="p-3">
+                      <h3 className="text-base font-bold text-gray-900 mb-1 line-clamp-2">
+                        {video[`title_${lang}`] || video.title}
+                      </h3>
+                      <p className="text-gray-600 text-xs mb-2 line-clamp-2">
+                        {video[`description_${lang}`] || video.description}
+                      </p>
+                      <div className="flex items-center justify-between text-xs text-gray-700">
+                        <div className="flex items-center space-x-2">
+                          <div className="flex items-center space-x-1">
+                            <Eye className="h-3 w-3 text-blue-600" />
+                            <span>{video.views}</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <Star className="h-3 w-3 text-yellow-400 fill-current" />
+                            <span>{video.rating}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+            {/* Slider Arrows on the sides, a bit higher */}
+            <button
+              onClick={prevSlide}
+              className="absolute top-[38%] -translate-y-1/2 left-3 z-10 w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-all shadow-lg"
+              disabled={sliderVideos.length <= 1}
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <button
+              onClick={nextSlide}
+              className="absolute top-[38%] -translate-y-1/2 right-3 z-10 w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-all shadow-lg"
+              disabled={sliderVideos.length <= 1}
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </div>
+          {/* Dots */}
+          <div className="flex justify-center gap-2 mt-4">
+            {sliderVideos.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setSliderIndex(idx)}
+                className={`h-2 rounded-full transition-all ${idx === sliderIndex ? 'bg-blue-600 w-6' : 'bg-blue-300 w-2'}`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Educational Videos Grid (desktop/tablet) */}
+        <div className="hidden sm:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
           {sortedVideos.map((video, index) => (
             <motion.div
               key={video.id}
@@ -184,7 +288,6 @@ const Videos = () => {
                   {video.duration}
                 </div>
               </div>
-
               <div className="p-3 sm:p-4">
                 <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-1.5 sm:mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">
                   {video[`title_${lang}`] || video.title}

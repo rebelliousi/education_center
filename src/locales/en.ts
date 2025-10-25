@@ -143,7 +143,8 @@ const en = {
     "videos": "Videos",
     "teachers": "Teachers",
     "discounts": "Discounts",
-    "contact": "Contact"
+    "contact": "Contact",
+    "select_language": "Language"
   }
 }
 export default en;

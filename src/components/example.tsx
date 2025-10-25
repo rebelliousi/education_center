@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Star, Menu, X, BookOpen, Play, Users, Tag, Mail, Home, ChevronDown, Check, GraduationCap, Globe } from 'lucide-react'
+import { Star, Menu, X, BookOpen, Play, Users, Tag, Mail, Home, ChevronDown, Check, GraduationCap } from 'lucide-react'
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
@@ -15,9 +15,9 @@ const navItems = [
 ]
 
 const languages = [
-  { code: 'en', label: 'EN', name: 'English', flag: '🇬🇧' },
-  { code: 'tk', label: 'TK', name: 'Türkmen', flag: '🇹🇲' },
-  { code: 'ru', label: 'RU', name: 'Русский', flag: '🇷🇺' }
+  { code: 'en', label: 'EN', name: 'English' },
+  { code: 'tk', label: 'TK', name: 'Türkmen' },
+  { code: 'ru', label: 'RU', name: 'Русский' }
 ]
 
 function NavbarBrand({ scrollToSection }: { isScrolled: boolean, scrollToSection: (id: string, forceHome?: boolean) => void }) {
@@ -99,8 +99,6 @@ const Navbar = () => {
     visible: { opacity: 1, scale: 1, y: 0 }
   }
 
-  const currentLanguage = languages.find(l => l.code === i18n.language) || languages[0]
-
   return (
     <motion.nav
       initial={{ y: -100 }}
@@ -143,7 +141,7 @@ const Navbar = () => {
               className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-full flex items-center space-x-2 shadow-md hover:shadow-lg transition-all duration-300"
               aria-label="Select language"
             >
-              <span>{currentLanguage.label}</span>
+              <span>{languages.find(l => l.code === i18n.language)?.label || "EN"}</span>
               <ChevronDown className="h-4 w-4" />
             </button>
             <AnimatePresence>
@@ -205,93 +203,65 @@ const Navbar = () => {
           className="lg:hidden bg-white/95 backdrop-blur-md border-t border-blue-100 shadow-lg"
         >
           <div className="px-2 sm:px-3 py-3 sm:py-4 space-y-1 sm:space-y-2 max-h-[calc(100vh-3.5rem)] overflow-y-auto">
-            {/* Language Selector - En Üstte */}
-            <div className="relative mb-3" ref={mobileDropdownRef}>
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 sm:p-4 border border-blue-100"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center space-x-2">
-                    <Globe className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
-                    <span className="text-xs sm:text-sm font-semibold text-gray-700">
-                      {t("nav.select_language") || "Select Language"}
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => setIsLangDropdownOpen(prev => !prev)}
-                    className="text-blue-600 hover:text-blue-700 transition-colors"
-                  >
-                    <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isLangDropdownOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                </div>
-
-                {/* Current Language Display */}
-                <div className="flex items-center space-x-2.5 bg-white rounded-lg px-3 py-2 shadow-sm">
-                  <span className="text-2xl">{currentLanguage.flag}</span>
-                  <div className="flex-1">
-                    <p className="text-sm sm:text-base font-bold text-gray-900">{currentLanguage.name}</p>
-                    <p className="text-xs text-gray-500">{currentLanguage.label}</p>
-                  </div>
-                </div>
-
-                {/* Language Options Dropdown */}
-                <AnimatePresence>
-                  {isLangDropdownOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                      animate={{ opacity: 1, height: 'auto', marginTop: 12 }}
-                      exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="space-y-1.5 overflow-hidden"
-                    >
-                      {languages.filter(l => l.code !== i18n.language).map((lang, index) => (
-                        <motion.button
-                          key={lang.code}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.05 }}
-                          onClick={() => {
-                            i18n.changeLanguage(lang.code)
-                            setIsLangDropdownOpen(false)
-                          }}
-                          className="flex items-center space-x-2.5 bg-white hover:bg-blue-50 rounded-lg px-3 py-2 shadow-sm w-full transition-all duration-200 group"
-                        >
-                          <span className="text-2xl group-hover:scale-110 transition-transform">{lang.flag}</span>
-                          <div className="flex-1 text-left">
-                            <p className="text-sm sm:text-base font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                              {lang.name}
-                            </p>
-                            <p className="text-xs text-gray-500">{lang.label}</p>
-                          </div>
-                          <div className="w-5 h-5 rounded-full border-2 border-gray-300 group-hover:border-blue-500 transition-colors" />
-                        </motion.button>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            </div>
-
-            {/* Divider */}
-            <div className="border-t border-gray-200 my-2" />
-
-            {/* Menu Items */}
-            {localizedNavItems.map(({ id, label, icon: Icon }, index) => (
-              <motion.button
+            {localizedNavItems.map(({ id, label, icon: Icon }) => (
+              <button
                 key={id}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.15 + index * 0.03 }}
                 onClick={() => scrollToSection(id)}
                 className="w-full flex items-center space-x-2.5 sm:space-x-3 px-3 py-2 sm:px-4 sm:py-2.5 text-blue-700 hover:text-blue-900 hover:bg-blue-50 rounded-lg sm:rounded-xl font-semibold text-sm sm:text-base transition-colors"
               >
                 <Icon className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
                 <span className="truncate">{label}</span>
-              </motion.button>
+              </button>
             ))}
+            {/* Dil Dropdown Mobil */}
+            <div className="pt-2 border-t border-blue-100 relative" ref={mobileDropdownRef}>
+              <button
+                onClick={() => setIsLangDropdownOpen(prev => !prev)}
+                className="w-full px-3 py-2 sm:px-4 sm:py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg sm:rounded-xl flex items-center justify-between shadow hover:shadow-md transition-all duration-300 text-sm sm:text-base"
+                aria-label="Select language"
+              >
+                <span className="flex items-center space-x-2">
+                  <span className="text-xs sm:text-sm opacity-90">Language:</span>
+                  <span>{languages.find(l => l.code === i18n.language)?.label || "EN"}</span>
+                </span>
+                <ChevronDown className={`h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform ${isLangDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+              <AnimatePresence>
+                {isLangDropdownOpen && (
+                  <motion.div
+                    initial="hidden"
+                    animate="visible"
+                    exit="hidden"
+                    variants={dropdownVariants}
+                    transition={{ duration: 0.18 }}
+                    className="absolute left-0 right-0 mt-1.5 sm:mt-2 bg-white/95 backdrop-blur-xl rounded-lg sm:rounded-xl shadow-xl border border-blue-100 z-20 flex flex-col overflow-hidden"
+                  >
+                    {languages.map(lang => (
+                      <button
+                        key={lang.code}
+                        onClick={() => {
+                          i18n.changeLanguage(lang.code)
+                          setIsLangDropdownOpen(false)
+                          setIsMobileMenuOpen(false)
+                        }}
+                        className={`flex items-center justify-between w-full px-3 py-2 sm:px-4 sm:py-2.5 font-semibold transition-all duration-200 text-sm sm:text-base
+                          ${i18n.language === lang.code
+                            ? "bg-blue-100 text-blue-700"
+                            : "text-gray-700 hover:bg-blue-50"}
+                        `}
+                      >
+                        <span className="flex items-center space-x-2 sm:space-x-3">
+                          <span className="font-bold">{lang.label}</span>
+                          <span className="text-xs sm:text-sm opacity-70">{lang.name}</span>
+                        </span>
+                        {i18n.language === lang.code &&
+                          <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-700 flex-shrink-0" />}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </motion.div>
       )}

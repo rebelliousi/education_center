@@ -142,7 +142,8 @@ const ru = {
     "videos": "Видео",
     "teachers": "Преподаватели",
     "discounts": "Скидки",
-    "contact": "Контакты"
+    "contact": "Контакты",
+    "select_language": "Язык"
   }
 };
 export default ru;

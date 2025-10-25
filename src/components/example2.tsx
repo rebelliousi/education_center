@@ -206,53 +206,6 @@ export default function CoursesSection() {
             );
           })}
         </div>
-
-        {/* Modal */}
-        {activeCourse && (
-          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full relative"
-            >
-              <button
-                onClick={() => setActiveCourse(null)}
-                className="absolute top-4 right-4 text-gray-500 hover:text-blue-700"
-                aria-label="Close"
-              >
-                <X className="h-6 w-6" />
-              </button>
-              <img src={activeCourse.image} alt={activeCourse.name} className="w-full h-48 object-cover rounded-xl mb-6" />
-              <h2 className="text-2xl font-bold mb-4">{activeCourse[`name_${lang}`] || activeCourse.name}</h2>
-              <p className="text-gray-700 text-base mb-4">{activeCourse[`description_${lang}`] || activeCourse.description}</p>
-              <div className="font-bold text-blue-700 text-xl mb-2">
-                {t("courses.price")}: {activeCourse.price} TMT
-              </div>
-            </motion.div>
-          </div>
-        )}
-
-        {/* Call to Action - Responsive & Mobile Friendly */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          viewport={{ once: true }}
-          className="text-center mt-10 sm:mt-14 lg:mt-16"
-        >
-          <div className="bg-blue-600 text-white p-4 sm:p-6 lg:p-8 rounded-2xl shadow-xl">
-            <Award className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 mx-auto mb-3 sm:mb-4" />
-            <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-1 sm:mb-2">{t("courses.ready")}</h3>
-            <p className="text-xs sm:text-base lg:text-lg text-blue-100 mb-4 sm:mb-6">{t("courses.join_students")}</p>
-            <button
-              className="w-full sm:w-auto px-6 py-3 sm:px-8 sm:py-4 bg-white text-blue-600 font-semibold rounded-full hover:shadow-lg transition-all duration-300 hover:scale-105 text-base sm:text-lg"
-              onClick={() => navigate("/courses")}
-            >
-              {t("courses.view_all")}
-            </button>
-          </div>
-        </motion.div>
       </div>
     </section>
   );
