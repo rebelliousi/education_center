@@ -135,7 +135,7 @@ const HeroSection = () => {
   return (
     <section 
       id="hero" 
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-50 via-white to-blue-100 pt-10 pb-12 lg:pt-0 lg:pb-0" 
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-50 via-white to-blue-100 pt-18 pb-12 lg:pt-0 lg:pb-0" 
       aria-label="Hero section"
     >
       {/* Navbar */}
