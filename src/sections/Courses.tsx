@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Clock, Users, Star, BookOpen, Award, X } from "lucide-react";
+import { ArrowRight, Clock, Users, BookOpen, Award, X } from "lucide-react";
 import { useCourses } from "../hooks/useCourses";
 import { useLevels } from "../hooks/useLevels";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import SmartRatingBar from "../components/SmartRatingBar"; // Import star rating bar!
 
 function getCardGradient() {
   return "from-blue-200 via-blue-400 to-blue-700";
@@ -102,7 +103,6 @@ export default function CoursesSection() {
         </motion.div>
 
         {/* Filter Buttons */}
-        {/* Mobile: Scrollable, sola yaslı */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -138,7 +138,6 @@ export default function CoursesSection() {
             </button>
           ))}
         </motion.div>
-        {/* Desktop: Ortalanmış filter bar */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -164,7 +163,7 @@ export default function CoursesSection() {
           ))}
         </motion.div>
 
-        {/* Course Cards: 2 Columns on Mobile */}
+        {/* Course Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-8">
           {categoryCourses.map((course: any, index: number) => {
             const displayName = course[`name_${lang}`] || course.name;
@@ -206,11 +205,14 @@ export default function CoursesSection() {
                       {displayLevel}
                     </span>
                   </div>
-                  <div className="absolute bottom-2 left-2 lg:bottom-4 lg:left-4 flex items-center space-x-2">
-                    <div className="flex items-center space-x-1 bg-white/20 backdrop-blur-sm px-1.5 py-0.5 lg:px-2 lg:py-1 rounded-full">
-                      <Star className="h-3 w-3 lg:h-4 lg:w-4 text-yellow-400 fill-current" />
-                      <span className="text-xs lg:text-sm font-semibold text-white">{course.rating}</span>
-                    </div>
+                  {/* Akıllı rating bar burada */}
+                  <div className="absolute bottom-2 left-2 lg:bottom-4 lg:left-4 flex items-center">
+                    <SmartRatingBar
+                      courseId={course.id}
+                      averageRating={course.average_rating ?? course.rating}
+                      totalVotes={course.rating_count ?? course.total_votes}
+                      compact
+                    />
                   </div>
                 </div>
                 {/* Course Content */}
@@ -268,6 +270,12 @@ export default function CoursesSection() {
               <div className="font-bold text-blue-700 text-xl mb-2">
                 {t("courses.price")}: {activeCourse.price} TMT
               </div>
+              {/* Modalda rating bar, tam geniş */}
+              <SmartRatingBar
+                courseId={activeCourse.id}
+                averageRating={activeCourse.average_rating ?? activeCourse.rating}
+                totalVotes={activeCourse.rating_count ?? activeCourse.total_votes}
+              />
             </motion.div>
           </div>
         )}
