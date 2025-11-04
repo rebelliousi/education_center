@@ -42,6 +42,7 @@ export const App = () => {
                 <Videos />
               </div>
               <Teachers />
+              
               <Discounts />
               <Contact />
               <Footer />
