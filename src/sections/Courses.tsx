@@ -1,11 +1,18 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Clock, Users, BookOpen, Award, X } from "lucide-react";
+import {
+  ArrowRight,
+  Clock,
+  Users,
+  BookOpen,
+  Award,
+  X
+} from "lucide-react";
 import { useCourses } from "../hooks/useCourses";
 import { useLevels } from "../hooks/useLevels";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import {SmartRatingBar} from "../components/SmartRatingBar"; // Mavi temalı interaktif bar!
+import {SmartRatingBar} from "../components/SmartRatingBar";
 
 function getCardGradient() {
   return "from-blue-200 via-blue-400 to-blue-700";
@@ -209,7 +216,7 @@ export default function CoursesSection() {
                   <div className="absolute bottom-2 left-2 lg:bottom-4 lg:left-4 flex items-center">
                     <SmartRatingBar
                       courseId={course.id}
-            
+
                       compact
                     />
                   </div>
@@ -219,7 +226,8 @@ export default function CoursesSection() {
                   <h3 className="text-sm sm:text-base lg:text-xl font-bold text-gray-900 mb-2 lg:mb-3 group-hover:text-blue-600 transition-colors leading-tight line-clamp-2 min-h-[36px] sm:min-h-[44px] lg:min-h-[56px]">
                     {displayName}
                   </h3>
-                  <p className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3 lg:mb-4 line-clamp-2 leading-relaxed min-h-[32px] sm:min-h-[40px] lg:min-h-[48px]">
+                  {/* Sadece 2 satırda description görünür */}
+                  <p className="text-xs sm:text-sm text-gray-600 font-normal line-clamp-2 mb-2 sm:mb-3 lg:mb-4 leading-relaxed">
                     {displayDescription}
                   </p>
                   <div className="flex items-center justify-between text-[10px] sm:text-xs lg:text-sm text-gray-500 mb-2 sm:mb-3 lg:mb-4">
@@ -265,15 +273,14 @@ export default function CoursesSection() {
               </button>
               <img src={activeCourse.image} alt={activeCourse.name} className="w-full h-48 object-cover rounded-xl mb-6" />
               <h2 className="text-2xl font-bold mb-4">{activeCourse[`name_${lang}`] || activeCourse.name}</h2>
-              <p className="text-gray-700 text-base mb-4">{activeCourse[`description_${lang}`] || activeCourse.description}</p>
+              {/* Modalda tüm description tam olarak görünür! */}
+              <p className="text-gray-700 text-base mb-4">
+                {activeCourse[`description_${lang}`] || activeCourse.description}
+              </p>
               <div className="font-bold text-blue-700 text-xl mb-2">
                 {t("courses.price")}: {activeCourse.price} TMT
               </div>
-              {/* Modalda rating bar, tam geniş */}
-              <SmartRatingBar
-                courseId={activeCourse.id}
-             
-              />
+              {/* Modalda rating bar YOK */}
             </motion.div>
           </div>
         )}
