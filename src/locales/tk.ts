@@ -88,10 +88,11 @@ const tk = {
     "footer.brand_name": "Goşmaça we",
   "footer.brand_tagline": "Üznüksiz Bilim Merkezi",
   "footer.description": "Täzeçillik bilim usullary bilen ylham berýän we geljegi gurýan merkez. Täze ylmy mümkinçilikler üçin bize ýüz tutuň",
-  "footer.connect_with_us": "Biziň bilen aragatnaşyň",
+  "footer.connect_with_us": "Biziň bilen habarlaşyň",
   "footer.privacy_policy": "Gizlinlik syýasaty",
   "footer.terms_of_service": "Ulanyş şertleri",
-   "footer.copyright": "© 2025 Goşmaça we Üznüksiz Bilim Merkezi. Ähli hukuklar goralan.",
+   "footer.copyright": "© 2025 Goşmaça we Üznüksiz Bilim Merkezi.",
+   "footer.university_name": "Türkmenistanyň Oguz han adyndaky Inžener-tehnologiýalar uniwersiteti",
    "courses": {
     "level": "Dereje",
     "category": "Kategoriýa",
@@ -167,6 +168,7 @@ const tk = {
       "announcement": "Bildiriş",
       "learn_more": "Has giňişleýin"
     },
+   
    
   
 

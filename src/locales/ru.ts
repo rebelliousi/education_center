@@ -91,7 +91,8 @@ const ru = {
   "footer.connect_with_us": "Свяжитесь с нами",
   "footer.privacy_policy": "Политика конфиденциальности",
   "footer.terms_of_service": "Условия использования",
-  "footer.copyright": "© 2025 Дополнительного и Центр непрерывных наук. Все права защищены.",
+  "footer.copyright": "© 2025 Дополнительного и Центр непрерывных наук",
+   "footer.university_name": "Туркменский университет инженерии и технологий имени Огуз хана",
   "courses": {
     "level": "Уровень",
     "category": "Категория",
@@ -167,6 +168,7 @@ const ru = {
       "announcement": "Объявление",
       "learn_more": "Узнать больше"
     },
+    
    
 };
 export default ru;

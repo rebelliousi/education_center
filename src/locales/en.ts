@@ -91,7 +91,8 @@ const en = {
   "footer.connect_with_us": "Connect With Us",
   "footer.privacy_policy": "Privacy Policy",
   "footer.terms_of_service": "Terms of Service",
-  "footer.copyright": "© 2025 Additional and Continuous Science Center. All rights reserved.",
+  "footer.copyright": "© 2025 Additional and Continuous Science Center.",
+  "footer.university_name": "Oguz han Engineering and Technology University of Turkmenistan",
   "courses": {
     "level": "Level",
     "category": "Category",
@@ -168,6 +169,7 @@ const en = {
       "announcement": "Announcement",
       "learn_more": "Learn More"
     },
+    
     
 }
 export default en;

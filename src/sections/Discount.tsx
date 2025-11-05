@@ -126,7 +126,7 @@ const Discounts = () => {
                 }`}
               >
                 {discount.popular && (
-                  <div className="absolute top-2 right-2 sm:top-4 sm:right-4 bg-yellow-400 text-gray-900 px-2 py-1 sm:px-3 rounded-full text-xs sm:text-sm font-bold z-10">
+                  <div className="absolute top-[-2px] right-1 sm:top-1   sm:right-1 bg-yellow-400 text-gray-900 px-2 py-1 sm:px-3 rounded-full text-xs sm:text-sm font-bold z-10">
                     {t("discounts.most_popular")}
                   </div>
                 )}
@@ -134,7 +134,7 @@ const Discounts = () => {
                 <div className={`absolute inset-0 bg-gradient-to-br ${discount.bgGradient}`} />
 
                 <div className="relative p-4 sm:p-6 lg:p-8">
-                  <div className="flex items-center justify-between mb-4 sm:mb-6">
+                  <div className="flex items-center justify-between mt-2 mb-4 sm:mb-6">
                     <div className={`p-2.5 sm:p-3 lg:p-4 bg-gradient-to-r ${discount.color} rounded-xl sm:rounded-2xl shadow-lg`}>
                       <IconComponent className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
                     </div>
