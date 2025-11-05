@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Users, Heart, Star, Search } from 'lucide-react'
+import { Users, Heart, Star, Search, Award, Clock } from 'lucide-react'
 import { useTeachers } from "../hooks/useTeachers"
+import { useLikeTeacher, useRemoveLikeTeacher } from "../hooks/useLikeTeacher"
 import { useTranslation } from "react-i18next"
 import { useLocation } from "react-router-dom"
 import placeholder from '../../public/placeholder2.png'
@@ -13,31 +14,56 @@ const AllTeachersPage = () => {
   const lang = i18n.language || "en"
   const { data: teachers = [], isLoading, error, refetch } = useTeachers();
   const [search, setSearch] = useState("")
+  const [likedTeachers, setLikedTeachers] = useState<number[]>([])
   const location = useLocation();
 
-  // SPA'da route değişiminde tekrar fetch et!
   useEffect(() => {
     refetch();
+    const stored = localStorage.getItem("likedTeachers");
+    if (stored) {
+      setLikedTeachers(JSON.parse(stored));
+    }
   }, [location.pathname]);
+  
+  // BACKEND mutation hooks
+  const { mutate: likeTeacher, isPending: likePending } = useLikeTeacher();
+  const { mutate: removeLikeTeacher, isPending: removeLikePending } = useRemoveLikeTeacher();
 
-  // Helper for image fallback
   const getTeacherImage = (teacher: any) => {
     return teacher.image && teacher.image.trim() !== "" ? teacher.image : DEFAULT_TEACHER_IMAGE;
   }
-
-  // Dil bazlı alan seçici
   const getTranslated = (item: any, field: string) => {
     const key = `${field}_${lang}`;
     return item[key] || item[field] || "";
   };
-
-  // Çok dilli başarılar
   const getAchievements = (teacher: any) => {
     const key = `achievements_${lang}`;
     return teacher[key] || teacher.achievements || [];
   };
 
-  // Filtreleme
+  // BACKEND entegre handleLike fonksiyonu
+  const handleLike = (teacherId: number) => {
+    if (likedTeachers.includes(teacherId)) {
+      removeLikeTeacher(teacherId, {
+        onSuccess: () => {
+          const updated = likedTeachers.filter(id => id !== teacherId);
+          setLikedTeachers(updated);
+          localStorage.setItem("likedTeachers", JSON.stringify(updated));
+          refetch();
+        }
+      });
+    } else {
+      likeTeacher(teacherId, {
+        onSuccess: () => {
+          const updated = [...likedTeachers, teacherId];
+          setLikedTeachers(updated);
+          localStorage.setItem("likedTeachers", JSON.stringify(updated));
+          refetch();
+        }
+      });
+    }
+  };
+
   const filteredTeachers = teachers.filter((teacher: any) => {
     const name = getTranslated(teacher, 'name').toLowerCase();
     const specialization = getTranslated(teacher, 'specialization').toLowerCase();
@@ -76,7 +102,7 @@ const AllTeachersPage = () => {
           <div className="relative w-full max-w-lg">
             <input
               type="text"
-              className="w-full py-3 px-5 rounded-xl border border-blue-200 focus:border-blue-500 outline-none text-lg transition"
+              className="w-full py-3 px-5 rounded-xl border border-blue-200 focus:border-blue-500 outline-none text-lg transition shadow-sm"
               placeholder={t("teachers.search_placeholder") || "Search teachers..."}
               value={search}
               onChange={e => setSearch(e.target.value)}
@@ -85,74 +111,127 @@ const AllTeachersPage = () => {
           </div>
         </div>
         
-        {/* All Teachers Grid - Mobile 2 columns, Desktop unchanged */}
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
-          {filteredTeachers.map((teacher: any, index: number) => (
-            <motion.div
-              key={teacher.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.05 }}
-              viewport={{ once: true }}
-              whileHover={{ y: -10 }}
-              className="bg-white/60 backdrop-blur-md rounded-2xl overflow-hidden border border-blue-200/50 hover:border-blue-300 transition-all duration-300 group shadow-lg hover:shadow-xl"
-            >
-              {/* Teacher Image */}
-              <div className="relative h-36 sm:h-40 md:h-48 lg:h-56 overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200">
-                <img
-                  src={getTeacherImage(teacher)}
-                  alt={getTranslated(teacher, "name")}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-blue-900/40 via-transparent to-transparent" />
-                {teacher.featured && (
-                  <motion.div 
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="absolute top-2 sm:top-3 md:top-4 left-2 sm:left-3 md:left-4 bg-gradient-to-r from-yellow-300 to-yellow-400 text-gray-900 px-2 sm:px-2.5 md:px-3 py-1 sm:py-1 md:py-1.5 rounded-full text-[10px] sm:text-xs font-bold shadow-lg"
+        {/* Updated Teachers Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
+          {filteredTeachers.map((teacher: any, index: number) => {
+            const isLiked = likedTeachers.includes(teacher.id);
+            
+            return (
+              <motion.div
+                key={teacher.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.05 }}
+                viewport={{ once: true }}
+                whileHover={{ y: -8 }}
+                className="bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden border border-blue-200/50 hover:border-blue-300 transition-all duration-300 group shadow-lg hover:shadow-xl cursor-pointer"
+              >
+                {/* Teacher Image with Overlay */}
+                <div className="relative h-48 sm:h-52 md:h-56 overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200">
+                  <img
+                    src={getTeacherImage(teacher)}
+                    alt={getTranslated(teacher, "name")}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-blue-900/50 via-transparent to-transparent" />
+                  
+                  {/* Experience Badge */}
+                  {teacher.experience && (
+                    <motion.div 
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute top-3 left-3 bg-gradient-to-r from-yellow-300 to-yellow-400 text-gray-900 px-3 py-1.5 rounded-full text-xs font-bold shadow-lg flex items-center space-x-1"
+                    >
+                      <Star className="h-3 w-3" />
+                      <span>   {t("teacher_experience", { exp: teacher.experience })}</span>
+                    </motion.div>
+                  )}
+                  
+                  {/* Like Button (Backend entegreli) */}
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleLike(teacher.id);
+                    }}
+                    className={`absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
+                      isLiked 
+                        ? 'bg-red-500 text-white scale-110' 
+                        : 'bg-white/30 backdrop-blur-md text-white hover:bg-white/50 border border-white/50'
+                    }`}
+                    disabled={likePending || removeLikePending}
                   >
-                    ⭐ {t("teachers.featured")}
-                  </motion.div>
-                )}
-                {/* Stats Overlay */}
-                <div className="absolute bottom-2 sm:bottom-3 md:bottom-4 left-2 sm:left-3 md:left-4 right-2 sm:right-3 md:right-4">
-                  <div className="bg-white/20 backdrop-blur-md rounded-lg sm:rounded-xl p-2 sm:p-2.5 md:p-3 border border-white/30">
-                    <div className="flex items-center justify-between text-white text-[10px] sm:text-xs md:text-sm font-semibold">
-                      <div className="flex items-center space-x-1 sm:space-x-1.5 md:space-x-2">
-                        <Star className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 text-yellow-300 fill-current" />
-                        <span>{teacher.rating}</span>
-                      </div>
-                      <div className="flex items-center space-x-1 sm:space-x-1.5 md:space-x-2">
-                        <Heart className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 text-red-300" />
-                        <span>{teacher.likes.toLocaleString()}</span>
+                    <Heart className={`h-5 w-5 ${isLiked ? 'fill-current' : ''}`} />
+                  </motion.button>
+
+                  {/* Stats Overlay - Bottom */}
+                  <div className="absolute bottom-3 left-3 right-3">
+                    <div className="bg-white/20 backdrop-blur-md rounded-xl p-3 border border-white/30">
+                      <div className="flex items-center justify-between text-white text-sm font-semibold">
+                        
+                        <div className="flex items-center space-x-2">
+                          <Heart className="h-4 w-4 text-red-300" />
+                          <span>{teacher.likes?.toLocaleString() || '0'}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Award className="h-4 w-4 text-green-300" />
+                          <span>{getAchievements(teacher).length}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              {/* Teacher Content */}
-              <div className="p-3 sm:p-4 md:p-5 lg:p-6">
-                <h3 className="text-sm sm:text-base md:text-lg font-bold text-gray-900 mb-1 sm:mb-1.5 md:mb-2 group-hover:text-blue-600 transition-colors line-clamp-1">
-                  {getTranslated(teacher, "name")}
-                </h3>
-                <p className="text-blue-600 font-semibold text-xs sm:text-sm line-clamp-1">
-                  {getTranslated(teacher, "specialization")}
-                </p>
-                <p className="text-gray-700 text-xs sm:text-sm mt-1 sm:mt-1.5 md:mt-2 line-clamp-2">{getTranslated(teacher, "bio")}</p>
-                {getAchievements(teacher).length > 0 && (
-                  <ul className="text-[10px] sm:text-xs text-blue-600 mt-1 sm:mt-1.5 md:mt-2 space-y-0.5">
-                    {getAchievements(teacher).slice(0, 2).map((ach: string, idx: number) => (
-                      <li key={idx} className="truncate">🏅 {ach}</li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </motion.div>
-          ))}
+
+                {/* Teacher Content */}
+                <div className="p-5 lg:p-6">
+                  <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-1">
+                    {getTranslated(teacher, "name")}
+                  </h3>
+                  <p className="text-blue-600 font-semibold text-sm mb-3 line-clamp-1">
+                    {getTranslated(teacher, "specialization")}
+                  </p>
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">
+                    {getTranslated(teacher, "bio")}
+                  </p>
+                  
+                  {/* Achievements */}
+                  {getAchievements(teacher).length > 0 && (
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-1 text-xs text-gray-500">
+                        <Award className="h-3 w-3" />
+                        <span>Achievements:</span>
+                      </div>
+                      <ul className="text-xs text-blue-600 space-y-1">
+                        {getAchievements(teacher).slice(0, 2).map((ach: string, idx: number) => (
+                          <li key={idx} className="flex items-start space-x-2 line-clamp-1">
+                            <span className="text-yellow-500 mt-0.5">•</span>
+                            <span className="flex-1">{ach}</span>
+                          </li>
+                        ))}
+                        {getAchievements(teacher).length > 2 && (
+                          <li className="text-gray-500 text-xs">
+                            +{getAchievements(teacher).length - 2} more
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
-        {/* Eğer hiç öğretmen yoksa */}
+
         {filteredTeachers.length === 0 && (
-          <div className="text-center text-gray-400 text-lg mt-12">{t("teachers.no_results") || "No teachers found."}</div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center text-gray-400 text-lg mt-12 py-12"
+          >
+            <Users className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+            <p>{t("teachers.no_results") || "No teachers found."}</p>
+          </motion.div>
         )}
       </div>
     </section>

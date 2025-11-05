@@ -44,6 +44,7 @@ const tk = {
   "teachers.world_class": "Tejribeli we ylham beriji",
   "teachers.educators": "mugallymlar",
   "teachers.description": "Öz ugrundan tejribeli mugallymlardan bilim alyň. ",
+  "teacher_experience": "Tejribesi: {{exp}}",
   "teachers.top_rated": "Iň ýokary baha berlen mugallymlar",
   "teachers.most_appreciated": "Okuwçylaryň iň köp halan mugallymlary",
   "teachers.featured": "ESASY",

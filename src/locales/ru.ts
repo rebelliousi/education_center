@@ -40,6 +40,7 @@ const ru = {
   "videos.watch_now": "Смотреть сейчас",
   "videos.all_videos": "Все видео",
   "videos.view_all": "Смотреть все видео",
+  "teacher_experience": "Опыт: {{exp}}",
   "teachers.meet_faculty": "Познакомьтесь с нашими преподавателями",
   "teachers.world_class": "Опытные и вдохновляющие",
   "teachers.educators": "преподаватели",

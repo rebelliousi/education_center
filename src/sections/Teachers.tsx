@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Heart, Award, Users, Star, Trophy, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useTeachers } from "../hooks/useTeachers"
-import { useLikeTeacher } from "../hooks/useLikeTeacher"
+import { useLikeTeacher, useRemoveLikeTeacher } from "../hooks/useLikeTeacher"
+import { useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 import placeholder from '../../public/placeholder2.png'
@@ -18,9 +19,11 @@ const Teachers = () => {
   const { t, i18n } = useTranslation()
   const lang = i18n.language || "en"
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { data: teachers = [], isLoading, error } = useTeachers();
   const { mutate: likeTeacher, isPending: likePending } = useLikeTeacher();
+  const { mutate: removeLikeTeacher, isPending: removeLikePending } = useRemoveLikeTeacher();
 
   const getTranslated = (item: any, field: string) => {
     const key = `${field}_${lang}`;
@@ -31,23 +34,43 @@ const Teachers = () => {
     return teacher[key] || teacher.achievements || [];
   };
 
-  const handleLike = (teacherId: number, currentLikes: number) => {
-    likeTeacher(teacherId);
-    if (likedTeachers.includes(teacherId)) {
-      setLikedTeachers(likedTeachers.filter(id => id !== teacherId))
-    } else {
-      setLikedTeachers([...likedTeachers, teacherId])
+  // Load likedTeachers from localStorage on mount
+  useEffect(() => {
+    const stored = localStorage.getItem("likedTeachers");
+    if (stored) {
+      setLikedTeachers(JSON.parse(stored));
     }
-  }
+  }, []);
 
-  // Sıralama ve slice'lar
-  const sortedTeachers = [...teachers].sort((a, b) => {
-    const aLikes = likedTeachers.includes(a.id) ? a.likes + 1 : a.likes
-    const bLikes = likedTeachers.includes(b.id) ? b.likes + 1 : b.likes
-    return bLikes - aLikes
-  })
-  const top3Teachers = sortedTeachers.slice(0, 3)
-  const top8Teachers = sortedTeachers.slice(0, 8)
+  // Backend'e like/unlike toggle gönder, localStorage ile senkronize et + REFETCH (invalidate)
+  const handleLike = (teacherId: number) => {
+    if (likedTeachers.includes(teacherId)) {
+      // unlike - backend ve localdan çıkar
+      removeLikeTeacher(teacherId, {
+        onSuccess: () => {
+          const updated = likedTeachers.filter(id => id !== teacherId);
+          setLikedTeachers(updated);
+          localStorage.setItem("likedTeachers", JSON.stringify(updated));
+          queryClient.invalidateQueries({ queryKey: ["teachers"] });
+        }
+      });
+    } else {
+      // like - backend ve locale ekle
+      likeTeacher(teacherId, {
+        onSuccess: () => {
+          const updated = [...likedTeachers, teacherId];
+          setLikedTeachers(updated);
+          localStorage.setItem("likedTeachers", JSON.stringify(updated));
+          queryClient.invalidateQueries({ queryKey: ["teachers"] });
+        }
+      });
+    }
+  };
+
+  // Sıralama -> SADECE backend likes ile
+  const sortedTeachers = [...teachers].sort((a, b) => b.likes - a.likes);
+  const top3Teachers = sortedTeachers.slice(0, 3);
+  const top8Teachers = sortedTeachers.slice(0, 8);
 
   // Helper for image fallback
   const getTeacherImage = (teacher: any) => {
@@ -61,7 +84,6 @@ const Teachers = () => {
   const handleTopNext = () => {
     setTopSliderIndex((prev) => (prev === top3Teachers.length - 1 ? 0 : prev + 1))
   }
-
   const handleGridPrev = () => {
     setGridSliderIndex((prev) => (prev === 0 ? top8Teachers.length - 1 : prev - 1))
   }
@@ -92,6 +114,7 @@ const Teachers = () => {
   return (
     <section id="teachers" className="py-12 sm:py-16 lg:py-24 bg-gradient-to-br from-blue-50 via-white to-blue-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -140,7 +163,8 @@ const Teachers = () => {
                   className="flex"
                 >
                   {top3Teachers.map((teacher, index) => {
-                    const currentLikes = likedTeachers.includes(teacher.id) ? teacher.likes + 1 : teacher.likes
+                    const isLiked = likedTeachers.includes(teacher.id)
+                    const currentLikes = teacher.likes  // Backend gelen likes
                     return (
                       <div key={teacher.id} className="w-full flex-shrink-0 px-2">
                         <div className="bg-white/15 backdrop-blur-md rounded-xl p-4 text-center border border-white/30">
@@ -202,7 +226,8 @@ const Teachers = () => {
             {/* Desktop Grid */}
             <div className="hidden md:grid md:grid-cols-3 gap-6 lg:gap-8">
               {top3Teachers.map((teacher, index) => {
-                const currentLikes = likedTeachers.includes(teacher.id) ? teacher.likes + 1 : teacher.likes
+                const isLiked = likedTeachers.includes(teacher.id)
+                const currentLikes = teacher.likes
                 return (
                   <motion.div
                     key={teacher.id}
@@ -253,7 +278,7 @@ const Teachers = () => {
               >
                 {top8Teachers.map((teacher) => {
                   const isLiked = likedTeachers.includes(teacher.id)
-                  const currentLikes = isLiked ? teacher.likes + 1 : teacher.likes
+                  const currentLikes = teacher.likes
                   return (
                     <div key={teacher.id} className="w-full flex-shrink-0 px-2">
                       <div className="bg-white/50 backdrop-blur-sm rounded-xl overflow-hidden border border-blue-200/50 shadow-lg">
@@ -264,14 +289,14 @@ const Teachers = () => {
                             className="w-full h-full object-cover"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-blue-900/40 via-transparent to-transparent" />
-                          {teacher.featured && (
+                          {teacher.experience && (
                             <div className="absolute top-2 left-2 bg-gradient-to-r from-yellow-300 to-yellow-400 text-gray-900 px-2 py-1 rounded-full text-[10px] font-bold shadow-lg">
-                              ⭐ {t("teachers.featured")}
+                           {t("teacher_experience", { exp: teacher.experience })}
                             </div>
                           )}
                           <button
-                            onClick={() => handleLike(teacher.id, teacher.likes)}
-                            disabled={likePending}
+                            onClick={() => handleLike(teacher.id)}
+                            disabled={likePending || removeLikePending}
                             className={`absolute top-2 right-2 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
                               isLiked 
                                 ? 'bg-red-500 text-white' 
@@ -282,11 +307,8 @@ const Teachers = () => {
                           </button>
                           <div className="absolute bottom-2 left-2 right-2">
                             <div className="bg-white/20 backdrop-blur-md rounded-lg p-2 border border-white/30">
-                              <div className="flex items-center justify-between text-white text-xs font-semibold">
-                                <div className="flex items-center space-x-1">
-                                  <Star className="h-3 w-3 text-yellow-300 fill-current" />
-                                  <span>{teacher.rating}</span>
-                                </div>
+                              <div className="flex items-center justify-start text-white text-xs font-semibold">
+                                
                                 <div className="flex items-center space-x-1">
                                   <Heart className="h-3 w-3 text-red-300" />
                                   <span>{currentLikes.toLocaleString()}</span>
@@ -316,38 +338,25 @@ const Teachers = () => {
                   )
                 })}
               </motion.div>
-              {/* Slider Arrows - üstünde ve ortada */}
-              {/* <button
-                onClick={handleGridPrev}
-                className="absolute top-[38%] -translate-y-1/2 left-3 z-10 w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-all shadow-lg"
-              >
-                <ChevronLeft className="h-5 w-5" />
-              </button> */}
-              {/* <button
-                onClick={handleGridNext}
-                className="absolute top-[38%] -translate-y-1/2 right-3 z-10 w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-all shadow-lg"
-              >
-                <ChevronRight className="h-5 w-5" />
-              </button> */}
-            </div>
-            {/* Dots */}
-            <div className="flex justify-center gap-2 mt-4">
-              {top8Teachers.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setGridSliderIndex(index)}
-                  className={`h-2 rounded-full transition-all ${
-                    index === gridSliderIndex ? 'bg-blue-600 w-6' : 'bg-blue-300 w-2'
-                  }`}
-                />
-              ))}
+              {/* Dots */}
+              <div className="flex justify-center gap-2 mt-4">
+                {top8Teachers.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setGridSliderIndex(index)}
+                    className={`h-2 rounded-full transition-all ${
+                      index === gridSliderIndex ? 'bg-blue-600 w-6' : 'bg-blue-300 w-2'
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
           </div>
           {/* Desktop Grid */}
           <div className="hidden lg:grid lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
             {top8Teachers.map((teacher, index) => {
               const isLiked = likedTeachers.includes(teacher.id)
-              const currentLikes = isLiked ? teacher.likes + 1 : teacher.likes
+              const currentLikes = teacher.likes
               return (
                 <motion.div
                   key={teacher.id}
@@ -365,20 +374,21 @@ const Teachers = () => {
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-blue-900/40 via-transparent to-transparent" />
-                    {teacher.featured && (
+                    {teacher.experience && (
                       <motion.div 
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         className="absolute top-4 left-4 bg-gradient-to-r from-yellow-300 to-yellow-400 text-gray-900 px-3 py-1.5 rounded-full text-xs font-bold shadow-lg"
                       >
-                        ⭐ {t("teachers.featured")}
+                    {t("teacher_experience", { exp: teacher.experience })}
+                       {/* {t("teachers.years_experience")} */}
                       </motion.div>
                     )}
                     <motion.button
                       whileHover={{ scale: 1.15 }}
                       whileTap={{ scale: 0.85 }}
-                      onClick={() => handleLike(teacher.id, teacher.likes)}
-                      disabled={likePending}
+                      onClick={() => handleLike(teacher.id)}
+                      disabled={likePending || removeLikePending}
                       className={`absolute top-4 right-4 w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
                         isLiked 
                           ? 'bg-red-500 text-white scale-110' 
@@ -389,11 +399,8 @@ const Teachers = () => {
                     </motion.button>
                     <div className="absolute bottom-4 left-4 right-4">
                       <div className="bg-white/20 backdrop-blur-md rounded-xl p-3 border border-white/30">
-                        <div className="flex items-center justify-between text-white text-sm font-semibold">
-                          <div className="flex items-center space-x-2">
-                            <Star className="h-4 w-4 text-yellow-300 fill-current" />
-                            <span>{teacher.rating}</span>
-                          </div>
+                        <div className="flex items-center justify-start text-white text-sm font-semibold">
+                         
                           <div className="flex items-center space-x-2">
                             <Heart className="h-4 w-4 text-red-300" />
                             <span>{currentLikes.toLocaleString()}</span>

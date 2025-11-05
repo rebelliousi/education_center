@@ -43,6 +43,7 @@ const en = {
   "teachers.meet_faculty": "Meet Our Faculty",
   "teachers.world_class": "Experienced and inspiring",
   "teachers.educators": "teachers",
+   "teacher_experience": "Experience: {{exp}}",
   "teachers.description": "Learn from passionate educators and renowned researchers who bring cutting-edge knowledge and real-world experience to every lesson. Show your appreciation by liking your favorite teachers!",
   "teachers.top_rated": "Top Rated Teachers",
   "teachers.most_appreciated": "Teachers most loved by our students",
