@@ -3,8 +3,9 @@ import { motion } from "framer-motion";
 import { useVideos } from "../hooks/useVideos";
 import { useCategories } from "../hooks/useCategories";
 import { useTranslation } from "react-i18next";
-import { Play, Clock, Eye, Star, X, ChevronDown } from "lucide-react";
+import { Play, Clock, Eye, X, ChevronDown, Star } from "lucide-react";
 import { useLocation } from "react-router-dom";
+import SmartVideoRatingBar from "../components/SmartVideoRatingBar";
 
 const PAGE_SIZE = 8;
 
@@ -250,8 +251,6 @@ export default function AllVideosPage() {
                     <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 flex items-center space-x-1 sm:space-x-2">
                       <Eye className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500" />
                       <span className="text-xs sm:text-sm font-semibold text-white bg-blue-500/60 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded">{video.views}</span>
-                      <Star className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400 fill-current ml-1 sm:ml-2" />
-                      <span className="text-xs sm:text-sm font-semibold text-white bg-yellow-500/60 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded">{video.rating}</span>
                     </div>
                   </div>
                   <div className="p-3 sm:p-4 lg:p-6 flex-1 flex flex-col">
@@ -259,6 +258,10 @@ export default function AllVideosPage() {
                     <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2">{displayDescription}</p>
                     <div className="flex items-center justify-between text-[10px] sm:text-xs text-gray-500 mb-3 sm:mb-4 mt-auto">
                       <span className="line-clamp-1">{displayInstructor}</span>
+                    </div>
+                    {/* ★ YENİ EK: Rating Bar */}
+                    <div className="mt-1 mb-4">
+                      <SmartVideoRatingBar videoId={video.id} compact />
                     </div>
                     <button
                       className="w-full flex items-center justify-center space-x-1.5 sm:space-x-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-1.5 sm:py-2 rounded-lg sm:rounded-xl hover:shadow-lg transition-all duration-300 font-semibold text-xs sm:text-sm mt-auto"
@@ -313,6 +316,7 @@ export default function AllVideosPage() {
                 <p className="text-gray-700 text-xs sm:text-sm lg:text-base mb-2">
                   {activeVideo[`description_${lang}`] || activeVideo.description}
                 </p>
+                {/* İstersen burada da <SmartVideoRatingBar videoId={activeVideo.id} /> ekleyebilirsin */}
                 <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 text-xs sm:text-sm mb-2 flex-wrap">
                   <div className="flex items-center gap-1">
                     <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
@@ -323,6 +327,7 @@ export default function AllVideosPage() {
                     <span>{activeVideo.views} {t("videos.views")}</span>
                   </div>
                   <div className="flex items-center gap-1">
+                    {/* Star & rating badge eskisi */}
                     <Star className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400 fill-current" />
                     <span>{activeVideo.rating}</span>
                   </div>
