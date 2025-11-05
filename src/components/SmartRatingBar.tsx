@@ -127,7 +127,7 @@ export const SmartRatingBar: React.FC<SmartRatingBarProps> = ({
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 7, scale: 0.95 }}
                   transition={{ type: "spring", duration: 0.17 }}
-                  className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 z-[70] w-max"
+                  className="absolute right-[-80px] bottom-full mb-2 z-[70] w-max"
                 >
                   <div className="
                     backdrop-blur-md border border-blue-700/40
@@ -153,7 +153,7 @@ export const SmartRatingBar: React.FC<SmartRatingBarProps> = ({
                         })
                       }
                     </div>
-                    <div className="absolute left-1/2 top-full -translate-x-1/2">
+                    <div className="absolute left-4 top-full -translate-x-1/2">
                       <div className="border-4 border-transparent border-t-blue-900/90"></div>
                     </div>
                   </div>
@@ -220,7 +220,7 @@ export const SmartRatingBar: React.FC<SmartRatingBarProps> = ({
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 7, scale: 0.95 }}
                     transition={{ type: "spring", duration: 0.17 }}
-                    className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 z-[70] w-max"
+                    className="absolute right-0 bottom-full mb-2 z-[70] w-max"
                   >
                     <div className="
                       backdrop-blur-md border border-blue-700/40
@@ -243,7 +243,7 @@ export const SmartRatingBar: React.FC<SmartRatingBarProps> = ({
                           })
                         }
                       </div>
-                      <div className="absolute left-1/2 top-full -translate-x-1/2">
+                      <div className="absolute left-4 top-full -translate-x-1/2">
                         <div className="border-4 border-transparent border-t-blue-900/90"></div>
                       </div>
                     </div>
