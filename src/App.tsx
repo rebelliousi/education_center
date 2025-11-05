@@ -9,6 +9,7 @@ import Teachers from "./sections/Teachers";
 import Discounts from "./sections/Discount";
 import Contact from "./sections/Contact";
 import Footer from "./sections/Footer";
+import Navbar from "./components/Navbar";
 
 // Lazy loaded pages
 const AllCoursesPage = lazy(() => import("./pages/AllCoursesPage"));
@@ -54,6 +55,7 @@ export const App = () => {
           path="/courses"
           element={
             <Suspense fallback={<CenterSpinner />}>
+              <Navbar/>
               <AllCoursesPage />
               <Footer />
             </Suspense>
@@ -64,6 +66,7 @@ export const App = () => {
           path="/videos"
           element={
             <Suspense fallback={<CenterSpinner />}>
+              <Navbar/>
               <AllVideosPage />
               <Footer />
             </Suspense>
@@ -74,6 +77,7 @@ export const App = () => {
           path="/teachers"
           element={
             <Suspense fallback={<CenterSpinner />}>
+              <Navbar/>
               <AllTeachersPage />
               <Footer />
             </Suspense>

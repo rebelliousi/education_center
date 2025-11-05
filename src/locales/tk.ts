@@ -95,16 +95,22 @@ const tk = {
     "level": "Dereje",
     "category": "Kategoriýa",
     "all": "Ähli",
+    "hours": "sagat",
     "all_courses": "Ähli kurslar",
     "all_courses_desc": "Kurslaryň hemmesine serediň we özüňe laýykyny tap!",
     "all_levels": "Ähli derejeler",
     "all_categories": "Ähli kategoriýalar",
     "search_placeholder": "Kurs gözleg...",
     "learn_more_btn": "Has giňişleýin",
+      "your_rating": "Siziň beren bahalaryňyz",
+"rating_date": "{{date}} baha berdiňiz",
+  "rate": "Baha ber",
+  "error": "Ýalňyşlyk ýüze çykdy!",
     "levels": {
       "beginner": "Başlangyç",
       "intermediate": "Orta",
-      "advanced": "Ýokary"
+      "advanced": "Ýokary",
+    
     }
   },
   "videos": {
@@ -153,7 +159,8 @@ const tk = {
     "banner": {
       "announcement": "Bildiriş",
       "learn_more": "Has giňişleýin"
-    }
+    },
+   
   
 
 };

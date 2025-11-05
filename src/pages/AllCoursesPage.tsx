@@ -4,10 +4,14 @@ import { useCourses } from "../hooks/useCourses";
 import { useLevels } from "../hooks/useLevels";
 import { useCategories } from "../hooks/useCategories";
 import { useTranslation } from "react-i18next";
-import { Clock, Users, Star, ChevronDown, X } from "lucide-react";
+import { Clock, Users, Star, ChevronDown, X, Calendar } from "lucide-react";
 import { useLocation } from "react-router-dom";
+import { SmartRatingBar } from "../components/SmartRatingBar"; // Mavi temalı interaktif star bar!
 
-// Seviye rengi fonksiyonu
+function getCardGradient() {
+  return "from-blue-200 via-blue-400 to-blue-700";
+}
+
 function getLevelColor(level: string) {
   switch (level) {
     case "Beginner":
@@ -36,7 +40,6 @@ type CategoryButtonType = {
 const PAGE_SIZE = 8;
 
 export default function AllCoursesPage() {
-  // SPA navigasyonunda da veri gelsin diye refetch eklenir!
   const { refetch, data: courses = [], isLoading: coursesLoading } = useCourses();
   const location = useLocation();
   useEffect(() => {
@@ -49,14 +52,13 @@ export default function AllCoursesPage() {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const [activeCourse, setActiveCourse] = useState<any>(null); // MODAL için aktif kurs
+  const [activeCourse, setActiveCourse] = useState<any>(null);
 
   const { data: levels = [] } = useLevels();
   const { data: categories = [] } = useCategories();
   const { t, i18n } = useTranslation();
   const lang = i18n.language || "en";
 
-  // Sadece kursu olan seviyeler için filter
   const usedLevelIds = new Set(
     courses
       .map(course =>
@@ -75,7 +77,6 @@ export default function AllCoursesPage() {
         value: lvl.id
       }))
   ];
-
   const CATEGORIES: CategoryButtonType[] = [
     { label: t("courses.all_categories") || "All Categories", value: "all" },
     ...categories.map(cat => ({
@@ -85,7 +86,6 @@ export default function AllCoursesPage() {
     }))
   ];
 
-  // Kursları filtrele
   let filteredCourses = courses;
   if (activeFilter === "category" && category !== "all") {
     filteredCourses = filteredCourses.filter((course: any) =>
@@ -105,12 +105,10 @@ export default function AllCoursesPage() {
     );
   }
 
-  // Pagination hesaplama
   const totalCourses = filteredCourses.length;
   const totalPages = Math.ceil(totalCourses / PAGE_SIZE);
   const paginatedCourses = filteredCourses.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
-  // Dropdown state ve ref
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [showLevelDropdown, setShowLevelDropdown] = useState(false);
   const categoryRef = useRef<HTMLDivElement>(null);
@@ -163,7 +161,6 @@ export default function AllCoursesPage() {
   return (
     <section className="py-12 sm:py-16 lg:py-24 min-h-[80vh] bg-gradient-to-br from-blue-50 via-white to-blue-100">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
-
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -179,7 +176,6 @@ export default function AllCoursesPage() {
             {t("courses.all_courses_desc")}
           </p>
         </motion.div>
-
         {/* Search Bar */}
         <div className="flex justify-center mb-6 sm:mb-8">
           <input
@@ -193,10 +189,8 @@ export default function AllCoursesPage() {
             }}
           />
         </div>
-
         {/* Filtre Button Alanı */}
         <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 lg:gap-4 mb-6 sm:mb-8 relative">
-          {/* All Button */}
           <button
             onClick={handleAllClick}
             className={`px-4 py-1.5 sm:px-5 sm:py-2 lg:px-6 rounded-full text-xs sm:text-sm font-semibold shadow transition duration-200 border-none outline-none ${
@@ -207,8 +201,6 @@ export default function AllCoursesPage() {
           >
             {t("courses.all")}
           </button>
-
-          {/* Category Button & Dropdown */}
           <div className="relative" ref={categoryRef}>
             <button
               onClick={() => {
@@ -228,7 +220,6 @@ export default function AllCoursesPage() {
               </span>
               <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
             </button>
-            {/* Dropdown */}
             {showCategoryDropdown && (
               <div className="absolute left-0 top-full z-10 mt-2 w-36 sm:w-44 bg-white rounded-xl sm:rounded-2xl shadow-lg border border-blue-100 py-2 max-h-60 overflow-y-auto">
                 {CATEGORIES.map(cat => (
@@ -247,8 +238,6 @@ export default function AllCoursesPage() {
               </div>
             )}
           </div>
-
-          {/* Level Button & Dropdown */}
           <div className="relative" ref={levelRef}>
             <button
               onClick={() => {
@@ -268,7 +257,6 @@ export default function AllCoursesPage() {
               </span>
               <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
             </button>
-            {/* Dropdown */}
             {showLevelDropdown && (
               <div className="absolute left-0 top-full z-10 mt-2 w-32 sm:w-44 bg-white rounded-xl sm:rounded-2xl shadow-lg border border-blue-100 py-2 max-h-60 overflow-y-auto">
                 {LEVELS.map(lvl => (
@@ -288,7 +276,6 @@ export default function AllCoursesPage() {
             )}
           </div>
         </div>
-
         {/* Kurs grid */}
         {coursesLoading ? (
           <div className="flex justify-center items-center min-h-[300px]">
@@ -325,27 +312,34 @@ export default function AllCoursesPage() {
                       alt={displayName}
                       className="w-full h-full object-cover"
                     />
+                    {/* BLUE CARD GRADIENT OVERLAY! */}
+                    <div className={`absolute inset-0 bg-gradient-to-t ${getCardGradient()} opacity-70`} />
                     <div className="absolute top-2 left-2 sm:top-3 sm:left-3">
                       <span className={`px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-semibold ${getLevelColor(displayLevel)}`}>
                         {displayLevel}
                       </span>
                     </div>
-                    <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 flex items-center space-x-1 sm:space-x-2">
-                      <Star className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400 fill-current" />
-                      <span className="text-xs sm:text-sm font-semibold text-white bg-blue-500/60 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded">{course.rating}</span>
+                    {/* STAR RATING BAR: Ana gridde compact modda! */}
+                    <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 flex items-center">
+                      <SmartRatingBar
+                        courseId={course.id}
+                      
+                        compact
+                      />
                     </div>
                   </div>
                   <div className="p-3 sm:p-4 lg:p-6 flex-1 flex flex-col">
                     <h3 className="text-sm sm:text-base lg:text-lg font-bold text-gray-900 mb-1 sm:mb-2 line-clamp-2">{displayName}</h3>
+                    {/* Description: sadece iki satır */}
                     <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2">{displayDescription}</p>
                     <div className="flex items-center justify-between text-[10px] sm:text-xs text-gray-500 mb-3 sm:mb-4 mt-auto">
                       <div className="flex items-center space-x-1">
-                        <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500" />
+                        <Calendar className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500" />
                         <span className="line-clamp-1">{displayDuration}</span>
                       </div>
                       <div className="flex items-center space-x-1">
-                        <Users className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500" />
-                        <span>{course.students}</span>
+                        <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500" />
+                        <span>{course.hours} {t("courses.hours")}</span>
                       </div>
                     </div>
                     <button
@@ -360,7 +354,6 @@ export default function AllCoursesPage() {
             })}
           </div>
         )}
-
         {/* Modal */}
         {activeCourse && (
           <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-3 sm:px-4">
@@ -383,10 +376,10 @@ export default function AllCoursesPage() {
               <div className="font-bold text-blue-700 text-base sm:text-lg lg:text-xl mb-2">
                 {t("courses.price")}{activeCourse.price ? `: ${activeCourse.price} TMT` : ""}
               </div>
+              {/* MODALDA RATING BAR YOK */}
             </motion.div>
           </div>
         )}
-
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex justify-center mt-8 sm:mt-10 lg:mt-12">

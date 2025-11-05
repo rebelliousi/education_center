@@ -8,7 +8,7 @@ export interface CourseType {
   description: string;
   duration: string;
   price: number;
-  students: number;
+  hours: number;
   rating: string | number;    // Eğer sayı olacaksa: number
   level: string;
   image: string;

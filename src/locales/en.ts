@@ -95,16 +95,22 @@ const en = {
     "level": "Level",
     "category": "Category",
     "all": "All",
+    "hours": "hours",
     "all_courses": "All Courses",
     "all_courses_desc": "Browse all courses and find the one for you!",
     "all_levels": "All Levels",
     "all_categories": "All Categories",
     "search_placeholder": "Search courses...",
     "learn_more_btn": "Learn More",
+    "your_rating": "Your rating",
+  "rating_date": "Rated on {{date}}",
+  "rate": "Rate",
+  "error": "An error occurred!",
     "levels": {
       "beginner": "Beginner",
       "intermediate": "Intermediate",
-      "advanced": "Advanced"
+      "advanced": "Advanced",
+      
     }
   },
   "videos": {
@@ -154,6 +160,7 @@ const en = {
     "banner": {
       "announcement": "Announcement",
       "learn_more": "Learn More"
-    }
+    },
+    
 }
 export default en;

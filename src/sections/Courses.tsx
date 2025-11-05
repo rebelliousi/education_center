@@ -6,7 +6,11 @@ import {
   Users,
   BookOpen,
   Award,
-  X
+  X,
+  Clock12,
+  ClosedCaptionIcon,
+  LucideAlarmClockOff,
+  Calendar
 } from "lucide-react";
 import { useCourses } from "../hooks/useCourses";
 import { useLevels } from "../hooks/useLevels";
@@ -232,12 +236,12 @@ export default function CoursesSection() {
                   </p>
                   <div className="flex items-center justify-between text-[10px] sm:text-xs lg:text-sm text-gray-500 mb-2 sm:mb-3 lg:mb-4">
                     <div className="flex items-center space-x-0.5 sm:space-x-1">
-                      <Clock className="h-3 w-3 lg:h-4 lg:w-4 text-blue-500" />
+                      <Calendar className="h-3 w-3 lg:h-4 lg:w-4 text-blue-500" />
                       <span className="truncate">{displayDuration}</span>
                     </div>
                     <div className="flex items-center space-x-0.5 sm:space-x-1">
-                      <Users className="h-3 w-3 lg:h-4 lg:w-4 text-blue-500" />
-                      <span>{course.students}</span>
+                      <Clock className="h-3 w-3 lg:h-4 lg:w-4 text-blue-500" />
+                      <span>{course.hours} {t("courses.hours")}</span>
                     </div>
                   </div>
                   <div className="mt-auto">

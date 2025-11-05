@@ -95,16 +95,22 @@ const ru = {
     "level": "Уровень",
     "category": "Категория",
     "all": "Все",
+     "hours": "часов",
     "all_courses": "Все курсы",
     "all_courses_desc": "Просмотрите все курсы и найдите подходящий!",
     "all_levels": "Все уровни",
     "all_categories": "Все категории",
     "search_placeholder": "Поиск курса...",
     "learn_more_btn": "Подробнее",
+     "your_rating": "Your rating",
+  "rating_date": "Оценено {{date}}",
+  "rate": "Оценить",
+  "error": "Произошла ошибка!",
     "levels": {
       "beginner": "Новичок",
       "intermediate": "Средний",
-      "advanced": "Продвинутый"
+      "advanced": "Продвинутый",
+      
     }
   },
   "videos": {
@@ -153,6 +159,7 @@ const ru = {
     "banner": {
       "announcement": "Объявление",
       "learn_more": "Узнать больше"
-    }
+    },
+   
 };
 export default ru;

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Info } from 'lucide-react';
 import { useRateCourse } from "../hooks/useRateCourses";
 import { useCourseRatingInfo } from "../hooks/useCourseRatingInfo";
+import { useTranslation } from 'react-i18next';
 
 type UserRatingInfo = {
   rating: number;
@@ -28,6 +29,9 @@ export const SmartRatingBar: React.FC<SmartRatingBarProps> = ({
   const { data: ratingInfo, refetch: refetchRatingInfo } = useCourseRatingInfo(courseId);
   const averageRating = ratingInfo?.average_rating ?? 0;
   const totalVotes = ratingInfo?.rating_count ?? 0;
+
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language || "en";
 
   // POST rating to backend
   const rateCourse = useRateCourse(courseId);
@@ -70,7 +74,7 @@ export const SmartRatingBar: React.FC<SmartRatingBarProps> = ({
           <motion.button
             key={i}
             disabled={!isInteractive}
-            aria-label={`rate ${i} star${i > 1 ? "s" : ""}`}
+            aria-label={t("courses.rate_star", { count: i })} // i18n: "Rate {{count}} stars"
             onClick={() => isInteractive && handleStarClick(i)}
             onMouseEnter={() => isInteractive && setHoveredRating(i)}
             onMouseLeave={() => isInteractive && setHoveredRating(null)}
@@ -103,7 +107,6 @@ export const SmartRatingBar: React.FC<SmartRatingBarProps> = ({
             {averageRating.toFixed(1)}
             <span className="ml-1 text-blue-200 font-normal">({totalVotes})</span>
           </span>
-          
         </span>
         {userRating && (
           <div className="relative ml-1">
@@ -124,24 +127,31 @@ export const SmartRatingBar: React.FC<SmartRatingBarProps> = ({
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 7, scale: 0.95 }}
                   transition={{ type: "spring", duration: 0.17 }}
-                  className="absolute left-1 -translate-x-1/2 bottom-full mb-1.5 z-[70] w-max"
+                  className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 z-[70] w-max"
                 >
                   <div className="
                     backdrop-blur-md border border-blue-700/40
-                    bg-blue-900/90 text-white text-[11px] px-2 py-1
+                    bg-blue-900/90 text-white text-[12px] px-3 py-2
                     rounded-lg shadow whitespace-nowrap
                     relative flex flex-col items-center
                   ">
-                    <div className="mb-1 text-blue-200">Your rating</div>
-                    <div className="flex items-center text-yellow-400 font-bold text-[13px] mb-[2px]">
+                    {/* i18n başlık! */}
+                    <div className="mb-1 text-blue-200">{t('courses.your_rating')}</div>
+                    <div className="flex items-center text-yellow-400 font-bold text-lg mb-[2px]">
                       {'★'.repeat(userRating.rating)}
                       {'☆'.repeat(5 - userRating.rating)}
-                      <span className="ml-1 text-white text-xs font-normal">
+                      <span className="ml-1 text-white text-sm font-normal">
                         ({userRating.rating}/5)
                       </span>
                     </div>
-                    <div className="text-blue-100 text-[10px] text-center leading-tight">
-                      {new Date(userRating.created_at).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'})}
+                    {/* Tarihin locale formatı ve çevirisi */}
+                    <div className="text-blue-100 text-[11px] text-center leading-tight">
+                      {
+                        t("courses.rating_date", {
+                          date: new Date(userRating.created_at)
+                            .toLocaleDateString(lang, {month:'short', day:'numeric', year:'numeric'})
+                        })
+                      }
                     </div>
                     <div className="absolute left-1/2 top-full -translate-x-1/2">
                       <div className="border-4 border-transparent border-t-blue-900/90"></div>
@@ -158,11 +168,11 @@ export const SmartRatingBar: React.FC<SmartRatingBarProps> = ({
             animate={{ opacity: 1 }}
             className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-100"
           >
-            Rate
+            {t("courses.rate")}
           </motion.span>
         )}
         {rateCourse.isError && (
-          <span className="absolute right-1 bottom-1 text-red-300 text-[10px]">An error occurred!</span>
+          <span className="absolute right-1 bottom-1 text-red-300 text-[10px]">{t("courses.error")}</span>
         )}
       </div>
     );
@@ -187,7 +197,7 @@ export const SmartRatingBar: React.FC<SmartRatingBarProps> = ({
             </span>
             {userRating && (
               <span className="text-sm text-blue-300 font-medium mt-0.5">
-                Average rate
+                {t("courses.average_rate")}
               </span>
             )}
           </span>
@@ -218,7 +228,7 @@ export const SmartRatingBar: React.FC<SmartRatingBarProps> = ({
                       rounded-lg shadow whitespace-nowrap
                       relative flex flex-col items-center
                     ">
-                      <div className="mb-1 text-blue-200">Your rating</div>
+                      <div className="mb-1 text-blue-200">{t('courses.your_rating')}</div>
                       <div className="flex items-center text-yellow-400 font-bold text-lg mb-[2px]">
                         {'★'.repeat(userRating.rating)}
                         {'☆'.repeat(5 - userRating.rating)}
@@ -227,7 +237,11 @@ export const SmartRatingBar: React.FC<SmartRatingBarProps> = ({
                         </span>
                       </div>
                       <div className="text-blue-100 text-[11px] text-center leading-tight">
-                        {new Date(userRating.created_at).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'})}
+                        { t("courses.rating_date", {
+                            date: new Date(userRating.created_at)
+                              .toLocaleDateString(lang, {month:'short', day:'numeric', year:'numeric'})
+                          })
+                        }
                       </div>
                       <div className="absolute left-1/2 top-full -translate-x-1/2">
                         <div className="border-4 border-transparent border-t-blue-900/90"></div>
@@ -239,7 +253,7 @@ export const SmartRatingBar: React.FC<SmartRatingBarProps> = ({
             </div>
           )}
           {rateCourse.isError && (
-            <span className="absolute right-3 bottom-3 text-red-300 text-xs">An error occurred!</span>
+            <span className="absolute right-3 bottom-3 text-red-300 text-xs">{t("courses.error")}</span>
           )}
         </div>
       </motion.div>
