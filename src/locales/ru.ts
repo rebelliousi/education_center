@@ -127,7 +127,13 @@ const ru = {
     "views": "просмотров",
     "latest_videos": "Наши новейшие видео",
     "featured_section_title": "О нашем центре",
-    "educational_grid_title": "Образовательные видео"
+    "educational_grid_title": "Образовательные видео",
+      "rate_star": "Звезда {count}",
+  "your_rating": "Ваш рейтинг",
+  "rating_date": "Дата оценки: {date}",
+  "rate": "Оценить",
+  "error": "Произошла ошибка",
+  "average_rate": "Средний рейтинг"
   },
    "teachers": {
     "all_faculty": "Все преподаватели",

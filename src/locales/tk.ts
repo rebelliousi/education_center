@@ -127,7 +127,13 @@ const tk = {
     "views": "görlen",
      "latest_videos": "Täze wideolarymyz",
      "featured_section_title": "Merkezimiz hakynda",
-    "educational_grid_title": "Täze kurslar we okuw wideolary"
+    "educational_grid_title": "Täze kurslar we okuw wideolary",
+    "rate_star": "Ýyldyz {count}",
+  "your_rating": "Siziň reýtingiňiz",
+  "rating_date": "Baha berlen senesi: {date}",
+  "rate": "Baha ber",
+  "error": "Ýalňyşlyk ýüze çykdy",
+  "average_rate": "Orta baha"
   },
   "teachers": {
     "all_faculty": "Ähli mugallymlar",

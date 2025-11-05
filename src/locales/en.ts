@@ -128,6 +128,12 @@ const en = {
     "latest_videos": "Our Latest Videos",
     "featured_section_title": "About Our Center",
      "educational_grid_title": "Educational Videos",
+     "rate_star": "Star {count}",
+  "your_rating": "Your rating",
+  "rating_date": "Rating date: {date}",
+  "rate": "Rate",
+  "error": "An error occurred",
+  "average_rate": "Average rating"
    
   },
   "teachers": {
