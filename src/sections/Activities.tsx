@@ -87,7 +87,7 @@ const Activities = () => {
 
   return (
     <section id="activities" className="py-12 lg:py-20">
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 w-full">
+      <div className="max-w-7xl mx-auto  px-3 sm:px-4 lg:px-8 w-full">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -112,7 +112,7 @@ const Activities = () => {
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 px-2 sm:px-4 lg:px-8 overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 px-2 sm:px-4 lg:px-8 py-10 overflow-hidden">
             <AnimatePresence mode="wait" initial={false} custom={direction}>
               <motion.div
                 key={`carousel-${currentIndex}`}

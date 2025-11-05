@@ -28,29 +28,27 @@ const Videos = () => {
   }, []);
 
   // Kullanıcının videoyu ilk mi izlediğini kontrol edip views artıran fonksiyon
- const handlePlayVideo = (videoId: string | number) => {
-  // id'yi string olarak kullan
-  const strId = String(videoId);
+  const handlePlayVideo = (videoId: string | number) => {
+    // id'yi string olarak kullan
+    const strId = String(videoId);
 
-  // Diziyi okurken map ile her elemanı string'e çevir!
-  let viewedVideos = JSON.parse(localStorage.getItem("viewedVideos") || "[]");
-  viewedVideos = viewedVideos.map((v: any) => String(v));
+    let viewedVideos = JSON.parse(localStorage.getItem("viewedVideos") || "[]");
+    viewedVideos = viewedVideos.map((v: any) => String(v));
 
-  if (!viewedVideos.includes(strId)) {
-    viewVideo(videoId, {
-      onSuccess: () => {
-        refetch();
-        localStorage.setItem("viewedVideos", JSON.stringify([...viewedVideos, strId]));
-      }
-    });
-  }
-  // Eğer daha önce izlenmişse tekrar istek göndermez!
-};
+    if (!viewedVideos.includes(strId)) {
+      viewVideo(videoId, {
+        onSuccess: () => {
+          refetch();
+          localStorage.setItem("viewedVideos", JSON.stringify([...viewedVideos, strId]));
+        }
+      });
+    }
+  };
 
   // İlk "featured" videoyu bul (varsa)
   const promotionalVideo = videos.find(v => v.featured) || videos[0];
 
-  // Sadece en yeni 8 video
+  // Diğer yeni videolar (featured olmayanlar)
   const sortedVideos = [...videos]
     .filter(video => !video.featured)
     .sort((a, b) => (b.created || b.id) - (a.created || a.id))
@@ -74,6 +72,7 @@ const Videos = () => {
   return (
     <section id="videos" className="py-24 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -116,7 +115,10 @@ const Videos = () => {
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                             className="w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-white/20 backdrop-blur-2xl rounded-full flex items-center justify-center border-2 border-white/60 hover:bg-white/30 transition-all duration-300 shadow-md"
-                            onClick={() => handlePlayVideo(promotionalVideo.id)}
+                            onClick={() => {
+                              handlePlayVideo(promotionalVideo.id);
+                              setModalVideo(promotionalVideo);
+                            }}
                             disabled={isPending}
                           >
                             <Play className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white ml-1" fill="currentColor" />
@@ -160,7 +162,11 @@ const Videos = () => {
                       <span>{promotionalVideo.views} {t("videos.views")}</span>
                     </div>
                   </div>
-                  <button className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 sm:px-6 sm:py-2.5 lg:px-8 lg:py-3 rounded-full hover:shadow-lg transition-all duration-300 hover:from-blue-700 hover:to-blue-800 font-semibold text-xs sm:text-base">
+                  <button className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-2 sm:px-6 sm:py-2.5 lg:px-8 lg:py-3 rounded-full hover:shadow-lg transition-all duration-300 hover:from-blue-700 hover:to-blue-800 font-semibold text-xs sm:text-base"
+                    onClick={() => {
+                      handlePlayVideo(promotionalVideo.id);
+                      setModalVideo(promotionalVideo);
+                    }}>
                     <Play className="h-4 w-4 sm:h-5 sm:w-5" />
                     <span>{t("videos.watch_now")}</span>
                   </button>
@@ -243,7 +249,6 @@ const Videos = () => {
                 </div>
               ))}
             </motion.div>
-            {/* Slider Arrows on the sides, a bit higher */}
             <button
               onClick={prevSlide}
               className="absolute top-[38%] -translate-y-1/2 left-3 z-10 w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-all shadow-lg"
@@ -259,7 +264,6 @@ const Videos = () => {
               <ChevronRight className="h-5 w-5" />
             </button>
           </div>
-          {/* Dots */}
           <div className="flex justify-center gap-2 mt-4">
             {sliderVideos.map((_, idx) => (
               <button
@@ -308,7 +312,10 @@ const Videos = () => {
                     whileTap={{ scale: 0.9 }}
                     className="w-12 h-12 sm:w-14 sm:h-14 bg-white/25 backdrop-blur-2xl rounded-full flex items-center justify-center border-2 border-white/60 shadow-md"
                     disabled={isPending}
-                    onClick={() => handlePlayVideo(video.id)}
+                    onClick={() => {
+                      handlePlayVideo(video.id);
+                      setModalVideo(video);
+                    }}
                   >
                     <Play className="h-4 w-4 sm:h-5 sm:w-5 text-white ml-1" fill="currentColor" />
                   </motion.button>
@@ -344,7 +351,7 @@ const Videos = () => {
           ))}
         </div>
 
-        {/* Modal (video açılınca izlenme sayısı artar & kapanır) */}
+        {/* Modal */}
         <AnimatePresence>
           {modalVideo && (
             <motion.div
@@ -413,6 +420,7 @@ const Videos = () => {
             </motion.div>
           )}
         </AnimatePresence>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
