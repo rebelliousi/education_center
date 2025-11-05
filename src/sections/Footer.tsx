@@ -23,10 +23,15 @@ const Footer = () => {
   return (
     <footer className="bg-gradient-to-b from-white to-blue-50 text-gray-900 py-16 border-t border-blue-200/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* ... Brand & Description bölümü ... */}
+        {/* Brand & Description bölümü */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12 items-start">
           {/* Sol: brand, üniversite ismi vs */}
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} viewport={{ once: true }}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
             <div className="flex items-center gap-3 mb-6">
               <div className="w-12 h-12 flex items-center ">
                 <img src={Logo} alt="" className="w-12 h-12 text-white" />
@@ -40,21 +45,22 @@ const Footer = () => {
               {t("footer.description")}
             </p>
             <span className="text-gray-500 italic text-base">
-            {t("footer.university_name")}
+              {t("footer.university_name")}
             </span>
           </motion.div>
 
+          {/* Sağda (desktop), solda (mobil) sosyal ikonlar */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
-            className="md:text-right flex flex-col items-end"
+            className="flex flex-col items-start md:items-end md:text-right"
           >
             <h4 className="font-bold text-gray-900 mb-6">{t("footer.connect_with_us")}</h4>
-            <div className="flex gap-4 md:justify-end mb-6">
+            <div className="flex gap-4 mb-6 md:justify-end">
               {socialItems.map(item => {
-                const IconComponent = iconMap[item.icon]
+                const IconComponent = iconMap[item.icon];
                 if (!IconComponent) return null;
                 return (
                   <a
