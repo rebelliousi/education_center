@@ -1,47 +1,75 @@
-import React, { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Play, Clock, Eye, Star, X, ChevronLeft, ChevronRight } from 'lucide-react'
-import { useVideos } from "../hooks/useVideos"
-import { useViewVideo } from "../hooks/useViewVideo"
-import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router-dom"
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Play, Clock, Eye, Star, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useVideos } from "../hooks/useVideos";
+import { useViewVideo } from "../hooks/useViewVideo";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 const Videos = () => {
-  const { t, i18n } = useTranslation()
-  const lang = i18n.language || "tk"
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language || "tk";
   const navigate = useNavigate();
 
   // Videoları çek
-  const { data: videos = [], isLoading: videosLoading, error: videosError } = useVideos()
-  const { mutate: viewVideo, isPending: viewPending } = useViewVideo()
+  const { data: videos = [], isLoading, error, refetch } = useVideos();
+  const { mutate: viewVideo, isPending } = useViewVideo();
 
   // Modal state
-  const [modalVideo, setModalVideo] = useState<any>(null)
-  const [sliderIndex, setSliderIndex] = useState(0)
-  const [isMobile, setIsMobile] = useState(false)
+  const [modalVideo, setModalVideo] = useState<any>(null);
+  const [sliderIndex, setSliderIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 640)
-    handleResize()
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Kullanıcının videoyu ilk mi izlediğini kontrol edip views artıran fonksiyon
+ const handlePlayVideo = (videoId: string | number) => {
+  // id'yi string olarak kullan
+  const strId = String(videoId);
+
+  // Diziyi okurken map ile her elemanı string'e çevir!
+  let viewedVideos = JSON.parse(localStorage.getItem("viewedVideos") || "[]");
+  viewedVideos = viewedVideos.map((v: any) => String(v));
+
+  if (!viewedVideos.includes(strId)) {
+    viewVideo(videoId, {
+      onSuccess: () => {
+        refetch();
+        localStorage.setItem("viewedVideos", JSON.stringify([...viewedVideos, strId]));
+      }
+    });
+  }
+  // Eğer daha önce izlenmişse tekrar istek göndermez!
+};
 
   // İlk "featured" videoyu bul (varsa)
-  const promotionalVideo = videos.find(v => v.featured) || videos[0]
+  const promotionalVideo = videos.find(v => v.featured) || videos[0];
 
   // Sadece en yeni 8 video
   const sortedVideos = [...videos]
     .filter(video => !video.featured)
     .sort((a, b) => (b.created || b.id) - (a.created || a.id))
-    .slice(0, 8)
+    .slice(0, 8);
 
   // Slider için mobilde gösterilecek videolar
-  const sliderVideos = isMobile ? sortedVideos : []
+  const sliderVideos = isMobile ? sortedVideos : [];
 
   // Slider ileri/geri fonksiyonları
-  const nextSlide = () => setSliderIndex(i => (i + 1) % sliderVideos.length)
-  const prevSlide = () => setSliderIndex(i => (i - 1 + sliderVideos.length) % sliderVideos.length)
+  const nextSlide = () => setSliderIndex(i => (i + 1) % sliderVideos.length);
+  const prevSlide = () => setSliderIndex(i => (i - 1 + sliderVideos.length) % sliderVideos.length);
+
+  // Modal açılınca otomatik views artışı
+  useEffect(() => {
+    if (modalVideo) {
+      handlePlayVideo(modalVideo.id);
+    }
+    // eslint-disable-next-line
+  }, [modalVideo]);
 
   return (
     <section id="videos" className="py-24 min-h-screen">
@@ -88,8 +116,8 @@ const Videos = () => {
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                             className="w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 bg-white/20 backdrop-blur-2xl rounded-full flex items-center justify-center border-2 border-white/60 hover:bg-white/30 transition-all duration-300 shadow-md"
-                            onClick={() => viewVideo(promotionalVideo.id)}
-                            disabled={viewPending}
+                            onClick={() => handlePlayVideo(promotionalVideo.id)}
+                            disabled={isPending}
                           >
                             <Play className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white ml-1" fill="currentColor" />
                           </motion.button>
@@ -243,14 +271,14 @@ const Videos = () => {
           </div>
         </div>
 
-        {/* Educational Videos Grid (desktop/tablet) */}
+        {/* Video Grid (desktop/tablet) */}
         <div className="hidden sm:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
-          {sortedVideos.map((video, index) => (
+          {sortedVideos.map((video, idx) => (
             <motion.div
               key={video.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
+              transition={{ duration: 0.6, delay: idx * 0.1 }}
               viewport={{ once: true }}
               whileHover={{ y: -10 }}
               className="bg-white/40 backdrop-blur-sm rounded-xl sm:rounded-2xl overflow-hidden border border-blue-200/50 hover:border-blue-300 transition-all duration-300 group cursor-pointer shadow-md hover:shadow-lg"
@@ -279,7 +307,8 @@ const Videos = () => {
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     className="w-12 h-12 sm:w-14 sm:h-14 bg-white/25 backdrop-blur-2xl rounded-full flex items-center justify-center border-2 border-white/60 shadow-md"
-                    disabled={viewPending}
+                    disabled={isPending}
+                    onClick={() => handlePlayVideo(video.id)}
                   >
                     <Play className="h-4 w-4 sm:h-5 sm:w-5 text-white ml-1" fill="currentColor" />
                   </motion.button>
@@ -315,7 +344,7 @@ const Videos = () => {
           ))}
         </div>
 
-        {/* Modal sadece grid videoları için */}
+        {/* Modal (video açılınca izlenme sayısı artar & kapanır) */}
         <AnimatePresence>
           {modalVideo && (
             <motion.div
@@ -400,7 +429,7 @@ const Videos = () => {
         </motion.div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Videos
+export default Videos;
