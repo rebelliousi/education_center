@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Info } from 'lucide-react';
 import { useRateCourse } from "../hooks/useRateCourses";
-import { useCourseRatingInfo } from "../hooks/useCourseRatingInfo";
 import { useTranslation } from 'react-i18next';
 
 type UserRatingInfo = {
@@ -12,11 +11,16 @@ type UserRatingInfo = {
 
 export interface SmartRatingBarProps {
   courseId: number;
+  ratingData?: {
+    average_rating: number;
+    rating_count: number;
+  };
   compact?: boolean;
 }
 
 export const SmartRatingBar: React.FC<SmartRatingBarProps> = ({
   courseId,
+  ratingData,
   compact = false
 }) => {
   const [hoveredRating, setHoveredRating] = useState<number | null>(null);
@@ -28,7 +32,6 @@ export const SmartRatingBar: React.FC<SmartRatingBarProps> = ({
   // Device type detection
   const [isMobileDevice, setIsMobileDevice] = useState(false);
   useEffect(() => {
-    // Tailwind's sm: breakpoint is 640px
     const checkIsMobile = () =>
       window.matchMedia('(max-width: 640px)').matches;
     setIsMobileDevice(checkIsMobile());
@@ -37,15 +40,14 @@ export const SmartRatingBar: React.FC<SmartRatingBarProps> = ({
       window.removeEventListener('resize', () => setIsMobileDevice(checkIsMobile()));
   }, []);
 
-  // Fetch rating info from backend (average + count)
-  const { data: ratingInfo, refetch: refetchRatingInfo } = useCourseRatingInfo(courseId);
-  const averageRating = ratingInfo?.average_rating ?? 0;
-  const totalVotes = ratingInfo?.rating_count ?? 0;
+  // Artık GET rating backend hook yok! Data prop'tan geliyor.
+  const averageRating = ratingData?.average_rating ?? 0;
+  const totalVotes = ratingData?.rating_count ?? 0;
 
   const { t, i18n } = useTranslation();
   const lang = i18n.language || "en";
 
-  // POST rating to backend
+  // POST rating to backend (aynı şekilde kaldı)
   const rateCourse = useRateCourse(courseId);
 
   useEffect(() => {
@@ -55,7 +57,6 @@ export const SmartRatingBar: React.FC<SmartRatingBarProps> = ({
     }
   }, [courseId]);
 
-  // Close tooltip when clicking outside (for all devices)
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent | TouchEvent) => {
       if (showInfoTooltip) {
@@ -78,12 +79,11 @@ export const SmartRatingBar: React.FC<SmartRatingBarProps> = ({
     };
   }, [showInfoTooltip]);
 
-  // Tooltip open logic based on device
   const handleInfoMouseEnter = (e: React.MouseEvent) => {
-    if (!isMobileDevice) setShowInfoTooltip(true); // desktop hover
+    if (!isMobileDevice) setShowInfoTooltip(true);
   };
   const handleInfoMouseLeave = (e: React.MouseEvent) => {
-    if (!isMobileDevice) setShowInfoTooltip(false); // desktop hover out
+    if (!isMobileDevice) setShowInfoTooltip(false);
   };
   const handleInfoTouch = (e: React.TouchEvent) => {
     if (isMobileDevice) {
@@ -97,10 +97,9 @@ export const SmartRatingBar: React.FC<SmartRatingBarProps> = ({
     setIsSubmitting(true);
     try {
       await rateCourse.mutateAsync({ rating });
-      await refetchRatingInfo();
-    } catch (e) {
-      // Optional: handle errors here
-    }
+      // Burada ratingData güncellenmesini ana componentte tetikle!
+      // (refetch fonksiyonunu yukarıdan gönderebilirsin veya backend hook'tan dönecek şekilde güncelle)
+    } catch (e) {}
     const ratingInfo: UserRatingInfo = {
       rating,
       created_at: new Date().toISOString()

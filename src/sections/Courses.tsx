@@ -3,29 +3,25 @@ import { motion } from "framer-motion";
 import {
   ArrowRight,
   Clock,
-  Users,
   BookOpen,
   Award,
   X,
-  Clock12,
-  ClosedCaptionIcon,
-  LucideAlarmClockOff,
   Calendar
 } from "lucide-react";
 import { useCourses } from "../hooks/useCourses";
 import { useLevels } from "../hooks/useLevels";
+import { useMultiCourseRatings } from "../hooks/useMultiCourseRating"; // YENİ: toplu rating hook
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import {SmartRatingBar} from "../components/SmartRatingBar";
+import { SmartRatingBar } from "../components/SmartRatingBar";
 
+// Yardımcı fonksiyonlar...
 function getCardGradient() {
   return "from-blue-200 via-blue-400 to-blue-700";
 }
-
 function getLevelColor(level: string) {
   return "bg-blue-100 text-blue-700";
 }
-
 function getCategoryCourses(courses: any[], lang: string) {
   const uniqueCourses: any[] = [];
   const seenCategories = new Set();
@@ -84,6 +80,10 @@ export default function CoursesSection() {
         );
 
   const categoryCourses = getCategoryCourses(filteredCourses, lang);
+
+  // *** YENİ: Burada toplu rating datasını çekiyoruz ***
+  const courseIds = categoryCourses.map(course => course.id);
+  const { data: ratings = [] } = useMultiCourseRatings(courseIds);
 
   return (
     <section id="courses" className="py-12 lg:py-20">
@@ -187,6 +187,9 @@ export default function CoursesSection() {
               displayLevel = course.level;
             }
 
+            // *** YENİ: toplu rating datasından ilgili kursun rating datasını al ***
+            const ratingData = ratings.find(r => r.course_id === course.id);
+
             return (
               <motion.div
                 key={course.id}
@@ -216,11 +219,11 @@ export default function CoursesSection() {
                       {displayLevel}
                     </span>
                   </div>
-                  {/* GERÇEK RATING BAR - KARTTA INTERAKTIF MAVİ STAR BAR */}
+                  {/* GERÇEK RATING BAR */}
                   <div className="absolute bottom-2 left-2 lg:bottom-4 lg:left-4 flex items-center">
                     <SmartRatingBar
                       courseId={course.id}
-
+                      ratingData={ratingData}    
                       compact
                     />
                   </div>
@@ -230,7 +233,6 @@ export default function CoursesSection() {
                   <h3 className="text-sm sm:text-base lg:text-xl font-bold text-gray-900 mb-2 lg:mb-3 group-hover:text-blue-600 transition-colors leading-tight line-clamp-2 min-h-[36px] sm:min-h-[44px] lg:min-h-[56px]">
                     {displayName}
                   </h3>
-                  {/* Sadece 2 satırda description görünür */}
                   <p className="text-xs sm:text-sm text-gray-600 font-normal line-clamp-2 mb-2 sm:mb-3 lg:mb-4 leading-relaxed">
                     {displayDescription}
                   </p>
@@ -277,19 +279,17 @@ export default function CoursesSection() {
               </button>
               <img src={activeCourse.image} alt={activeCourse.name} className="w-full h-48 object-cover rounded-xl mb-6" />
               <h2 className="text-2xl font-bold mb-4">{activeCourse[`name_${lang}`] || activeCourse.name}</h2>
-              {/* Modalda tüm description tam olarak görünür! */}
               <p className="text-gray-700 text-base mb-4">
                 {activeCourse[`description_${lang}`] || activeCourse.description}
               </p>
               <div className="font-bold text-blue-700 text-xl mb-2">
                 {t("courses.price")}: {activeCourse.price} TMT
               </div>
-              {/* Modalda rating bar YOK */}
             </motion.div>
           </div>
         )}
 
-        {/* Call to Action - Responsive & Mobile Friendly */}
+        {/* Call to Action */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
