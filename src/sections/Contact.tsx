@@ -27,6 +27,9 @@ const Contact = () => {
   const { data: contactItems = [], isLoading: contactLoading, error: contactError } = useContactItems();
   const { t } = useTranslation();
 
+  // SADECE ilk 3 tanesini al
+  const limitedContactItems = contactItems.slice(0, 3);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({
@@ -92,7 +95,7 @@ const Contact = () => {
           viewport={{ once: true }}
           className="flex flex-col md:grid md:grid-cols-3 gap-3 md:gap-6 lg:gap-8 mb-8 sm:mb-12 lg:mb-16"
         >
-          {contactItems.map((item, index) => {
+          {limitedContactItems.map((item, index) => {
             const IconComponent = iconMap[item.icon as keyof typeof iconMap]  || Phone;
             return (
               <motion.div
