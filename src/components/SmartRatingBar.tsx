@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Info } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useRateCourse } from "../hooks/useRateCourses";
 import { useTranslation } from 'react-i18next';
 
@@ -16,38 +15,37 @@ export interface SmartRatingBarProps {
     rating_count: number;
   };
   compact?: boolean;
+  onRatingSuccess?: () => void;
 }
 
 export const SmartRatingBar: React.FC<SmartRatingBarProps> = ({
   courseId,
   ratingData,
-  compact = false
+  compact = false,
+  onRatingSuccess
 }) => {
   const [hoveredRating, setHoveredRating] = useState<number | null>(null);
   const [userRating, setUserRating] = useState<UserRatingInfo | null>(null);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [showInfoTooltip, setShowInfoTooltip] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRatingMode, setIsRatingMode] = useState(false);
+  
+  const [optimisticRating, setOptimisticRating] = useState<{
+    average_rating: number;
+    rating_count: number;
+  } | null>(null);
 
-  // Device type detection
-  const [isMobileDevice, setIsMobileDevice] = useState(false);
+  // DÜZELTME: optimisticRating'i dependency'den çıkar
   useEffect(() => {
-    const checkIsMobile = () =>
-      window.matchMedia('(max-width: 640px)').matches;
-    setIsMobileDevice(checkIsMobile());
-    window.addEventListener('resize', () => setIsMobileDevice(checkIsMobile()));
-    return () =>
-      window.removeEventListener('resize', () => setIsMobileDevice(checkIsMobile()));
-  }, []);
+    if (ratingData && optimisticRating) {
+      setOptimisticRating(null);
+    }
+  }, [ratingData]); // optimisticRating'i kaldırdık
 
-  // Artık GET rating backend hook yok! Data prop'tan geliyor.
-  const averageRating = ratingData?.average_rating ?? 0;
-  const totalVotes = ratingData?.rating_count ?? 0;
+  const displayRatingData = optimisticRating || ratingData;
+  const averageRating = displayRatingData?.average_rating ?? 0;
+  const totalVotes = displayRatingData?.rating_count ?? 0;
 
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language || "en";
-
-  // POST rating to backend (aynı şekilde kaldı)
+  const { t } = useTranslation();
   const rateCourse = useRateCourse(courseId);
 
   useEffect(() => {
@@ -57,65 +55,66 @@ export const SmartRatingBar: React.FC<SmartRatingBarProps> = ({
     }
   }, [courseId]);
 
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
-      if (showInfoTooltip) {
-        const target = e.target as HTMLElement;
-        if (
-          !target.closest('.info-tooltip-trigger') &&
-          !target.closest('.info-tooltip-content')
-        ) {
-          setShowInfoTooltip(false);
-        }
-      }
-    };
-    if (showInfoTooltip) {
-      document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('touchstart', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('touchstart', handleClickOutside);
-    };
-  }, [showInfoTooltip]);
-
-  const handleInfoMouseEnter = (e: React.MouseEvent) => {
-    if (!isMobileDevice) setShowInfoTooltip(true);
-  };
-  const handleInfoMouseLeave = (e: React.MouseEvent) => {
-    if (!isMobileDevice) setShowInfoTooltip(false);
-  };
-  const handleInfoTouch = (e: React.TouchEvent) => {
-    if (isMobileDevice) {
-      e.preventDefault();
-      setShowInfoTooltip(prev => !prev);
-    }
+  const handleRateButtonClick = () => {
+    setIsRatingMode(true);
   };
 
   const handleStarClick = async (rating: number) => {
     if (userRating || isSubmitting) return;
     setIsSubmitting(true);
+    
     try {
+      if (ratingData) {
+        const currentTotal = ratingData.average_rating * ratingData.rating_count;
+        const newCount = ratingData.rating_count + 1;
+        const newAverage = (currentTotal + rating) / newCount;
+        
+        setOptimisticRating({
+          average_rating: newAverage,
+          rating_count: newCount
+        });
+      }
+      
       await rateCourse.mutateAsync({ rating });
-      // Burada ratingData güncellenmesini ana componentte tetikle!
-      // (refetch fonksiyonunu yukarıdan gönderebilirsin veya backend hook'tan dönecek şekilde güncelle)
-    } catch (e) {}
-    const ratingInfo: UserRatingInfo = {
-      rating,
-      created_at: new Date().toISOString()
-    };
-    localStorage.setItem(`course_rating_${courseId}`, JSON.stringify(ratingInfo));
-    setUserRating(ratingInfo);
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 3000);
-    setIsSubmitting(false);
+      
+      if (onRatingSuccess) {
+        onRatingSuccess();
+      }
+      
+      const ratingInfo: UserRatingInfo = {
+        rating,
+        created_at: new Date().toISOString()
+      };
+      localStorage.setItem(`course_rating_${courseId}`, JSON.stringify(ratingInfo));
+      setUserRating(ratingInfo);
+      setIsRatingMode(false);
+    } catch (e) {
+      console.error('Rating failed:', e);
+      setOptimisticRating(null);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  // Only show filled stars for hover OR user's own rating.
   const renderStars = () => {
-    const displayRating = hoveredRating ?? (userRating ? userRating.rating : 0);
-    const roundedDisplay = Math.round(displayRating);
-    const isInteractive = !userRating && !isSubmitting;
+    let displayRating = 0;
+    let roundedDisplay = 0;
+    let isInteractive = false;
+
+    if (userRating) {
+      displayRating = averageRating;
+      roundedDisplay = Math.round(averageRating);
+      isInteractive = false;
+    } else if (isRatingMode) {
+      displayRating = hoveredRating ?? 0;
+      roundedDisplay = Math.round(displayRating);
+      isInteractive = true;
+    } else {
+      displayRating = averageRating;
+      roundedDisplay = Math.round(averageRating);
+      isInteractive = false;
+    }
+
     return (
       <div className="flex items-center gap-0.5">
         {[1,2,3,4,5].map(i => (
@@ -156,70 +155,15 @@ export const SmartRatingBar: React.FC<SmartRatingBarProps> = ({
             <span className="ml-0.5 sm:ml-1 text-blue-200 font-normal text-[9px] sm:text-xs">({totalVotes})</span>
           </span>
         </span>
-        {userRating && (
-          <div className="relative ml-0.5 sm:ml-1">
-            <motion.button
-              className="info-tooltip-trigger text-blue-200 hover:text-yellow-400 active:text-yellow-400 transition-colors p-1 touch-manipulation"
-              onMouseEnter={handleInfoMouseEnter}
-              onMouseLeave={handleInfoMouseLeave}
-              onTouchStart={handleInfoTouch}
-              whileHover={{ scale: 1.12 }}
-              whileTap={{ scale: 0.95 }}
-              type="button"
-              aria-label="Show rating info"
-              style={{background:'none',outline:'none', WebkitTapHighlightColor: 'transparent'}}
-            >
-              <Info size={13} className="sm:w-[15px] sm:h-[15px] pointer-events-none" />
-            </motion.button>
-            <AnimatePresence>
-              {showInfoTooltip && (
-                <motion.div
-                  initial={{ opacity: 0, y: 7, scale: 0.97 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 7, scale: 0.95 }}
-                  transition={{ type: "spring", duration: 0.17 }}
-                  className="info-tooltip-content absolute right-[-20px] sm:right-[-80px] bottom-full mb-2 z-[70] w-max"
-                  onMouseLeave={() => { if (!isMobileDevice) setShowInfoTooltip(false); }}
-                >
-                  <div className="
-                    backdrop-blur-md border border-blue-700/40
-                    bg-blue-900/90 text-white text-[10px] sm:text-[12px] px-2.5 sm:px-3 py-1.5 sm:py-2
-                    rounded-lg shadow whitespace-nowrap
-                    relative flex flex-col items-center
-                  ">
-                    <div className="mb-0.5 sm:mb-1 text-blue-200 text-[9px] sm:text-[11px]">{t('courses.your_rating')}</div>
-                    <div className="flex items-center text-yellow-400 font-bold text-base sm:text-lg mb-[2px]">
-                      {'★'.repeat(userRating.rating)}
-                      {'☆'.repeat(5 - userRating.rating)}
-                      <span className="ml-1 text-white text-xs sm:text-sm font-normal">
-                        ({userRating.rating}/5)
-                      </span>
-                    </div>
-                    <div className="text-blue-100 text-[9px] sm:text-[11px] text-center leading-tight">
-                      {
-                        t("courses.rating_date", {
-                          date: new Date(userRating.created_at)
-                            .toLocaleDateString(lang, {month:'short', day:'numeric', year:'numeric'})
-                        })
-                      }
-                    </div>
-                    <div className="absolute left-4 top-full -translate-x-1/2">
-                      <div className="border-4 border-transparent border-t-blue-900/90"></div>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )}
-        {!userRating && (
-          <motion.span
+        {!userRating && !isRatingMode && (
+          <motion.button
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-[8px] sm:text-[9px] font-medium px-1 sm:px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-100"
+            onClick={handleRateButtonClick}
+            className="text-[8px] sm:text-[9px] font-medium px-1 sm:px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-100 hover:bg-blue-500/30 transition-colors cursor-pointer"
           >
             {t("courses.rate")}
-          </motion.span>
+          </motion.button>
         )}
         {rateCourse.isError && (
           <span className="absolute right-1 bottom-1 text-red-300 text-[9px] sm:text-[10px]">{t("courses.error")}</span>
@@ -251,59 +195,15 @@ export const SmartRatingBar: React.FC<SmartRatingBarProps> = ({
               </span>
             )}
           </span>
-          {userRating && (
-            <div className="relative ml-0.5 sm:ml-1">
-              <motion.button
-                className="info-tooltip-trigger text-blue-200 hover:text-yellow-400 active:text-yellow-400 transition-colors p-0"
-                onMouseEnter={handleInfoMouseEnter}
-                onMouseLeave={handleInfoMouseLeave}
-                onTouchStart={handleInfoTouch}
-                whileHover={{ scale: 1.12 }}
-                whileTap={{ scale: 0.95 }}
-                tabIndex={-1}
-                style={{background:'none',outline:'none'}}
-              >
-                <Info size={16} className="sm:w-[18px] sm:h-[18px]" />
-              </motion.button>
-              <AnimatePresence>
-                {showInfoTooltip && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 7, scale: 0.97 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 7, scale: 0.95 }}
-                    transition={{ type: "spring", duration: 0.17 }}
-                    className="info-tooltip-content absolute right-0 bottom-full mb-2 z-[70] w-max"
-                    onMouseLeave={() => { if (!isMobileDevice) setShowInfoTooltip(false); }}
-                  >
-                    <div className="
-                      backdrop-blur-md border border-blue-700/40
-                      bg-blue-900/90 text-white text-[11px] sm:text-[12px] px-2.5 sm:px-3 py-1.5 sm:py-2
-                      rounded-lg shadow whitespace-nowrap
-                      relative flex flex-col items-center
-                    ">
-                      <div className="mb-0.5 sm:mb-1 text-blue-200 text-[10px] sm:text-[11px]">{t('courses.your_rating')}</div>
-                      <div className="flex items-center text-yellow-400 font-bold text-base sm:text-lg mb-[2px]">
-                        {'★'.repeat(userRating.rating)}
-                        {'☆'.repeat(5 - userRating.rating)}
-                        <span className="ml-1 text-white text-xs sm:text-sm font-normal">
-                          ({userRating.rating}/5)
-                        </span>
-                      </div>
-                      <div className="text-blue-100 text-[10px] sm:text-[11px] text-center leading-tight">
-                        { t("courses.rating_date", {
-                            date: new Date(userRating.created_at)
-                              .toLocaleDateString(lang, {month:'short', day:'numeric', year:'numeric'})
-                          })
-                        }
-                      </div>
-                      <div className="absolute left-4 top-full -translate-x-1/2">
-                        <div className="border-4 border-transparent border-t-blue-900/90"></div>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+          {!userRating && !isRatingMode && (
+            <motion.button
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              onClick={handleRateButtonClick}
+              className="text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 rounded bg-blue-500/20 text-blue-100 hover:bg-blue-500/30 transition-colors cursor-pointer"
+            >
+              {t("courses.rate")}
+            </motion.button>
           )}
           {rateCourse.isError && (
             <span className="absolute right-2 sm:right-3 bottom-2 sm:bottom-3 text-red-300 text-[10px] sm:text-xs">{t("courses.error")}</span>
