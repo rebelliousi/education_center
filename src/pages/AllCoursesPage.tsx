@@ -11,7 +11,6 @@ import { SmartRatingBar } from "../components/SmartRatingBar"; // Mavi temalı i
 function getCardGradient() {
   return "from-blue-200 via-blue-400 to-blue-700";
 }
-
 function getLevelColor(level: string) {
   switch (level) {
     case "Beginner":
@@ -30,13 +29,11 @@ function getLevelColor(level: string) {
       return "bg-blue-100 text-blue-700";
   }
 }
-
 type CategoryButtonType = {
   label: string;
   value: number | string;
   image?: string;
 };
-
 const PAGE_SIZE = 8;
 
 export default function AllCoursesPage() {
@@ -45,13 +42,11 @@ export default function AllCoursesPage() {
   useEffect(() => {
     refetch();
   }, [location.pathname]);
-
   const [activeFilter, setActiveFilter] = useState<"all" | "category" | "level">("all");
   const [category, setCategory] = useState<string>("all");
   const [level, setLevel] = useState<number | string>("all");
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-
   const [activeCourse, setActiveCourse] = useState<any>(null);
 
   const { data: levels = [] } = useLevels();
@@ -133,7 +128,6 @@ export default function AllCoursesPage() {
     return () =>
       document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
   useEffect(() => {
     setCurrentPage(1);
   }, [activeFilter, category, level, search]);
@@ -319,11 +313,14 @@ export default function AllCoursesPage() {
                         {displayLevel}
                       </span>
                     </div>
-                    {/* STAR RATING BAR: Ana gridde compact modda! */}
+                    {/* STAR RATING BAR */}
                     <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 flex items-center">
                       <SmartRatingBar
                         courseId={course.id}
-                      
+                        ratingData={{
+                          average_rating: course.average_rating,
+                          rating_count: course.rating_count
+                        }}
                         compact
                       />
                     </div>

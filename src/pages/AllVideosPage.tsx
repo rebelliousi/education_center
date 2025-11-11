@@ -39,17 +39,14 @@ export default function AllVideosPage() {
   const lang = i18n.language || "en";
   const location = useLocation();
 
-  // SPA'da route değişiminde tekrar fetch et!
   useEffect(() => {
     refetch();
   }, [location.pathname]);
 
-  // Çoklu dil için label fonksiyonu
   function getCategoryLabel(cat: CategoryType) {
     return (cat as any)[`name_${lang}`] || cat.name;
   }
 
-  // Category buton listesi
   const CATEGORIES: CategoryButtonType[] = [
     { label: t("videos.all_categories") || "All Categories", value: "all" },
     ...categories.map(cat => ({
@@ -59,7 +56,6 @@ export default function AllVideosPage() {
     }))
   ];
 
-  // Videoları filtrele
   let filteredVideos = videos.filter(v => !v.featured);
   if (activeFilter === "category" && category !== "all") {
     filteredVideos = filteredVideos.filter(
@@ -74,7 +70,6 @@ export default function AllVideosPage() {
     );
   }
 
-  // Pagination hesaplama
   const totalVideos = filteredVideos.length;
   const totalPages = Math.ceil(totalVideos / PAGE_SIZE);
   const paginatedVideos = filteredVideos.slice(
@@ -82,7 +77,6 @@ export default function AllVideosPage() {
     currentPage * PAGE_SIZE
   );
 
-  // Dropdown state ve ref
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const categoryRef = useRef<HTMLDivElement>(null);
 
@@ -151,7 +145,6 @@ export default function AllVideosPage() {
 
         {/* Filtre Button Alanı */}
         <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 lg:gap-4 mb-6 sm:mb-8 relative">
-          {/* All Button */}
           <button
             onClick={handleAllClick}
             className={`px-4 py-1.5 sm:px-5 sm:py-2 lg:px-6 rounded-full text-xs sm:text-sm font-semibold shadow transition duration-200 border-none outline-none ${
@@ -162,8 +155,6 @@ export default function AllVideosPage() {
           >
             {t("videos.all")}
           </button>
-
-          {/* Category Button & Dropdown */}
           <div className="relative" ref={categoryRef}>
             <button
               onClick={() => {
@@ -182,7 +173,6 @@ export default function AllVideosPage() {
               </span>
               <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
             </button>
-            {/* Dropdown */}
             {showCategoryDropdown && (
               <div className="absolute left-0 top-full z-10 mt-2 w-36 sm:w-44 bg-white rounded-xl sm:rounded-2xl shadow-lg border border-blue-100 py-2 max-h-60 overflow-y-auto">
                 {CATEGORIES.map(cat => (
@@ -259,9 +249,16 @@ export default function AllVideosPage() {
                     <div className="flex items-center justify-between text-[10px] sm:text-xs text-gray-500 mb-3 sm:mb-4 mt-auto">
                       <span className="line-clamp-1">{displayInstructor}</span>
                     </div>
-                    {/* ★ YENİ EK: Rating Bar */}
+                    {/* ★ Rating Bar (average_rating ve rating_count varsa prop ile!) */}
                     <div className="mt-1 mb-4">
-                      <SmartVideoRatingBar videoId={video.id} compact />
+                      <SmartVideoRatingBar
+                        videoId={video.id}
+                        ratingData={{
+                          average_rating: video.average_rating,
+                          rating_count: video.rating_count
+                        }}
+                        compact
+                      />
                     </div>
                     <button
                       className="w-full flex items-center justify-center space-x-1.5 sm:space-x-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-1.5 sm:py-2 rounded-lg sm:rounded-xl hover:shadow-lg transition-all duration-300 font-semibold text-xs sm:text-sm mt-auto"
@@ -316,7 +313,16 @@ export default function AllVideosPage() {
                 <p className="text-gray-700 text-xs sm:text-sm lg:text-base mb-2">
                   {activeVideo[`description_${lang}`] || activeVideo.description}
                 </p>
-                {/* İstersen burada da <SmartVideoRatingBar videoId={activeVideo.id} /> ekleyebilirsin */}
+                {/* Modalda rating bar (average_rating ve rating_count varsa yine prop ile!) */}
+                <div className="mt-2 mb-4">
+                  <SmartVideoRatingBar
+                    videoId={activeVideo.id}
+                    ratingData={{
+                      average_rating: activeVideo.average_rating,
+                      rating_count: activeVideo.rating_count
+                    }}
+                  />
+                </div>
                 <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 text-xs sm:text-sm mb-2 flex-wrap">
                   <div className="flex items-center gap-1">
                     <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
@@ -327,7 +333,6 @@ export default function AllVideosPage() {
                     <span>{activeVideo.views} {t("videos.views")}</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    {/* Star & rating badge eskisi */}
                     <Star className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400 fill-current" />
                     <span>{activeVideo.rating}</span>
                   </div>
@@ -340,7 +345,6 @@ export default function AllVideosPage() {
           </div>
         )}
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex justify-center mt-8 sm:mt-10 lg:mt-12">
             <nav className="flex items-center gap-1.5 sm:gap-2">

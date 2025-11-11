@@ -9,14 +9,20 @@ type UserRatingInfo = {
   created_at: string;
 };
 
+// GÜNCELLEME: ratingData props'u eklendi!
 export interface SmartVideoRatingBarProps {
   videoId: number | string;
+  ratingData?: {
+    average_rating: number;
+    rating_count: number;
+  };
   compact?: boolean;
   onRatingSuccess?: () => void;
 }
 
 export const SmartVideoRatingBar: React.FC<SmartVideoRatingBarProps> = ({
   videoId,
+  ratingData,
   compact = false,
   onRatingSuccess
 }) => {
@@ -24,23 +30,22 @@ export const SmartVideoRatingBar: React.FC<SmartVideoRatingBarProps> = ({
   const [userRating, setUserRating] = useState<UserRatingInfo | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRatingMode, setIsRatingMode] = useState(false);
-
-  // Optimistic update için local state
   const [optimisticRating, setOptimisticRating] = useState<{
     average_rating: number;
     rating_count: number;
   } | null>(null);
 
-  // Hook'tan gelen rating bilgisi
   const { data: ratingInfoData, refetch: refetchRatingInfo } = useVideoRatingInfo(videoId);
 
+  // optimal: ratingData varsa onu, yoksa ratingInfoData kullan
   useEffect(() => {
-    if (ratingInfoData && optimisticRating) {
+    if ((ratingData || ratingInfoData) && optimisticRating) {
       setOptimisticRating(null);
     }
-  }, [ratingInfoData]);
+  }, [ratingData, ratingInfoData]);
 
-  const displayRatingData = optimisticRating || ratingInfoData;
+  // GÖSTERİLECEK DATA: optimistic > ratingData > hook
+  const displayRatingData = optimisticRating || ratingData || ratingInfoData;
   const averageRating = displayRatingData?.average_rating ?? 0;
   const totalVotes = displayRatingData?.rating_count ?? 0;
 
@@ -54,7 +59,8 @@ export const SmartVideoRatingBar: React.FC<SmartVideoRatingBarProps> = ({
     }
   }, [videoId]);
 
-  const handleRateButtonClick = () => {
+  const handleRateButtonClick = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     setIsRatingMode(true);
   };
 
@@ -79,12 +85,15 @@ export const SmartVideoRatingBar: React.FC<SmartVideoRatingBarProps> = ({
 
     return (
       <div className="flex items-center gap-0.5">
-        {[1,2,3,4,5].map(i => (
+        {[1, 2, 3, 4, 5].map(i => (
           <motion.button
             key={i}
             disabled={!isInteractive}
             aria-label={t("videos.rate_star", { count: i })}
-            onClick={() => isInteractive && handleStarClick(i)}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (isInteractive) handleStarClick(i);
+            }}
             onMouseEnter={() => isInteractive && setHoveredRating(i)}
             onMouseLeave={() => isInteractive && setHoveredRating(null)}
             className={`
@@ -112,11 +121,12 @@ export const SmartVideoRatingBar: React.FC<SmartVideoRatingBarProps> = ({
   const handleStarClick = async (rating: number) => {
     if (userRating || isSubmitting) return;
     setIsSubmitting(true);
-    
+
     try {
-      if (ratingInfoData) {
-        const currentTotal = ratingInfoData.average_rating * ratingInfoData.rating_count;
-        const newCount = ratingInfoData.rating_count + 1;
+      const info = ratingData || ratingInfoData;
+      if (info) {
+        const currentTotal = info.average_rating * info.rating_count;
+        const newCount = info.rating_count + 1;
         const newAverage = (currentTotal + rating) / newCount;
 
         setOptimisticRating({
@@ -171,7 +181,7 @@ export const SmartVideoRatingBar: React.FC<SmartVideoRatingBarProps> = ({
           </motion.button>
         )}
         {rateVideo.isError && (
-          <motion.span 
+          <motion.span
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="text-red-400 text-[10px] font-medium"
@@ -208,7 +218,7 @@ export const SmartVideoRatingBar: React.FC<SmartVideoRatingBarProps> = ({
         </motion.button>
       )}
       {rateVideo.isError && (
-        <motion.span 
+        <motion.span
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="text-red-400 text-xs font-medium"
