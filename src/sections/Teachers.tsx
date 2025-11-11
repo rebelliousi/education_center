@@ -15,6 +15,7 @@ const Teachers = () => {
   const [likedTeachers, setLikedTeachers] = useState<number[]>([])
   const [topSliderIndex, setTopSliderIndex] = useState(0)
   const [gridSliderIndex, setGridSliderIndex] = useState(0)
+  const [localLikes, setLocalLikes] = useState<{[id:number]:number}>({})
 
   const { t, i18n } = useTranslation()
   const lang = i18n.language || "en"
@@ -22,8 +23,8 @@ const Teachers = () => {
   const queryClient = useQueryClient();
 
   const { data: teachers = [], isLoading, error } = useTeachers();
-  const { mutate: likeTeacher, isPending: likePending } = useLikeTeacher();
-  const { mutate: removeLikeTeacher, isPending: removeLikePending } = useRemoveLikeTeacher();
+  const { mutate: likeTeacher } = useLikeTeacher();
+  const { mutate: removeLikeTeacher } = useRemoveLikeTeacher();
 
   const getTranslated = (item: any, field: string) => {
     const key = `${field}_${lang}`;
@@ -34,37 +35,63 @@ const Teachers = () => {
     return teacher[key] || teacher.achievements || [];
   };
 
-  // Load likedTeachers from localStorage on mount
+  // Load likedTeachers and localLikes from localStorage on mount
   useEffect(() => {
     const stored = localStorage.getItem("likedTeachers");
     if (stored) {
       setLikedTeachers(JSON.parse(stored));
     }
+    const storedLikes = localStorage.getItem("localTeacherLikes");
+    if (storedLikes) {
+      setLocalLikes(JSON.parse(storedLikes));
+    }
   }, []);
 
-  // Backend'e like/unlike toggle gönder, localStorage ile senkronize et + REFETCH (invalidate)
-  const handleLike = (teacherId: number) => {
-    if (likedTeachers.includes(teacherId)) {
-      // unlike - backend ve localdan çıkar
-      removeLikeTeacher(teacherId, {
-        onSuccess: () => {
-          const updated = likedTeachers.filter(id => id !== teacherId);
-          setLikedTeachers(updated);
-          localStorage.setItem("likedTeachers", JSON.stringify(updated));
-          queryClient.invalidateQueries({ queryKey: ["teachers"] });
-        }
-      });
-    } else {
-      // like - backend ve locale ekle
-      likeTeacher(teacherId, {
-        onSuccess: () => {
-          const updated = [...likedTeachers, teacherId];
-          setLikedTeachers(updated);
-          localStorage.setItem("likedTeachers", JSON.stringify(updated));
-          queryClient.invalidateQueries({ queryKey: ["teachers"] });
-        }
-      });
+  // Sync localLikes state with current teachers data when teachers fetched
+  useEffect(() => {
+    if (teachers.length) {
+      const likesState: {[id:number]:number} = {};
+      teachers.forEach(t => { likesState[t.id] = t.likes; });
+      setLocalLikes(likesState);
+      localStorage.setItem("localTeacherLikes", JSON.stringify(likesState));
     }
+  }, [teachers]);
+
+  // Optimistic Like/Unlike Handler
+  const handleLike = (teacherId: number) => {
+    const isLiked = likedTeachers.includes(teacherId);
+    // Optimistic update - locally change likedTeachers and like count
+    const newLiked = isLiked 
+      ? likedTeachers.filter(id => id !== teacherId)
+      : [...likedTeachers, teacherId];
+    setLikedTeachers(newLiked);
+    localStorage.setItem("likedTeachers", JSON.stringify(newLiked));
+
+    setLocalLikes(prev => {
+      const updated = { ...prev };
+      updated[teacherId] = isLiked ? (updated[teacherId] - 1) : (updated[teacherId] + 1);
+      localStorage.setItem("localTeacherLikes", JSON.stringify(updated));
+      return updated;
+    });
+
+    // Backend API call and revert on error
+    const apiFn = isLiked ? removeLikeTeacher : likeTeacher;
+    apiFn(teacherId, {
+      onError: () => {
+        setLikedTeachers(isLiked 
+          ? [...likedTeachers, teacherId]
+          : likedTeachers.filter(id => id !== teacherId));
+        setLocalLikes(prev => {
+          const fallback = { ...prev };
+          fallback[teacherId] = isLiked ? (fallback[teacherId] + 1) : (fallback[teacherId] - 1);
+          localStorage.setItem("localTeacherLikes", JSON.stringify(fallback));
+          return fallback;
+        });
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries({ queryKey: ["teachers"] });
+      }
+    });
   };
 
   // Sıralama -> SADECE backend likes ile
@@ -164,7 +191,7 @@ const Teachers = () => {
                 >
                   {top3Teachers.map((teacher, index) => {
                     const isLiked = likedTeachers.includes(teacher.id)
-                    const currentLikes = teacher.likes  // Backend gelen likes
+                    const currentLikes = localLikes[teacher.id] ?? teacher.likes
                     return (
                       <div key={teacher.id} className="w-full flex-shrink-0 px-2">
                         <div className="bg-white/15 backdrop-blur-md rounded-xl p-4 text-center border border-white/30">
@@ -191,12 +218,21 @@ const Teachers = () => {
                               ))}
                             </ul>
                           )}
+                          <button
+                            onClick={() => handleLike(teacher.id)}
+                            className={`absolute top-2 right-2 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
+                              isLiked 
+                                ? 'bg-red-500 text-white' 
+                                : 'bg-white/30 backdrop-blur-md text-white border border-white/50'
+                            }`}
+                          >
+                            <Heart className={`h-5 w-5 ${isLiked ? 'fill-current' : ''}`} />
+                          </button>
                         </div>
                       </div>
                     )
                   })}
                 </motion.div>
-                {/* Slider Arrows - üstünde ve ortada */}
                 <button
                   onClick={handleTopPrev}
                   className="absolute top-[38%] -translate-y-1/2 left-3 z-10 w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-white/30 transition-all shadow-lg"
@@ -227,7 +263,7 @@ const Teachers = () => {
             <div className="hidden md:grid md:grid-cols-3 gap-6 lg:gap-8">
               {top3Teachers.map((teacher, index) => {
                 const isLiked = likedTeachers.includes(teacher.id)
-                const currentLikes = teacher.likes
+                const currentLikes = localLikes[teacher.id] ?? teacher.likes
                 return (
                   <motion.div
                     key={teacher.id}
@@ -278,7 +314,7 @@ const Teachers = () => {
               >
                 {top8Teachers.map((teacher) => {
                   const isLiked = likedTeachers.includes(teacher.id)
-                  const currentLikes = teacher.likes
+                  const currentLikes = localLikes[teacher.id] ?? teacher.likes
                   return (
                     <div key={teacher.id} className="w-full flex-shrink-0 px-2">
                       <div className="bg-white/50 backdrop-blur-sm rounded-xl overflow-hidden border border-blue-200/50 shadow-lg">
@@ -291,12 +327,11 @@ const Teachers = () => {
                           <div className="absolute inset-0 bg-gradient-to-t from-blue-900/40 via-transparent to-transparent" />
                           {teacher.experience && (
                             <div className="absolute top-2 left-2 bg-gradient-to-r from-yellow-300 to-yellow-400 text-gray-900 px-2 py-1 rounded-full text-[10px] font-bold shadow-lg">
-                           {t("teacher_experience", { exp: teacher.experience })}
+                              {t("teacher_experience", { exp: teacher.experience })}
                             </div>
                           )}
                           <button
                             onClick={() => handleLike(teacher.id)}
-                            disabled={likePending || removeLikePending}
                             className={`absolute top-2 right-2 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
                               isLiked 
                                 ? 'bg-red-500 text-white' 
@@ -308,7 +343,6 @@ const Teachers = () => {
                           <div className="absolute bottom-2 left-2 right-2">
                             <div className="bg-white/20 backdrop-blur-md rounded-lg p-2 border border-white/30">
                               <div className="flex items-center justify-start text-white text-xs font-semibold">
-                                
                                 <div className="flex items-center space-x-1">
                                   <Heart className="h-3 w-3 text-red-300" />
                                   <span>{currentLikes.toLocaleString()}</span>
@@ -338,7 +372,6 @@ const Teachers = () => {
                   )
                 })}
               </motion.div>
-              {/* Dots */}
               <div className="flex justify-center gap-2 mt-4">
                 {top8Teachers.map((_, index) => (
                   <button
@@ -352,11 +385,10 @@ const Teachers = () => {
               </div>
             </div>
           </div>
-          {/* Desktop Grid */}
           <div className="hidden lg:grid lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
             {top8Teachers.map((teacher, index) => {
               const isLiked = likedTeachers.includes(teacher.id)
-              const currentLikes = teacher.likes
+              const currentLikes = localLikes[teacher.id] ?? teacher.likes
               return (
                 <motion.div
                   key={teacher.id}
@@ -381,14 +413,12 @@ const Teachers = () => {
                         className="absolute top-4 left-4 bg-gradient-to-r from-yellow-300 to-yellow-400 text-gray-900 px-3 py-1.5 rounded-full text-xs font-bold shadow-lg"
                       >
                     {t("teacher_experience", { exp: teacher.experience })}
-                       {/* {t("teachers.years_experience")} */}
                       </motion.div>
                     )}
                     <motion.button
                       whileHover={{ scale: 1.15 }}
                       whileTap={{ scale: 0.85 }}
                       onClick={() => handleLike(teacher.id)}
-                      disabled={likePending || removeLikePending}
                       className={`absolute top-4 right-4 w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
                         isLiked 
                           ? 'bg-red-500 text-white scale-110' 
@@ -400,7 +430,6 @@ const Teachers = () => {
                     <div className="absolute bottom-4 left-4 right-4">
                       <div className="bg-white/20 backdrop-blur-md rounded-xl p-3 border border-white/30">
                         <div className="flex items-center justify-start text-white text-sm font-semibold">
-                         
                           <div className="flex items-center space-x-2">
                             <Heart className="h-4 w-4 text-red-300" />
                             <span>{currentLikes.toLocaleString()}</span>
@@ -430,6 +459,7 @@ const Teachers = () => {
             })}
           </div>
         </div>
+
         {/* Join Our Team CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
