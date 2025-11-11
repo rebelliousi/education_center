@@ -9,7 +9,6 @@ type UserRatingInfo = {
   created_at: string;
 };
 
-// GÜNCELLEME: ratingData props'u eklendi!
 export interface SmartVideoRatingBarProps {
   videoId: number | string;
   ratingData?: {
@@ -30,21 +29,23 @@ export const SmartVideoRatingBar: React.FC<SmartVideoRatingBarProps> = ({
   const [userRating, setUserRating] = useState<UserRatingInfo | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRatingMode, setIsRatingMode] = useState(false);
+
+  // Optimistic update için local state
   const [optimisticRating, setOptimisticRating] = useState<{
     average_rating: number;
     rating_count: number;
   } | null>(null);
 
+  // Backend rating data (hook)
   const { data: ratingInfoData, refetch: refetchRatingInfo } = useVideoRatingInfo(videoId);
 
-  // optimal: ratingData varsa onu, yoksa ratingInfoData kullan
   useEffect(() => {
     if ((ratingData || ratingInfoData) && optimisticRating) {
       setOptimisticRating(null);
     }
   }, [ratingData, ratingInfoData]);
 
-  // GÖSTERİLECEK DATA: optimistic > ratingData > hook
+  // Gösterilecek ratingData: Optimistic > Prop > Hook
   const displayRatingData = optimisticRating || ratingData || ratingInfoData;
   const averageRating = displayRatingData?.average_rating ?? 0;
   const totalVotes = displayRatingData?.rating_count ?? 0;
@@ -62,6 +63,45 @@ export const SmartVideoRatingBar: React.FC<SmartVideoRatingBarProps> = ({
   const handleRateButtonClick = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     setIsRatingMode(true);
+  };
+
+  const handleStarClick = async (rating: number, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (userRating || isSubmitting) return;
+    setIsSubmitting(true);
+
+    try {
+      const info = ratingData || ratingInfoData;
+      if (info) {
+        const currentTotal = info.average_rating * info.rating_count;
+        const newCount = info.rating_count + 1;
+        const newAverage = (currentTotal + rating) / newCount;
+        setOptimisticRating({
+          average_rating: newAverage,
+          rating_count: newCount
+        });
+      }
+
+      await rateVideo.mutateAsync({ rating });
+      await refetchRatingInfo();
+
+      if (onRatingSuccess) {
+        onRatingSuccess();
+      }
+
+      const userRatingObj: UserRatingInfo = {
+        rating,
+        created_at: new Date().toISOString()
+      };
+      localStorage.setItem(`video_rating_${videoId}`, JSON.stringify(userRatingObj));
+      setUserRating(userRatingObj);
+      setIsRatingMode(false);
+    } catch (e) {
+      console.error('Rating failed:', e);
+      setOptimisticRating(null);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const renderStars = () => {
@@ -92,7 +132,7 @@ export const SmartVideoRatingBar: React.FC<SmartVideoRatingBarProps> = ({
             aria-label={t("videos.rate_star", { count: i })}
             onClick={(e) => {
               e.stopPropagation();
-              if (isInteractive) handleStarClick(i);
+              if (isInteractive) handleStarClick(i, e);
             }}
             onMouseEnter={() => isInteractive && setHoveredRating(i)}
             onMouseLeave={() => isInteractive && setHoveredRating(null)}
@@ -101,10 +141,9 @@ export const SmartVideoRatingBar: React.FC<SmartVideoRatingBarProps> = ({
               ${isInteractive ? 'cursor-pointer' : 'cursor-default'}
               transition-all duration-200
               ${compact ? 'text-sm' : 'text-base'}
-              ${
-                i <= roundedDisplay
-                  ? 'text-yellow-400 drop-shadow-[0_0_4px_rgba(250,204,21,0.6)]'
-                  : 'text-gray-300 drop-shadow-[0_0_2px_rgba(96,165,250,0.4)]'
+              ${i <= roundedDisplay
+                ? 'text-yellow-400 drop-shadow-[0_0_4px_rgba(250,204,21,0.6)]'
+                : 'text-gray-300 drop-shadow-[0_0_2px_rgba(96,165,250,0.4)]'
               }
               ${isInteractive ? 'hover:text-yellow-300' : ''}
             `}
@@ -116,45 +155,6 @@ export const SmartVideoRatingBar: React.FC<SmartVideoRatingBarProps> = ({
         ))}
       </div>
     );
-  };
-
-  const handleStarClick = async (rating: number) => {
-    if (userRating || isSubmitting) return;
-    setIsSubmitting(true);
-
-    try {
-      const info = ratingData || ratingInfoData;
-      if (info) {
-        const currentTotal = info.average_rating * info.rating_count;
-        const newCount = info.rating_count + 1;
-        const newAverage = (currentTotal + rating) / newCount;
-
-        setOptimisticRating({
-          average_rating: newAverage,
-          rating_count: newCount
-        });
-      }
-
-      await rateVideo.mutateAsync({ rating });
-      await refetchRatingInfo();
-
-      if (onRatingSuccess) {
-        onRatingSuccess();
-      }
-
-      const userRatingObj: UserRatingInfo = {
-        rating,
-        created_at: new Date().toISOString()
-      };
-      localStorage.setItem(`video_rating_${videoId}`, JSON.stringify(userRatingObj));
-      setUserRating(userRatingObj);
-      setIsRatingMode(false);
-    } catch (e) {
-      console.error('Rating failed:', e);
-      setOptimisticRating(null);
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   // COMPACT VERSION
@@ -174,7 +174,7 @@ export const SmartVideoRatingBar: React.FC<SmartVideoRatingBarProps> = ({
           <motion.button
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            onClick={handleRateButtonClick}
+            onClick={(e) => handleRateButtonClick(e)}
             className="text-[10px] font-semibold px-2 py-1 rounded-full bg-blue-500/30 text-blue-100 border border-blue-400/50 hover:bg-blue-500/40 transition-colors cursor-pointer"
           >
             {t("videos.rate")}
@@ -211,7 +211,7 @@ export const SmartVideoRatingBar: React.FC<SmartVideoRatingBarProps> = ({
         <motion.button
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          onClick={handleRateButtonClick}
+          onClick={(e) => handleRateButtonClick(e)}
           className="text-xs font-semibold px-3 py-1.5 rounded-full bg-blue-500/30 text-blue-100 border border-blue-400/50 hover:bg-blue-500/40 transition-colors cursor-pointer"
         >
           {t("videos.rate")}

@@ -258,6 +258,7 @@ export default function AllVideosPage() {
                           rating_count: video.rating_count
                         }}
                         compact
+                        onRatingSuccess={() => refetch()} 
                       />
                     </div>
                     <button
@@ -321,6 +322,7 @@ export default function AllVideosPage() {
                       average_rating: activeVideo.average_rating,
                       rating_count: activeVideo.rating_count
                     }}
+                      onRatingSuccess={() => refetch()}
                   />
                 </div>
                 <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 text-xs sm:text-sm mb-2 flex-wrap">
